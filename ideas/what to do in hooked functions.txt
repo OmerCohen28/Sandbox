@@ -1,0 +1,12 @@
+CreateFile - 
+return an handle to a file of my decision, could be a copy and could be a new file.
+
+DeleteFile - 
+copy the file into a file with simmilar name, delete current file, after the program ends recreate the prev file
+
+ReadFile - 
+i need to think whether i want to trust the program has a false handle or should i redirect him here as well?
+
+WriteFile - 
+same as readfile
+

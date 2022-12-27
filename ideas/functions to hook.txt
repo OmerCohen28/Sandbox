@@ -1,0 +1,36 @@
+open virus process from sandbox
+dll inject to the virus
+
+
+IMPORTANT!!!!!
+ - hook FreeLibrary() in order for the dll to function properly
+
+dll - 
+hooking files:
+- CreateFileA();
+- CreatefileW();
+- DeleteFileA();
+- DeleteFileW();
+- ReadFile();
+- ReadFileEx();
+- WriteFile();
+- WriteFileEx();
+- WriteFileGather();
+
+sockets
+
+registry -
+
+link to all function:
+https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-functions 
+
+- RegCopyTree();
+- RegCreateKeyEx();
+- RegCreateKeyTransacted();
+- RegDeleteKey();
+- RegDeleteKeyEx();
+- RegDeleteKeyTransacted();
+- RegDeleteValue();
+- RegFlushKey();
+- RegOpenKeyEx();
+- RegOpenKeyTransacted();

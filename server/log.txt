@@ -1,0 +1,12 @@
+---------------
+started hooking
+---------------
+
+---------------
+hooked from CreateFileA
+---------------
+
+---------------
+hooked from WriteFile
+---------------
+

@@ -1,0 +1,36 @@
+---------------
+started hooking
+---------------
+
+---------------
+hooked from CreateFileA
+---------------
+
+time called since start (s) : 2
+arguemtns given to function -
+
+File Name: ..\test.txt
+---------------
+hooked from WriteFile
+---------------
+
+time called since start (s) : 2
+arguemtns given to function -
+Handle Location: 00000100
+Data buffer: nami swannn
+
+---------------
+hooked socket.send
+---------------
+
+time called since start (s) : 2
+arguemtns given to function -
+Handle Location: 456
+Data buffer: hello world!
+---------------
+hooked socket.recv
+---------------
+
+time called since start (s) : 2
+arguemtns given to function -
+Handle Location: 456

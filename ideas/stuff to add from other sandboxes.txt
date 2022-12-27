@@ -1,0 +1,14 @@
+
+what does kaspersky report - 
+
+	API calls log
+	memory dumps
+	loaded modules dumps
+	chnages in file system and registry
+	network traffic (PACP fileS)
+	
+kasperaky emulates user action so the malware thinks there is an actual user
+
+
+
+MUST DO- allow the user to get live feedback (sort of uncompleted log)

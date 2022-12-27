@@ -1,0 +1,6 @@
+D:\c++ programs\POC test\virus\Debug\virus.exe
+C:\Users\Omer Cohen\OneDrive\מסמכים\Programming\Sandbox\POC-sandbox\virus\Debug\virus.exe
+D:\c++ programs\POC\virus\Debug\virus.exe
+C:\Users\Omer Cohen\Documents\Programming\Sandbox\POC\virus\Debug\virus.exe
+D:\c++ programs\new-POC\POC\virus\Debug\virus.exe
+C:\Users\u101040.DESHALIT\Documents\Omer_Cohen\POC\virus\Debug\virus.exe

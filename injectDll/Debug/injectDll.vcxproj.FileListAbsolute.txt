@@ -1,0 +1,6 @@
+D:\c++ programs\POC test\injectDll\Debug\injectDll.exe
+C:\Users\Omer Cohen\OneDrive\מסמכים\Programming\Sandbox\POC-sandbox\injectDll\Debug\injectDll.exe
+D:\c++ programs\POC\injectDll\Debug\injectDll.exe
+C:\Users\Omer Cohen\Documents\Programming\Sandbox\POC\injectDll\Debug\injectDll.exe
+D:\c++ programs\new-POC\POC\injectDll\Debug\injectDll.exe
+C:\Users\u101040.DESHALIT\Documents\Omer_Cohen\POC\injectDll\Debug\injectDll.exe
