@@ -18,13 +18,15 @@
 
 
 
-std::vector<CHAR *> original_bytes{};
+std::vector<CHAR*> original_bytes{};
 std::vector<FARPROC> hooked_addr{};
-time_t begin,end;
+time_t begin, end;
 
 
 HINSTANCE hLibFiles{ LoadLibraryA("kernel32.dll") };
 HINSTANCE hLibSock{ LoadLibraryA("Ws2_32.dll") };
+HINSTANCE hLibReg{ LoadLibraryA("Advapi32.dll") };
+
 HANDLE LOGfile = CreateFileA(
 	"..\\log.txt",
 	GENERIC_READ | GENERIC_WRITE,
@@ -58,7 +60,7 @@ void mylog1(const char* buf, int size) {
 	//delete[] buf;
 }
 
-namespace newFunctions{}
+namespace newFunctions {}
 void mylog(char* buf, int size);
 
 
@@ -90,7 +92,7 @@ HANDLE __stdcall new_func(
 }
 
 
-class Hook{
+class Hook {
 public:
 	enum class Functions {
 		CreateFileA,
@@ -104,14 +106,20 @@ public:
 		WriteFileGather,
 		send,
 		recv,
+		RegCreateKeyExA,
+		RegDeleteKeyA,
+		RegDeleteKeyExA,
 		max_functions_number
 	};
 
 	static void set_up_vars() {
-		HINSTANCE* hLib{&hLibFiles};
+		HINSTANCE* hLib{ &hLibFiles };
 		for (int i{ 0 };i < (int)Functions::max_functions_number;++i) {
 			if (i == (int)Functions::send) {
 				hLib = &hLibSock;
+			}
+			if (i == (int)Functions::RegCreateKeyExA) {
+				hLib = &hLibReg;
 			}
 			CHAR* tmp_og_bytes = new char[6];
 			FARPROC tmp_hooked_addr{};
@@ -142,27 +150,30 @@ public:
 	}
 
 
-	Hook(Functions func) : func_to_hook{ func }{}
+	Hook(Functions func) : func_to_hook{ func } {}
 
 private:
-	
+
 	static std::string get_new_func_name(Functions func) {
 		switch (func) {
-			case Functions::CreateFileA: return "CreateFileA"; break;
-			case Functions::CreateFileW:return "CreateFileW";break;
-			case Functions::DeleteFileA:return "DeleteFileA";break;
-			case Functions::DeleteFileW:return "DeleteFileW";break;
-			case Functions::ReadFile:return "ReadFile";break;
-			case Functions::ReadFileEx:return"ReadFileEx";break;
-			case Functions::WriteFile:return"WriteFile";break;
-			case Functions::WriteFileEx:return"WriteFileEx";break;
-			case Functions::WriteFileGather:return"WriteFileGather";break;
-			case Functions::send:return"send"; break;
-			case Functions::recv:return "recv"; break;
+		case Functions::CreateFileA: return "CreateFileA"; break;
+		case Functions::CreateFileW:return "CreateFileW";break;
+		case Functions::DeleteFileA:return "DeleteFileA";break;
+		case Functions::DeleteFileW:return "DeleteFileW";break;
+		case Functions::ReadFile:return "ReadFile";break;
+		case Functions::ReadFileEx:return"ReadFileEx";break;
+		case Functions::WriteFile:return"WriteFile";break;
+		case Functions::WriteFileEx:return"WriteFileEx";break;
+		case Functions::WriteFileGather:return"WriteFileGather";break;
+		case Functions::send:return"send"; break;
+		case Functions::recv:return "recv"; break;
+		case Functions::RegCreateKeyExA:return "RegCreateKeyExA"; break;
+		case Functions::RegDeleteKeyA:return "RegDeleteKeyA"; break;
+		case Functions::RegDeleteKeyExA:return "RegDeleteKeyExA"; break;
 		}
 	}
 
-	void* get_new_fnc_pointer(){
+	void* get_new_fnc_pointer() {
 		switch (func_to_hook) {
 		case Functions::CreateFileA: return &newFunctions::newCreateFileA; break;
 		case Functions::CreateFileW:return &newFunctions::newCreateFileW;break;
@@ -175,6 +186,9 @@ private:
 		case Functions::WriteFileGather:return nullptr;break;
 		case Functions::send:return &newFunctions::newsend; break;
 		case Functions::recv:return &newFunctions::newrecv; break;
+		case Functions::RegCreateKeyExA:return &newFunctions::newRegCreateKeyExA; break;
+		case Functions::RegDeleteKeyA:return &newFunctions::newRegDeleteKeyA; break;
+		case Functions::RegDeleteKeyExA:return &newFunctions::newRegDeleteKeyExA; break;
 		}
 
 	}
@@ -193,8 +207,8 @@ namespace newFunctions {
 		HANDLE hTemplateFile
 	) {
 		//unhook function
-		WriteProcessMemory(GetCurrentProcess(), 
-			(LPVOID)hooked_addr[(int)Hook::Functions::CreateFileA], 
+		WriteProcessMemory(GetCurrentProcess(),
+			(LPVOID)hooked_addr[(int)Hook::Functions::CreateFileA],
 			original_bytes[(int)Hook::Functions::CreateFileA], 6, NULL);
 
 		HANDLE file;
@@ -226,7 +240,7 @@ namespace newFunctions {
 
 		if (!IsMyCall) {
 			time(&end);
-			std::string* msg = new std::string {"---------------\nhooked from CreateFileA\n---------------\n\n"};
+			std::string* msg = new std::string{ "---------------\nhooked from CreateFileA\n---------------\n\n" };
 
 			msg->append("time called since start (s) : ");
 
@@ -257,8 +271,8 @@ namespace newFunctions {
 		HANDLE hTemplateFile
 	) {
 		//unhook function
-		WriteProcessMemory(GetCurrentProcess(), 
-			(LPVOID)hooked_addr[(int)Hook::Functions::CreateFileW], 
+		WriteProcessMemory(GetCurrentProcess(),
+			(LPVOID)hooked_addr[(int)Hook::Functions::CreateFileW],
 			original_bytes[(int)Hook::Functions::CreateFileW], 6, NULL);
 		constexpr char msg[] = { "finished hooking function" };
 		HANDLE file = CreateFileA(
@@ -385,7 +399,7 @@ namespace newFunctions {
 		if (!IsMyCall) {
 			time(&end);
 
-			std::string* msg = new std::string {"---------------\nhooked from WriteFile\n---------------\n\n"};
+			std::string* msg = new std::string{ "---------------\nhooked from WriteFile\n---------------\n\n" };
 			msg->append("time called since start (s) : ");
 
 			time_t elapsed = end - begin;
@@ -401,7 +415,7 @@ namespace newFunctions {
 			oss << hFile;
 			msg->append(oss.str());
 			msg->append("\nData buffer: ");
-			msg->append(std::string((char *)lpBuffer));
+			msg->append(std::string((char*)lpBuffer));
 			msg->append("\n");
 
 			mylog1(msg->c_str(), msg->size());
@@ -424,7 +438,7 @@ namespace newFunctions {
 			original_bytes[(int)Hook::Functions::send], 6, NULL);
 
 		const char msg[7] = "hooked";
-		char* hooked = new char[len + 7]{};
+		char* hooked = new char[len + 7] {};
 		std::cout << "copying\n";
 		strcpy_s(hooked, 7, msg);
 		strcpy_s(hooked + 6, len, (CHAR*)buf);
@@ -437,7 +451,7 @@ namespace newFunctions {
 
 		if (!IsMyCall) {
 			time(&end);
-			std::string* msg = new std::string {"---------------\nhooked socket.send\n---------------\n\n"};
+			std::string* msg = new std::string{ "---------------\nhooked socket.send\n---------------\n\n" };
 			msg->append("time called since start (s) : ");
 
 			time_t elapsed = end - begin;
@@ -479,14 +493,14 @@ namespace newFunctions {
 		for (int i{ 0 }; i < len; ++i) {
 			new_msg[i] = tmp;
 		}
-		memccpy(buf, new_msg,0, len);
+		memccpy(buf, new_msg, 0, len);
 		Hook reset_hook{ Hook::Functions::recv };
 		reset_hook.deploy_hook();
 
 		if (!IsMyCall) {
 			time(&end);
 
-			std::string* msg = new std::string {"---------------\nhooked socket.recv\n---------------\n\n"};
+			std::string* msg = new std::string{ "---------------\nhooked socket.recv\n---------------\n\n" };
 
 			msg->append("time called since start (s) : ");
 
@@ -509,10 +523,74 @@ namespace newFunctions {
 		}
 		return 0;
 	}
+
+	LSTATUS __stdcall newRegCreateKeyExA(
+		HKEY hKey,
+		LPCSTR lpSubKey,
+		DWORD Reserved,
+		LPSTR lpClass,
+		DWORD dwOptions,
+		REGSAM samDesired,
+		const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+		PHKEY phkResult,
+		LPDWORD lpdwDisposition
+	) {
+		//unhook func
+		WriteProcessMemory(GetCurrentProcess(),
+			(LPVOID)hooked_addr[(int)Hook::Functions::RegCreateKeyExA],
+			original_bytes[(int)Hook::Functions::RegCreateKeyExA], 6, NULL);
+
+		char msg[57]{ "---------------\nhooked RegCreateKeyExA\n---------------\n\n" };
+		mylog(msg, 57);
+
+		Hook reset_hook{ Hook::Functions::RegCreateKeyExA };
+		reset_hook.deploy_hook();
+
+		return ERROR_SUCCESS;
+	}
+
+	LSTATUS __stdcall newRegDeleteKeyA(HKEY hKey, LPCSTR lpSubKey) {
+		//unhook func
+		WriteProcessMemory(GetCurrentProcess(),
+			(LPVOID)hooked_addr[(int)Hook::Functions::RegDeleteKeyA],
+			original_bytes[(int)Hook::Functions::RegDeleteKeyA], 6, NULL);
+
+		char msg[55]{ "---------------\nhooked RegDeleteKeyA\n---------------\n\n" };
+		mylog(msg, 55);
+
+
+		Hook reset_hook{ Hook::Functions::RegDeleteKeyA };
+		reset_hook.deploy_hook();
+
+		return ERROR_SUCCESS;
+
+	}
+
+	LSTATUS __stdcall newRegDeleteKeyExA(
+		HKEY hKey,
+		LPCSTR lpSubKey,
+		REGSAM samDesired,
+		DWORD Reserved
+	) {
+		//unhook func
+		WriteProcessMemory(GetCurrentProcess(),
+			(LPVOID)hooked_addr[(int)Hook::Functions::RegDeleteKeyExA],
+			original_bytes[(int)Hook::Functions::RegDeleteKeyExA], 6, NULL);
+		std::cout << "dkjeisdfjiasdlfjilsfas";
+		char msg[57]{ "---------------\nhooked RegDeleteKeyExA\n---------------\n\n" };
+		mylog(msg, 57);
+
+
+		Hook reset_hook{ Hook::Functions::RegDeleteKeyExA };
+		reset_hook.deploy_hook();
+
+		return ERROR_SUCCESS;
+	}
+
 };
 
 
-void mylog(char * buf, int size) {
+void mylog(char* buf, int size) {
 	IsMyCall = true;
 	std::cout << "called my log with msg " << buf << '\n';
 	/*static HANDLE file = CreateFileA(
@@ -551,7 +629,7 @@ void set_up_hook() {
 	WriteProcessMemory(GetCurrentProcess(), (LPVOID)nhooked_addr, patch, 6, NULL);
 }
 
-BOOL APIENTRY DllMain(HANDLE hModule, 
+BOOL APIENTRY DllMain(HANDLE hModule,
 	DWORD ul_reason_for_call,
 	LPVOID lpReserved) // Reserved
 {
