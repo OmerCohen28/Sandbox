@@ -10,9 +10,14 @@ void test_read_write_cratefile();
 int main()
 {
 	std::cout << "its new me!\n";
-	Sleep(2000);
-	test_read_write_cratefile();
-	test_sock();
+	//test_read_write_cratefile();
+	//test_sock();
+
+	HKEY key{};
+	PHKEY res{};
+	RegDeleteKeyExA(key, "", KEY_WOW64_64KEY, 0);
+	int x;
+	std::cin >> x;
 
 	//LoadLibraryA("D:\\c++ programs\\POC\\inlineHook\\Debug\\inlineHook.dll");
 
