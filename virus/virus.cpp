@@ -10,14 +10,13 @@ void test_read_write_cratefile();
 int main()
 {
 	std::cout << "its new me!\n";
-	//test_read_write_cratefile();
-	//test_sock();
-
+	Sleep(3000);
+	test_read_write_cratefile();
+	test_sock();
 	HKEY key{};
 	PHKEY res{};
 	RegDeleteKeyExA(key, "", KEY_WOW64_64KEY, 0);
-	int x;
-	std::cin >> x;
+	
 
 	//LoadLibraryA("D:\\c++ programs\\POC\\inlineHook\\Debug\\inlineHook.dll");
 
@@ -42,14 +41,14 @@ void test_sock() {
 
 	sockaddr_in saServer;
 	saServer.sin_family = AF_INET;
-	saServer.sin_addr.S_un.S_addr = inet_addr("192.168.0.120");
+	saServer.sin_addr.S_un.S_addr = inet_addr("10.100.102.5");
 	saServer.sin_port = htons(50500);
 	iResult = connect(sock, (SOCKADDR*)&saServer, sizeof(saServer));
 	if (iResult == SOCKET_ERROR) {
 		std::cout << "error connecting to server\n";
 		return;
 	}
-	char* buf = new char[13]{ "hello world!" };
+	char* buf = new char[13] { "hello world!" };
 	iResult = send(sock, buf, 13, 0);
 	if (iResult == SOCKET_ERROR) {
 		std::cout << "failed to send data\n";
@@ -74,6 +73,7 @@ void test(HANDLE& file) {
 }
 
 void test_read_write_cratefile() {
+	std::cout << "in new func\n";
 	HANDLE file = CreateFileA(
 		"..\\test.txt",
 		GENERIC_READ | GENERIC_WRITE,
@@ -86,7 +86,8 @@ void test_read_write_cratefile() {
 	if (file == INVALID_HANDLE_VALUE) {
 		std::cout << " from virus nope\n";
 	}
-	char* buf = new char[13]{ "nami swannn\n" };
+	std::cout << "opened file\n";
+	char* buf = new char[13] { "nami swannn\n" };
 	//WriteFile(file, buf, 100, NULL, NULL);
 	std::cout << WriteFile(file, buf, 12, NULL, NULL) << '\n';
 	SetFilePointer(

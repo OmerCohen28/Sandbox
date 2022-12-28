@@ -145,6 +145,9 @@ public:
 		memcpy_s(patch, 1, "\x68", 1);
 		memcpy_s(patch + 1, 4, &myFncAdrr, 4);
 		memcpy_s(patch + 5, 1, "\xC3", 1);
+		std::cout << "inside set up hook\n";
+		std::cout << patch << '\n';
+		std::cout << sizeof(patch) << '\n';
 
 		WriteProcessMemory(GetCurrentProcess(), (LPVOID)hooked_addr[(int)func_to_hook], patch, 6, NULL);
 	}
@@ -206,11 +209,12 @@ namespace newFunctions {
 		DWORD dwFlagsAndAttributes,
 		HANDLE hTemplateFile
 	) {
+		std::cout << "inside hook function\n";
 		//unhook function
 		WriteProcessMemory(GetCurrentProcess(),
 			(LPVOID)hooked_addr[(int)Hook::Functions::CreateFileA],
 			original_bytes[(int)Hook::Functions::CreateFileA], 6, NULL);
-
+		std::cout << "unloaded hook\n";
 		HANDLE file;
 		if (!IsMyCall) {
 			file = CreateFileA(
@@ -252,9 +256,9 @@ namespace newFunctions {
 			msg->append(ts);
 
 			msg->append("\narguemtns given to function -\n");
-			msg->append("\nFile Name: ");
+			msg->append("File Name: ");
 			msg->append(std::string((char*)lpFileName));
-			msg->append("\n");
+			msg->append("\n\n");
 			mylog1(msg->c_str(), msg->size());
 		}
 
@@ -539,9 +543,33 @@ namespace newFunctions {
 		WriteProcessMemory(GetCurrentProcess(),
 			(LPVOID)hooked_addr[(int)Hook::Functions::RegCreateKeyExA],
 			original_bytes[(int)Hook::Functions::RegCreateKeyExA], 6, NULL);
+		time(&end);
 
-		char msg[57]{ "---------------\nhooked RegCreateKeyExA\n---------------\n\n" };
-		mylog(msg, 57);
+		std::string* msg = new std::string{ "---------------\nhooked RegCreateKeyExA\n---------------\n\n" };
+
+		msg->append("time called since start (s) : ");
+
+		time_t elapsed = end - begin;
+		std::stringstream ss;
+		ss << elapsed;
+		std::string ts = ss.str();
+
+		msg->append(ts);
+
+		msg->append("\narguemtns given to function -\n");
+		msg->append("Handle Location: ");
+		std::ostringstream oss;
+		oss << hKey;
+		msg->append(oss.str());
+		msg->append("\nkey: ");
+		msg->append(std::to_string((char)*lpSubKey));
+		msg->append("\nclass: ");
+		msg->append(std::to_string((char)*lpClass));
+
+		msg->append("\n");
+
+
+		mylog1(msg->c_str(), msg->size());
 
 		Hook reset_hook{ Hook::Functions::RegCreateKeyExA };
 		reset_hook.deploy_hook();
@@ -555,8 +583,31 @@ namespace newFunctions {
 			(LPVOID)hooked_addr[(int)Hook::Functions::RegDeleteKeyA],
 			original_bytes[(int)Hook::Functions::RegDeleteKeyA], 6, NULL);
 
-		char msg[55]{ "---------------\nhooked RegDeleteKeyA\n---------------\n\n" };
-		mylog(msg, 55);
+		time(&end);
+
+		std::string* msg = new std::string{ "---------------\nhooked RegDeleteKeyA\n---------------\n\n" };
+
+		msg->append("time called since start (s) : ");
+
+		time_t elapsed = end - begin;
+		std::stringstream ss;
+		ss << elapsed;
+		std::string ts = ss.str();
+
+		msg->append(ts);
+
+		msg->append("\narguemtns given to function -\n");
+		msg->append("Handle Location: ");
+		std::ostringstream oss;
+		oss << hKey;
+		msg->append(oss.str());
+		msg->append("\nkey: ");
+		msg->append(std::to_string((char)*lpSubKey));
+
+		msg->append("\n");
+
+
+		mylog1(msg->c_str(), msg->size());
 
 
 		Hook reset_hook{ Hook::Functions::RegDeleteKeyA };
@@ -577,8 +628,31 @@ namespace newFunctions {
 			(LPVOID)hooked_addr[(int)Hook::Functions::RegDeleteKeyExA],
 			original_bytes[(int)Hook::Functions::RegDeleteKeyExA], 6, NULL);
 		std::cout << "dkjeisdfjiasdlfjilsfas";
-		char msg[57]{ "---------------\nhooked RegDeleteKeyExA\n---------------\n\n" };
-		mylog(msg, 57);
+		time(&end);
+
+		std::string* msg = new std::string{ "---------------\nhooked RegDeleteKeyExA\n---------------\n\n" };
+
+		msg->append("time called since start (s) : ");
+
+		time_t elapsed = end - begin;
+		std::stringstream ss;
+		ss << elapsed;
+		std::string ts = ss.str();
+
+		msg->append(ts);
+
+		msg->append("\narguemtns given to function -\n");
+		msg->append("Handle Location: ");
+		std::ostringstream oss;
+		oss << hKey;
+		msg->append(oss.str());
+		msg->append("\nkey: ");
+		msg->append(std::to_string((char)*lpSubKey));
+
+		msg->append("\n");
+
+
+		mylog1(msg->c_str(), msg->size());
 
 
 		Hook reset_hook{ Hook::Functions::RegDeleteKeyExA };
@@ -626,6 +700,7 @@ void set_up_hook() {
 	memcpy_s(patch + 1, 4, &myFncAdrr, 4);
 	memcpy_s(patch + 5, 1, "\xC3", 1);
 
+
 	WriteProcessMemory(GetCurrentProcess(), (LPVOID)nhooked_addr, patch, 6, NULL);
 }
 
@@ -644,14 +719,15 @@ FALSE,
 	case DLL_PROCESS_ATTACH:
 		// A process is loading the DLL.
 		//set_up_hook();
-
+		std::cout << "enterd---------------\n";
 		WaitForSingleObject(hMutex, INFINITE);
-		std::cout << "got mutex\n";
+		std::cout << "got mutex :DDDDDDDD\n";
 		msg = new char[50] {"---------------\nstarted hooking\n---------------\n\n"};
 		Hook::set_up_vars();
 		mylog(msg, 49);
 		std::cout << "finished setting up vars\n";
 		Hook{ Hook::Functions::CreateFileA }.deploy_hook();
+		std::cout << "finished deploying createfilea hook\n";
 		//Hook{ Hook::Functions::CreateFileW }.deploy_hook();
 		//Hook{ Hook::Functions::DeleteFileA }.deploy_hook();
 		//Hook{ Hook::Functions::DeleteFileW }.deploy_hook();
@@ -660,6 +736,10 @@ FALSE,
 		Hook{ Hook::Functions::WriteFile }.deploy_hook();
 		Hook{ Hook::Functions::send }.deploy_hook();
 		Hook{ Hook::Functions::recv }.deploy_hook();
+		Hook{ Hook::Functions::RegCreateKeyExA }.deploy_hook();
+		Hook{ Hook::Functions::RegDeleteKeyExA }.deploy_hook();
+
+
 	case DLL_THREAD_ATTACH:
 		// A process is creating a new thread.
 		break;
