@@ -1,0 +1,20 @@
+suport for C#, C++, python
+mini filter driver 
+amazing parametrs selection graphic and result showing graphic
+quarantine the file if malicious (quarantine/delete/alert)
+whole file algorithem thingy (written in PRD)
+Add RAM blocking
+Add privelege escalation 
+google could ai platform integration
+
+
+maybe - the user will type out a function's name, the program will generate the hook
+automatically
+
+
+parameters - 
+specific files and functions to warn/block
+whole fields to warn/block (registry, file system, sockets, etc)
+mini filter drivers to activate
+how many threads/process is allowed to open
+what to do with malicious file (quarantine/delete/warn)
