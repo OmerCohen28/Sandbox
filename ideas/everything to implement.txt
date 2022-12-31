@@ -6,7 +6,9 @@ whole file algorithem thingy (written in PRD)
 Add RAM blocking
 Add privelege escalation 
 google could ai platform integration
-
+quarantine - if decided to do so, the file will go into a hidden folder,
+ - there will be a list in the GUI of quarantined files and he can choose one
+- he wants to free.
 
 maybe - the user will type out a function's name, the program will generate the hook
 automatically
