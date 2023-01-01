@@ -5,6 +5,7 @@
 /*
 - after creating a new tmp file, need to copy the contents from the original file
 - test a lot
+- delte files after class is done
 */
 
 class Divertor {
