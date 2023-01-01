@@ -4,10 +4,10 @@
 #else 
 #define DECLDIR __declspec(dllimport) 
 #endif  
-extern "C" 
-{     
+extern "C"
+{
 	//DECLDIR void Share();    
 	//void Keep();
 
 
-} 
+}
