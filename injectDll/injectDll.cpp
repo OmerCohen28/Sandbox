@@ -13,15 +13,18 @@ int main()
         std::string file{};
         std::cin >> file;
         std::cout << file.c_str() << '\n';
+        std::cout << "what is the max size you want to allow for the process? (in MB): ";
+        int size;
+        std::cin >> size;
         if (file == "stop") {
             break;
         }
         if (file == "default") {
             std::string path{ _path_to_virus_ };
-            inject_dll(path);
+            inject_dll(path, size);
         }
         else {
-            inject_dll(file);
+            inject_dll(file,size);
         }
     }
     std::cout << "thank you for using SafeBox :)\n";

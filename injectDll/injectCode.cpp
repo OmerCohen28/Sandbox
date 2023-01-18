@@ -1,9 +1,38 @@
 #include <iostream>
 #include <Windows.h>
 #include <string>
+#include <psapi.h>
 
 
-void inject_dll(std::string& file) {
+struct pass_to_memory_limiter {
+    HANDLE hProcess;
+    int max_size;
+};
+
+DWORD WINAPI checkProcessMemory(pass_to_memory_limiter& data) {
+    if (data.hProcess == NULL) {
+        std::cout << "Failed to open process with error " << GetLastError() << std::endl;
+        return 1;
+    }
+    while (true) {
+        Sleep(10);
+        PROCESS_MEMORY_COUNTERS pmc;
+        if (GetProcessMemoryInfo(data.hProcess, &pmc, sizeof(pmc))) {
+            int size = pmc.WorkingSetSize / 1024;
+            if (size > data.max_size * 1024) {
+                std::cout << "PROCESS EXCEEDED ALLOWED MEMORY\n";
+                TerminateProcess(data.hProcess, 1);
+                ExitProcess(1);
+            }
+        }
+        else {
+            continue;
+        }
+    }
+    return 0;
+}
+
+void inject_dll(std::string& file, int size) {
     const char name[] = { "D:\\Actual sandbox sln\\inlineHook\\Debug\\inlineHook.dll" };
     unsigned int len{ sizeof(name) + 1 };
     DWORD result = GetFullPathNameA(name, 0, NULL, NULL);
@@ -77,9 +106,20 @@ void inject_dll(std::string& file) {
         std::cout << "failed to create remote thread\n";
     }
     std::cout << "injected the DLL\n";
+    pass_to_memory_limiter data{ pi.hProcess,size };
+    HANDLE hThread = CreateThread(
+        NULL,
+        0,
+        (LPTHREAD_START_ROUTINE)checkProcessMemory,
+        (LPVOID)&data,
+        0,
+        NULL
+    );
+
     ResumeThread(pi.hThread);
     WaitForSingleObject(remote_thread, INFINITE);
     CloseHandle(remote_thread);
     WaitForSingleObject(pi.hProcess, INFINITE);
     CloseHandle(pi.hProcess);
+    CloseHandle(hThread);
 }
