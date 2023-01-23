@@ -1,0 +1,676 @@
+DWORD AddUsersToEncryptedFile(
+  [in] LPCWSTR                      lpFileName,
+  [in] PENCRYPTION_CERTIFICATE_LIST pEncryptionCertificates
+);
+BOOL AreFileApisANSI();
+BOOL CheckNameLegalDOS8Dot3A(
+  [in]            LPCSTR lpName,
+  [out, optional] LPSTR  lpOemName,
+  [in]            DWORD  OemNameSize,
+  [out, optional] PBOOL  pbNameContainsSpaces,
+  [out]           PBOOL  pbNameLegal
+);
+void CloseEncryptedFileRaw(
+  [in] PVOID pvContext
+);
+BOOL CopyFile(
+  [in] LPCTSTR lpExistingFileName,
+  [in] LPCTSTR lpNewFileName,
+  [in] BOOL    bFailIfExists
+);
+HRESULT CopyFile2(
+  [in]           PCWSTR                        pwszExistingFileName,
+  [in]           PCWSTR                        pwszNewFileName,
+  [in, optional] COPYFILE2_EXTENDED_PARAMETERS *pExtendedParameters
+);
+PCOPYFILE2_PROGRESS_ROUTINE Pcopyfile2ProgressRoutine;
+
+COPYFILE2_MESSAGE_ACTION Pcopyfile2ProgressRoutine(
+  [in]           const COPYFILE2_MESSAGE *pMessage,
+  [in, optional] PVOID pvCallbackContext
+)
+{...}
+BOOL CopyFileExA(
+  [in]           LPCSTR             lpExistingFileName,
+  [in]           LPCSTR             lpNewFileName,
+  [in, optional] LPPROGRESS_ROUTINE lpProgressRoutine,
+  [in, optional] LPVOID             lpData,
+  [in, optional] LPBOOL             pbCancel,
+  [in]           DWORD              dwCopyFlags
+);
+BOOL CopyFileTransactedA(
+  [in]           LPCSTR             lpExistingFileName,
+  [in]           LPCSTR             lpNewFileName,
+  [in, optional] LPPROGRESS_ROUTINE lpProgressRoutine,
+  [in, optional] LPVOID             lpData,
+  [in, optional] LPBOOL             pbCancel,
+  [in]           DWORD              dwCopyFlags,
+  [in]           HANDLE             hTransaction
+);
+LPPROGRESS_ROUTINE LpprogressRoutine;
+
+DWORD LpprogressRoutine(
+  [in]           LARGE_INTEGER TotalFileSize,
+  [in]           LARGE_INTEGER TotalBytesTransferred,
+  [in]           LARGE_INTEGER StreamSize,
+  [in]           LARGE_INTEGER StreamBytesTransferred,
+  [in]           DWORD dwStreamNumber,
+  [in]           DWORD dwCallbackReason,
+  [in]           HANDLE hSourceFile,
+  [in]           HANDLE hDestinationFile,
+  [in, optional] LPVOID lpData
+)
+{...}
+HANDLE CreateFileA(
+  [in]           LPCSTR                lpFileName,
+  [in]           DWORD                 dwDesiredAccess,
+  [in]           DWORD                 dwShareMode,
+  [in, optional] LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+  [in]           DWORD                 dwCreationDisposition,
+  [in]           DWORD                 dwFlagsAndAttributes,
+  [in, optional] HANDLE                hTemplateFile
+);
+HANDLE CreateFile2(
+  [in]           LPCWSTR                           lpFileName,
+  [in]           DWORD                             dwDesiredAccess,
+  [in]           DWORD                             dwShareMode,
+  [in]           DWORD                             dwCreationDisposition,
+  [in, optional] LPCREATEFILE2_EXTENDED_PARAMETERS pCreateExParams
+);
+HANDLE CreateFileTransactedA(
+  [in]           LPCSTR                lpFileName,
+  [in]           DWORD                 dwDesiredAccess,
+  [in]           DWORD                 dwShareMode,
+  [in, optional] LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+  [in]           DWORD                 dwCreationDisposition,
+  [in]           DWORD                 dwFlagsAndAttributes,
+  [in, optional] HANDLE                hTemplateFile,
+  [in]           HANDLE                hTransaction,
+  [in, optional] PUSHORT               pusMiniVersion,
+                 PVOID                 lpExtendedParameter
+);
+BOOL CreateHardLinkA(
+  [in] LPCSTR                lpFileName,
+  [in] LPCSTR                lpExistingFileName,
+       LPSECURITY_ATTRIBUTES lpSecurityAttributes
+);
+BOOL CreateHardLinkTransactedA(
+  [in] LPCSTR                lpFileName,
+  [in] LPCSTR                lpExistingFileName,
+       LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+  [in] HANDLE                hTransaction
+);
+BOOLEAN CreateSymbolicLinkA(
+  [in] LPCSTR lpSymlinkFileName,
+  [in] LPCSTR lpTargetFileName,
+  [in] DWORD  dwFlags
+);
+BOOLEAN CreateSymbolicLinkTransactedA(
+  [in] LPCSTR lpSymlinkFileName,
+  [in] LPCSTR lpTargetFileName,
+  [in] DWORD  dwFlags,
+  [in] HANDLE hTransaction
+);
+BOOL DecryptFileA(
+  [in] LPCSTR lpFileName,
+       DWORD  dwReserved
+);
+BOOL DeleteFileA(
+  [in] LPCSTR lpFileName
+);
+BOOL DeleteFileTransactedA(
+  [in] LPCSTR lpFileName,
+  [in] HANDLE hTransaction
+);
+DWORD DuplicateEncryptionInfoFile(
+  [in]           LPCWSTR                     SrcFileName,
+  [in]           LPCWSTR                     DstFileName,
+  [in]           DWORD                       dwCreationDistribution,
+  [in]           DWORD                       dwAttributes,
+  [in, optional] const LPSECURITY_ATTRIBUTES lpSecurityAttributes
+);
+BOOL EncryptFileA(
+  [in] LPCSTR lpFileName
+);
+BOOL EncryptionDisable(
+  [in] LPCWSTR DirPath,
+  [in] BOOL    Disable
+);
+PFE_EXPORT_FUNC PfeExportFunc;
+
+DWORD PfeExportFunc(
+  [in]           PBYTE pbData,
+  [in, optional] PVOID pvCallbackContext,
+  [in]           ULONG ulLength
+)
+{...}
+BOOL FileEncryptionStatusA(
+  [in]  LPCSTR  lpFileName,
+  [out] LPDWORD lpStatus
+);
+LPOVERLAPPED_COMPLETION_ROUTINE LpoverlappedCompletionRoutine;
+
+void LpoverlappedCompletionRoutine(
+  [in]      DWORD dwErrorCode,
+  [in]      DWORD dwNumberOfBytesTransfered,
+  [in, out] LPOVERLAPPED lpOverlapped
+)
+{...}
+BOOL FindClose(
+  [in, out] HANDLE hFindFile
+);
+HANDLE FindFirstFileA(
+  [in]  LPCSTR             lpFileName,
+  [out] LPWIN32_FIND_DATAA lpFindFileData
+);
+HANDLE FindFirstFileExA(
+  [in]  LPCSTR             lpFileName,
+  [in]  FINDEX_INFO_LEVELS fInfoLevelId,
+  [out] LPVOID             lpFindFileData,
+  [in]  FINDEX_SEARCH_OPS  fSearchOp,
+        LPVOID             lpSearchFilter,
+  [in]  DWORD              dwAdditionalFlags
+);
+HANDLE FindFirstFileNameTransactedW(
+  [in]           LPCWSTR lpFileName,
+  [in]           DWORD   dwFlags,
+  [in, out]      LPDWORD StringLength,
+  [in, out]      PWSTR   LinkName,
+  [in, optional] HANDLE  hTransaction
+);
+HANDLE FindFirstFileNameW(
+  [in]      LPCWSTR lpFileName,
+  [in]      DWORD   dwFlags,
+  [in, out] LPDWORD StringLength,
+  [in, out] PWSTR   LinkName
+);
+HANDLE FindFirstFileTransactedA(
+  [in]  LPCSTR             lpFileName,
+  [in]  FINDEX_INFO_LEVELS fInfoLevelId,
+  [out] LPVOID             lpFindFileData,
+  [in]  FINDEX_SEARCH_OPS  fSearchOp,
+        LPVOID             lpSearchFilter,
+  [in]  DWORD              dwAdditionalFlags,
+  [in]  HANDLE             hTransaction
+);
+HANDLE FindFirstStreamTransactedW(
+  [in]  LPCWSTR            lpFileName,
+  [in]  STREAM_INFO_LEVELS InfoLevel,
+  [out] LPVOID             lpFindStreamData,
+        DWORD              dwFlags,
+  [in]  HANDLE             hTransaction
+);
+HANDLE FindFirstStreamW(
+  [in]  LPCWSTR            lpFileName,
+  [in]  STREAM_INFO_LEVELS InfoLevel,
+  [out] LPVOID             lpFindStreamData,
+        DWORD              dwFlags
+);
+BOOL FindNextFileA(
+  [in]  HANDLE             hFindFile,
+  [out] LPWIN32_FIND_DATAA lpFindFileData
+);
+BOOL FindNextFileNameW(
+  [in]      HANDLE  hFindStream,
+  [in, out] LPDWORD StringLength,
+  [in, out] PWSTR   LinkName
+);
+BOOL FindNextStreamW(
+  [in]  HANDLE hFindStream,
+  [out] LPVOID lpFindStreamData
+);
+BOOL FlushFileBuffers(
+  [in] HANDLE hFile
+);
+void FreeEncryptionCertificateHashList(
+  [in] PENCRYPTION_CERTIFICATE_HASH_LIST pUsers
+);
+BOOL GetBinaryTypeA(
+  [in]  LPCSTR  lpApplicationName,
+  [out] LPDWORD lpBinaryType
+);
+DWORD GetCompressedFileSizeA(
+  [in]            LPCSTR  lpFileName,
+  [out, optional] LPDWORD lpFileSizeHigh
+);
+DWORD GetCompressedFileSizeTransactedA(
+  [in]            LPCSTR  lpFileName,
+  [out, optional] LPDWORD lpFileSizeHigh,
+  [in]            HANDLE  hTransaction
+);
+INT GetExpandedNameA(
+  [in]  LPSTR lpszSource,
+  [out] LPSTR lpszBuffer
+);
+DWORD GetFileAttributesA(
+  [in] LPCSTR lpFileName
+);
+BOOL GetFileAttributesExA(
+  [in]  LPCSTR                 lpFileName,
+  [in]  GET_FILEEX_INFO_LEVELS fInfoLevelId,
+  [out] LPVOID                 lpFileInformation
+);
+BOOL GetFileAttributesTransactedA(
+  [in]  LPCSTR                 lpFileName,
+  [in]  GET_FILEEX_INFO_LEVELS fInfoLevelId,
+  [out] LPVOID                 lpFileInformation,
+  [in]  HANDLE                 hTransaction
+);
+BOOL GetFileBandwidthReservation(
+  [in]  HANDLE  hFile,
+  [out] LPDWORD lpPeriodMilliseconds,
+  [out] LPDWORD lpBytesPerPeriod,
+  [out] LPBOOL  pDiscardable,
+  [out] LPDWORD lpTransferSize,
+  [out] LPDWORD lpNumOutstandingRequests
+);
+BOOL GetFileInformationByHandle(
+  [in]  HANDLE                       hFile,
+  [out] LPBY_HANDLE_FILE_INFORMATION lpFileInformation
+);
+BOOL GetFileInformationByHandleEx(
+  [in]  HANDLE                    hFile,
+  [in]  FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
+  [out] LPVOID                    lpFileInformation,
+  [in]  DWORD                     dwBufferSize
+);
+DWORD GetFileSize(
+  [in]            HANDLE  hFile,
+  [out, optional] LPDWORD lpFileSizeHigh
+);
+BOOL GetFileSizeEx(
+  [in]  HANDLE         hFile,
+  [out] PLARGE_INTEGER lpFileSize
+);
+DWORD GetFileType(
+  [in] HANDLE hFile
+);
+DWORD GetFinalPathNameByHandleA(
+  [in]  HANDLE hFile,
+  [out] LPSTR  lpszFilePath,
+  [in]  DWORD  cchFilePath,
+  [in]  DWORD  dwFlags
+);
+DWORD GetFullPathNameA(
+  [in]  LPCSTR lpFileName,
+  [in]  DWORD  nBufferLength,
+  [out] LPSTR  lpBuffer,
+  [out] LPSTR  *lpFilePart
+);
+DWORD GetFullPathNameTransactedA(
+  [in]  LPCSTR lpFileName,
+  [in]  DWORD  nBufferLength,
+  [out] LPSTR  lpBuffer,
+  [out] LPSTR  *lpFilePart,
+  [in]  HANDLE hTransaction
+);
+DWORD GetLongPathNameA(
+  [in]  LPCSTR lpszShortPath,
+  [out] LPSTR  lpszLongPath,
+  [in]  DWORD  cchBuffer
+);
+DWORD GetLongPathNameTransactedA(
+  [in]  LPCSTR lpszShortPath,
+  [out] LPSTR  lpszLongPath,
+  [in]  DWORD  cchBuffer,
+  [in]  HANDLE hTransaction
+);
+BOOL GetQueuedCompletionStatus(
+  [in]  HANDLE       CompletionPort,
+        LPDWORD      lpNumberOfBytesTransferred,
+  [out] PULONG_PTR   lpCompletionKey,
+  [out] LPOVERLAPPED *lpOverlapped,
+  [in]  DWORD        dwMilliseconds
+);
+DWORD GetShortPathNameW(
+  [in]  LPCWSTR lpszLongPath,
+  [out] LPWSTR  lpszShortPath,
+  [in]  DWORD   cchBuffer
+);
+UINT GetTempFileNameA(
+  [in]  LPCSTR lpPathName,
+  [in]  LPCSTR lpPrefixString,
+  [in]  UINT   uUnique,
+  [out] LPSTR  lpTempFileName
+);
+DWORD GetTempPathA(
+  [in]  DWORD nBufferLength,
+  [out] LPSTR lpBuffer
+);
+PFE_IMPORT_FUNC PfeImportFunc;
+
+DWORD PfeImportFunc(
+  [in]           PBYTE pbData,
+  [in, optional] PVOID pvCallbackContext,
+  [in, out]      PULONG ulLength
+)
+{...}
+BOOL LockFile(
+  [in] HANDLE hFile,
+  [in] DWORD  dwFileOffsetLow,
+  [in] DWORD  dwFileOffsetHigh,
+  [in] DWORD  nNumberOfBytesToLockLow,
+  [in] DWORD  nNumberOfBytesToLockHigh
+);
+BOOL LockFileEx(
+  [in]      HANDLE       hFile,
+  [in]      DWORD        dwFlags,
+            DWORD        dwReserved,
+  [in]      DWORD        nNumberOfBytesToLockLow,
+  [in]      DWORD        nNumberOfBytesToLockHigh,
+  [in, out] LPOVERLAPPED lpOverlapped
+);
+void LZClose(
+  [in] INT hFile
+);
+LONG LZCopy(
+  [in] INT hfSource,
+  [in] INT hfDest
+);
+INT LZInit(
+  [in] INT hfSource
+);
+INT LZOpenFileA(
+  [in]  LPSTR      lpFileName,
+  [out] LPOFSTRUCT lpReOpenBuf,
+  [in]  WORD       wStyle
+);
+INT LZRead(
+  [in]  INT  hFile,
+  [out] CHAR *lpBuffer,
+  [in]  INT  cbRead
+);
+LONG LZSeek(
+  [in] INT  hFile,
+  [in] LONG lOffset,
+  [in] INT  iOrigin
+);
+BOOL MoveFile(
+  [in] LPCTSTR lpExistingFileName,
+  [in] LPCTSTR lpNewFileName
+);
+BOOL MoveFileExA(
+  [in]           LPCSTR lpExistingFileName,
+  [in, optional] LPCSTR lpNewFileName,
+  [in]           DWORD  dwFlags
+);
+BOOL MoveFileTransactedA(
+  [in]           LPCSTR             lpExistingFileName,
+  [in, optional] LPCSTR             lpNewFileName,
+  [in, optional] LPPROGRESS_ROUTINE lpProgressRoutine,
+  [in, optional] LPVOID             lpData,
+  [in]           DWORD              dwFlags,
+  [in]           HANDLE             hTransaction
+);
+BOOL MoveFileWithProgressA(
+  [in]           LPCSTR             lpExistingFileName,
+  [in, optional] LPCSTR             lpNewFileName,
+  [in, optional] LPPROGRESS_ROUTINE lpProgressRoutine,
+  [in, optional] LPVOID             lpData,
+  [in]           DWORD              dwFlags
+);
+DWORD OpenEncryptedFileRawA(
+  [in]  LPCSTR lpFileName,
+  [in]  ULONG  ulFlags,
+  [out] PVOID  *pvContext
+);
+HFILE OpenFile(
+  [in]  LPCSTR     lpFileName,
+  [out] LPOFSTRUCT lpReOpenBuff,
+  [in]  UINT       uStyle
+);
+HANDLE OpenFileById(
+  [in]           HANDLE                hVolumeHint,
+  [in]           LPFILE_ID_DESCRIPTOR  lpFileId,
+  [in]           DWORD                 dwDesiredAccess,
+  [in]           DWORD                 dwShareMode,
+  [in, optional] LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+  [in]           DWORD                 dwFlagsAndAttributes
+);
+DWORD QueryRecoveryAgentsOnEncryptedFile(
+  [in]  LPCWSTR                           lpFileName,
+  [out] PENCRYPTION_CERTIFICATE_HASH_LIST *pRecoveryAgents
+);
+DWORD QueryUsersOnEncryptedFile(
+  [in]  LPCWSTR                           lpFileName,
+  [out] PENCRYPTION_CERTIFICATE_HASH_LIST *pUsers
+);
+DWORD ReadEncryptedFileRaw(
+  [in]           PFE_EXPORT_FUNC pfExportCallback,
+  [in, optional] PVOID           pvCallbackContext,
+  [in]           PVOID           pvContext
+);
+BOOL ReadFile(
+  [in]                HANDLE       hFile,
+  [out]               LPVOID       lpBuffer,
+  [in]                DWORD        nNumberOfBytesToRead,
+  [out, optional]     LPDWORD      lpNumberOfBytesRead,
+  [in, out, optional] LPOVERLAPPED lpOverlapped
+);
+BOOL ReadFileEx(
+  [in]            HANDLE                          hFile,
+  [out, optional] LPVOID                          lpBuffer,
+  [in]            DWORD                           nNumberOfBytesToRead,
+  [in, out]       LPOVERLAPPED                    lpOverlapped,
+  [in]            LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
+);
+BOOL ReadFileScatter(
+  [in]      HANDLE                  hFile,
+  [in]      FILE_SEGMENT_ELEMENT [] aSegmentArray,
+  [in]      DWORD                   nNumberOfBytesToRead,
+            LPDWORD                 lpReserved,
+  [in, out] LPOVERLAPPED            lpOverlapped
+);
+DWORD RemoveUsersFromEncryptedFile(
+  [in] LPCWSTR                           lpFileName,
+  [in] PENCRYPTION_CERTIFICATE_HASH_LIST pHashes
+);
+HANDLE ReOpenFile(
+  [in] HANDLE hOriginalFile,
+  [in] DWORD  dwDesiredAccess,
+  [in] DWORD  dwShareMode,
+  [in] DWORD  dwFlagsAndAttributes
+);
+BOOL ReplaceFileA(
+  [in]           LPCSTR lpReplacedFileName,
+  [in]           LPCSTR lpReplacementFileName,
+  [in, optional] LPCSTR lpBackupFileName,
+  [in]           DWORD  dwReplaceFlags,
+                 LPVOID lpExclude,
+                 LPVOID lpReserved
+);
+DWORD SearchPathA(
+  [in, optional]  LPCSTR lpPath,
+  [in]            LPCSTR lpFileName,
+  [in, optional]  LPCSTR lpExtension,
+  [in]            DWORD  nBufferLength,
+  [out]           LPSTR  lpBuffer,
+  [out, optional] LPSTR  *lpFilePart
+);
+BOOL SetEndOfFile(
+  [in] HANDLE hFile
+);
+void SetFileApisToANSI();
+void SetFileApisToOEM();
+BOOL SetFileAttributesA(
+  [in] LPCSTR lpFileName,
+  [in] DWORD  dwFileAttributes
+);
+BOOL SetFileAttributesTransactedA(
+  [in] LPCSTR lpFileName,
+  [in] DWORD  dwFileAttributes,
+  [in] HANDLE hTransaction
+);
+BOOL SetFileBandwidthReservation(
+  [in]  HANDLE  hFile,
+  [in]  DWORD   nPeriodMilliseconds,
+  [in]  DWORD   nBytesPerPeriod,
+  [in]  BOOL    bDiscardable,
+  [out] LPDWORD lpTransferSize,
+  [out] LPDWORD lpNumOutstandingRequests
+);
+BOOL SetFileCompletionNotificationModes(
+  [in] HANDLE FileHandle,
+  [in] UCHAR  Flags
+);
+BOOL SetFileInformationByHandle(
+  [in] HANDLE                    hFile,
+  [in] FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
+  [in] LPVOID                    lpFileInformation,
+  [in] DWORD                     dwBufferSize
+);
+BOOL SetFileIoOverlappedRange(
+  [in] HANDLE FileHandle,
+  [in] PUCHAR OverlappedRangeStart,
+  [in] ULONG  Length
+);
+DWORD SetFilePointer(
+  [in]                HANDLE hFile,
+  [in]                LONG   lDistanceToMove,
+  [in, out, optional] PLONG  lpDistanceToMoveHigh,
+  [in]                DWORD  dwMoveMethod
+);
+BOOL SetFilePointerEx(
+  [in]            HANDLE         hFile,
+  [in]            LARGE_INTEGER  liDistanceToMove,
+  [out, optional] PLARGE_INTEGER lpNewFilePointer,
+  [in]            DWORD          dwMoveMethod
+);
+BOOL SetFileShortNameA(
+  [in] HANDLE hFile,
+  [in] LPCSTR lpShortName
+);
+BOOL SetFileValidData(
+  [in] HANDLE   hFile,
+  [in] LONGLONG ValidDataLength
+);
+BOOL SetSearchPathMode(
+  [in] DWORD Flags
+);
+DWORD SetUserFileEncryptionKey(
+  [in] PENCRYPTION_CERTIFICATE pEncryptionCertificate
+);
+BOOL UnlockFile(
+  [in] HANDLE hFile,
+  [in] DWORD  dwFileOffsetLow,
+  [in] DWORD  dwFileOffsetHigh,
+  [in] DWORD  nNumberOfBytesToUnlockLow,
+  [in] DWORD  nNumberOfBytesToUnlockHigh
+);
+BOOL UnlockFileEx(
+  [in]      HANDLE       hFile,
+            DWORD        dwReserved,
+  [in]      DWORD        nNumberOfBytesToUnlockLow,
+  [in]      DWORD        nNumberOfBytesToUnlockHigh,
+  [in, out] LPOVERLAPPED lpOverlapped
+);
+HRESULT WofEnumEntries(
+  [in]           PCWSTR           VolumeName,
+  [in]           ULONG            Provider,
+  [in]           WofEnumEntryProc EnumProc,
+  [in, optional] PVOID            UserData
+);
+WofEnumEntryProc Wofenumentryproc;
+
+BOOL Wofenumentryproc(
+  [in]           const PVOID EntryInfo,
+  [in, optional] PVOID UserData
+)
+{...}
+WofEnumFilesProc Wofenumfilesproc;
+
+BOOL Wofenumfilesproc(
+  [in]           PCWSTR FilePath,
+  [in]           PVOID ExternalFileInfo,
+  [in, optional] PVOID UserData
+)
+{...}
+HRESULT WofFileEnumFiles(
+  [in]           PCWSTR           VolumeName,
+  [in]           ULONG            Algorithm,
+  [in]           WofEnumFilesProc EnumProc,
+  [in, optional] PVOID            UserData
+);
+HRESULT WofGetDriverVersion(
+  [in]  HANDLE FileOrVolumeHandle,
+  [in]  ULONG  Provider,
+  [out] PULONG WofVersion
+);
+HRESULT WofIsExternalFile(
+  [in]                LPCWSTR FilePath,
+  [out, optional]     PBOOL   IsExternalFile,
+  [out, optional]     PULONG  Provider,
+  [out, optional]     PVOID   ExternalFileInfo,
+  [in, out, optional] PULONG  BufferLength
+);
+HRESULT WofSetFileDataLocation(
+  [in] HANDLE FileHandle,
+  [in] ULONG  Provider,
+  [in] PVOID  ExternalFileInfo,
+  [in] ULONG  Length
+);
+BOOL WofShouldCompressBinaries(
+  [in]  LPCWSTR Volume,
+  [out] PULONG  Algorithm
+);
+HRESULT WofWimAddEntry(
+  [in]  PCWSTR         VolumeName,
+  [in]  PCWSTR         WimPath,
+  [in]  DWORD          WimType,
+  [in]  DWORD          WimIndex,
+  [out] PLARGE_INTEGER DataSourceId
+);
+HRESULT WofWimEnumFiles(
+  [in]           PCWSTR           VolumeName,
+  [in]           LARGE_INTEGER    DataSourceId,
+  [in]           WofEnumFilesProc EnumProc,
+  [in, optional] PVOID            UserData
+);
+HRESULT WofWimRemoveEntry(
+  [in] PCWSTR        VolumeName,
+  [in] LARGE_INTEGER DataSourceId
+);
+HRESULT WofWimSuspendEntry(
+  [in] PCWSTR        VolumeName,
+  [in] LARGE_INTEGER DataSourceId
+);
+HRESULT WofWimUpdateEntry(
+  [in] PCWSTR        VolumeName,
+  [in] LARGE_INTEGER DataSourceId,
+  [in] PCWSTR        NewWimPath
+);
+BOOL Wow64DisableWow64FsRedirection(
+  [out] PVOID *OldValue
+);
+BOOLEAN Wow64EnableWow64FsRedirection(
+  BOOLEAN Wow64FsEnableRedirection
+);
+BOOL Wow64RevertWow64FsRedirection(
+  PVOID OlValue
+);
+DWORD WriteEncryptedFileRaw(
+  [in]           PFE_IMPORT_FUNC pfImportCallback,
+  [in, optional] PVOID           pvCallbackContext,
+  [in]           PVOID           pvContext
+);
+BOOL WriteFile(
+  [in]                HANDLE       hFile,
+  [in]                LPCVOID      lpBuffer,
+  [in]                DWORD        nNumberOfBytesToWrite,
+  [out, optional]     LPDWORD      lpNumberOfBytesWritten,
+  [in, out, optional] LPOVERLAPPED lpOverlapped
+);
+BOOL WriteFileEx(
+  [in]           HANDLE                          hFile,
+  [in, optional] LPCVOID                         lpBuffer,
+  [in]           DWORD                           nNumberOfBytesToWrite,
+  [in, out]      LPOVERLAPPED                    lpOverlapped,
+  [in]           LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
+);
+BOOL WriteFileGather(
+  [in]      HANDLE                  hFile,
+  [in]      FILE_SEGMENT_ELEMENT [] aSegmentArray,
+  [in]      DWORD                   nNumberOfBytesToWrite,
+            LPDWORD                 lpReserved,
+  [in, out] LPOVERLAPPED            lpOverlapped
+);
