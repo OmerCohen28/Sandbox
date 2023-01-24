@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup
 import time
 
 #url = "https://docs.microsoft.com/en-us/windows/win32/fileio/file-management-functions"
-url = "https://learn.microsoft.com/en-us/windows/win32/winsock/winsock-functions"
+#url = "https://learn.microsoft.com/en-us/windows/win32/winsock/winsock-functions"
+url = "https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-functions"
 page = requests.get(url)
 soup = BeautifulSoup(page.content, "html.parser")
 
@@ -42,10 +43,11 @@ for link in links:
         params.text
     except AttributeError:
         params = soup.find("code",class_ = "lang-c++")
-    print(params.text)
-    print(params.text.split())
-    recevied.append(params.text.split())
+    recevied.append(params.text)
 '''proto = soup.find("div", class_="syntax")
 print(proto.text)'''
 
 print(len(recevied))
+
+with open("reg_functions.txt",'w') as file:
+    file.writelines(recevied)

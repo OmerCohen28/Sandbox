@@ -1,5 +1,19 @@
 #pragma once
+#include <iostream>
+#include <winsock2.h>
 #include <Windows.h>
+#pragma comment(lib,"ws2_32")
+#pragma warning(disable : 4996)
+
+#include "inlineHook.h"
+#include <functional>
+#include <string>
+#include <vector>
+#include <array>
+#include <cstring>
+#include <sstream>
+#include <time.h>
+
 namespace newFunctions {
 	HANDLE __stdcall newCreateFileA(LPCSTR lpFileName,
 		DWORD dwDesiredAccess,
