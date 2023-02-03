@@ -1,0 +1,3 @@
+finish changing last 2 functions, email eran about logging problem
+possible solution - overload functions to the already needed args, apart from that
+just dont log GL in the interviews :) :D
