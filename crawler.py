@@ -6,13 +6,18 @@ import time
 
 #url = "https://docs.microsoft.com/en-us/windows/win32/fileio/file-management-functions"
 #url = "https://learn.microsoft.com/en-us/windows/win32/winsock/winsock-functions"
-url = "https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-functions"
-page = requests.get(url)
-soup = BeautifulSoup(page.content, "html.parser")
+urls = ["https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-functions","https://learn.microsoft.com/en-us/windows/win32/winsock/winsock-functions","https://docs.microsoft.com/en-us/windows/win32/fileio/file-management-functions"]
+count =0 
+for url in urls:
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, "html.parser")
 
-links = []
+    links = []
 
-functions = soup.find_all("tr")
+    functions = soup.find_all("tr")
+    count+=len(functions)
+print(count)
+exit(1)
 for function in functions:
     name = function.find("td")
     if name:

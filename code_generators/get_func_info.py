@@ -26,13 +26,26 @@ def get_data(raw):
 
 
 def get_all_function_names():
-    with open("..\\inlineHook\\codeGeneratedFunctionsFileSystem.h",'r') as file:
-        data = file.read()
-        data_fs = data.split("{")[1].strip("}").split(";")
-    with open("..\\inlineHook\\codeGeneratedFunctionsSockets.h",'r') as file:
-        data_socket = file.read().split("{")[1].strip("}").split(";")
-    with open("..\\inlineHook\\codeGeneratedFunctionsRegistry.h",'r') as file:
-        data_reg = file.read().split("{")[1].strip("}").split(";")
+    try:
+        with open("..\\inlineHook\\codeGeneratedFunctionsFileSystem.h",'r') as file:
+            data = file.read()
+            data_fs = data.split("{")[1].strip("}").split(";")
+    except FileNotFoundError:
+        with open("inlineHook\\codeGeneratedFunctionsFileSystem.h",'r') as file:
+            data = file.read()
+            data_fs = data.split("{")[1].strip("}").split(";")
+    try:
+        with open("..\\inlineHook\\codeGeneratedFunctionsSockets.h",'r') as file:
+            data_socket = file.read().split("{")[1].strip("}").split(";")
+    except FileNotFoundError:
+        with open("inlineHook\\codeGeneratedFunctionsSockets.h",'r') as file:
+            data_socket = file.read().split("{")[1].strip("}").split(";")
+    try:
+        with open("..\\inlineHook\\codeGeneratedFunctionsRegistry.h",'r') as file:
+            data_reg = file.read().split("{")[1].strip("}").split(";")
+    except FileNotFoundError:
+        with open("inlineHook\\codeGeneratedFunctionsRegistry.h",'r') as file:
+            data_reg = file.read().split("{")[1].strip("}").split(";")
     names = []
     for func in data_fs:
         try:

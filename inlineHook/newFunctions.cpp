@@ -92,7 +92,7 @@ namespace newFunctions {
 		return file;
 	}
 
-	HANDLE __stdcall newCreateFileW(
+	HANDLE __stdcall newCreateFile2(
 		LPCWSTR lpFileName,
 		DWORD dwDesiredAccess,
 		DWORD dwShareMode,
@@ -103,8 +103,8 @@ namespace newFunctions {
 	) {
 		//unhook function
 		WriteProcessMemory(GetCurrentProcess(),
-			(LPVOID)hooked_addr[(int)Hook::Functions::CreateFileW],
-			original_bytes[(int)Hook::Functions::CreateFileW], 6, NULL);
+			(LPVOID)hooked_addr[(int)Hook::Functions::CreateFile2],
+			original_bytes[(int)Hook::Functions::CreateFile2], 6, NULL);
 		constexpr char msg[] = { "finished hooking function" };
 		HANDLE file = CreateFileA(
 			"..\\hooked.txt",
@@ -116,7 +116,7 @@ namespace newFunctions {
 			NULL
 		);
 
-		Hook reset_hook{ Hook::Functions::CreateFileW };
+		Hook reset_hook{ Hook::Functions::CreateFile2 };
 		reset_hook.deploy_hook();
 
 		return file;
@@ -130,24 +130,12 @@ namespace newFunctions {
 			(LPVOID)hooked_addr[(int)Hook::Functions::DeleteFileA],
 			original_bytes[(int)Hook::Functions::DeleteFileA], 6, NULL);
 
+		BOOL result = DeleteFileA(lpFileName);
+
 		Hook reset_hook{ Hook::Functions::DeleteFileA };
 		reset_hook.deploy_hook();
 
-		return true;
-	}
-
-	BOOL __stdcall newDeleteFileW(
-		LPCWSTR lpFileName
-	) {
-		//unhook function
-		WriteProcessMemory(GetCurrentProcess(),
-			(LPVOID)hooked_addr[(int)Hook::Functions::DeleteFileW],
-			original_bytes[(int)Hook::Functions::DeleteFileW], 6, NULL);
-
-		Hook reset_hook{ Hook::Functions::DeleteFileW };
-		reset_hook.deploy_hook();
-
-		return true;
+		return result;
 	}
 
 	BOOL __stdcall newReadFile(

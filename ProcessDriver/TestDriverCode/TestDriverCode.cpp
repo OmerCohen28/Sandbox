@@ -1,17 +1,22 @@
 #include <Windows.h>
 #include <iostream>
-#include "D:\Actual sandbox sln\ProcessDriver\ProcessThreadMonitorDriver\ProcessThreadMonitorDriver\helperClasses.h"
-
+#include "Header.h"
 void DisplayInfo(BYTE* buffer, DWORD size);
 
 int main() {
-	auto hFile = ::CreateFile(L"\\\\.\\SysMon", GENERIC_READ, 0,
+	auto hFile = ::CreateFile(L"\\\\.\\SysMon", GENERIC_READ | GENERIC_WRITE, 0,
 		nullptr, OPEN_EXISTING, 0, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		std::cout << "Failed to open file\n";
 		return 1;
 	}
-	BYTE buffer[1 << 16]; // 64KB buffer
+	int x = 5;
+	if (!::WriteFile(hFile,(LPCVOID)x,sizeof(int),NULL,NULL)) {
+		std::cout << "Writing to driver failed\n";
+		return 1;
+	}
+	BYTE* buffer = new BYTE[1 << 16]; // 64KB buffer
+	int count=0;
 	while (true) {
 		DWORD bytes;
 		if (!::ReadFile(hFile, buffer, sizeof(buffer), &bytes, nullptr)) {
@@ -46,12 +51,12 @@ void DisplayInfo(BYTE* buffer, DWORD size) {
 		}
 		case ItemType::ProcessCreate:
 		{
-			DisplayTime(header->Time);
+			/*DisplayTime(header->Time);
 			auto info = (ProcessCreateInfo*)buffer;
 			std::wstring commandline((WCHAR*)(buffer + info->CommandLineOffset),
 				info->CommandLineLength);
 			printf("Process %d Created. Command line: %ws\n", info->ProcessId,
-				commandline.c_str());
+				commandline.c_str());*/
 			break;
 		}
 		case ItemType::ThreadCreate:
