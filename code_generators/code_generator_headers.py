@@ -18,22 +18,27 @@ code = """#pragma once
 namespace newFunctions {
 """
 
-with open("reg_functions.txt",'r') as file:
+with open("functions_sockets.txt",'r') as file:
     data = file.read().split(";")
     #print(data.split(";"))
 
 add = " __stdcall new"
 
 for raw  in data:
-    add = " __stdcall new"
-    raw = raw.replace(" ",add,1)
+    add = " __stdcall WSAAPI new"
+    raw = raw.replace(" WSAAPI ",add,1)
+    
+    forbidden = ["[in]","[out]","[optional]","[in, out]","[in, out, optional]","[out, optional]","[in, optional]"]
+    for forb in forbidden:
+        raw = raw.replace(forb," "*len(forb))
+
     raw+=";"
     code+=raw
 
 
 print(code)
 
-with open("inlineHook\\codeGeneratedFunctionsRegistry.h",'w') as file:
+with open("inlineHook\\codeGeneratedFunctionsSockets.h",'w') as file:
     file.write(code)
 
 
