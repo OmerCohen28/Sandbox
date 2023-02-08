@@ -53,27 +53,46 @@ HANDLE __stdcall newCreateFileA(){
 
 '''
 
-with open("..\\inlineHook\\codeGeneratedFunctionsFilesystem.h",'r') as file:
+with open("inlineHook\\codeGeneratedFunctionsFilesystem.h",'r') as file:
     data = file.read().split("{")[1].strip("}").split(";")
 for func in data:
     try:
         func_name,return_type,params_list = get_data(func)
     except:
         continue
-    func+="""{
-    	//unhook function
-	WriteProcessMemory(GetCurrentProcess(),
-		(LPVOID)hooked_addr[(int)Hook::Functions::func],
-		original_bytes[(int)Hook::Functions::func], 6, NULL);
+    if return_type != "void":
+        func+="""{
+        	//unhook function
+    	WriteProcessMemory(GetCurrentProcess(),
+    		(LPVOID)hooked_addr[(int)Hook::Functions::func],
+    		original_bytes[(int)Hook::Functions::func], 6, NULL);
 
-    return_type result = func(params);
-    Hook reset_hook { Hook::Functions::func};
-    reset_hook.deploy_hook();
+        return_type result = func(params);
+        Hook reset_hook { Hook::Functions::func};
+        reset_hook.deploy_hook();
 
-    //char* msg = new msg{whatever}
-    //log1(msg,msg.len)
+        //char* msg = new msg{whatever}
+        //log1(msg,msg.len)
+
+        return result;
 
 }"""
+    else:
+        func+="""{
+        	//unhook function
+    	WriteProcessMemory(GetCurrentProcess(),
+    		(LPVOID)hooked_addr[(int)Hook::Functions::func],
+    		original_bytes[(int)Hook::Functions::func], 6, NULL);
+
+        func(params);
+        Hook reset_hook { Hook::Functions::func};
+        reset_hook.deploy_hook();
+
+        //char* msg = new msg{whatever}
+        //log1(msg,msg.len)
+
+}"""
+
     func_name = func_name.replace("new","",1)
     print(func_name)
     func = func.replace("func",func_name)
@@ -82,5 +101,5 @@ for func in data:
     code+=func
 
 
-with open("..\\inlineHook\\codeGeneratedFunctionsFileSystem.cpp",'w') as file:
+with open("inlineHook\\codeGeneratedFunctionsFileSystem.cpp",'w') as file:
     file.write(code)

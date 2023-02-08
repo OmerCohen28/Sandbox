@@ -1,0 +1,330 @@
+BOOL GetSystemRegistryQuota(
+  [out, optional] PDWORD pdwQuotaAllowed,
+  [out, optional] PDWORD pdwQuotaUsed
+);
+LSTATUS RegCloseKey(
+  [in] HKEY hKey
+);
+LSTATUS RegConnectRegistryA(
+  [in, optional] LPCSTR lpMachineName,
+  [in]           HKEY   hKey,
+  [out]          PHKEY  phkResult
+);
+LSTATUS RegCopyTreeA(
+  [in]           HKEY   hKeySrc,
+  [in, optional] LPCSTR lpSubKey,
+  [in]           HKEY   hKeyDest
+);
+LSTATUS RegCreateKeyExA(
+  [in]            HKEY                        hKey,
+  [in]            LPCSTR                      lpSubKey,
+                  DWORD                       Reserved,
+  [in, optional]  LPSTR                       lpClass,
+  [in]            DWORD                       dwOptions,
+  [in]            REGSAM                      samDesired,
+  [in, optional]  const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+  [out]           PHKEY                       phkResult,
+  [out, optional] LPDWORD                     lpdwDisposition
+);
+LSTATUS RegCreateKeyTransactedA(
+  [in]            HKEY                        hKey,
+  [in]            LPCSTR                      lpSubKey,
+                  DWORD                       Reserved,
+  [in, optional]  LPSTR                       lpClass,
+  [in]            DWORD                       dwOptions,
+  [in]            REGSAM                      samDesired,
+  [in, optional]  const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+  [out]           PHKEY                       phkResult,
+  [out, optional] LPDWORD                     lpdwDisposition,
+  [in]            HANDLE                      hTransaction,
+                  PVOID                       pExtendedParemeter
+);
+LSTATUS RegDeleteKeyA(
+  [in] HKEY   hKey,
+  [in] LPCSTR lpSubKey
+);
+LSTATUS RegDeleteKeyExA(
+  [in] HKEY   hKey,
+  [in] LPCSTR lpSubKey,
+  [in] REGSAM samDesired,
+       DWORD  Reserved
+);
+LSTATUS RegDeleteKeyTransactedA(
+  [in] HKEY   hKey,
+  [in] LPCSTR lpSubKey,
+  [in] REGSAM samDesired,
+       DWORD  Reserved,
+  [in] HANDLE hTransaction,
+       PVOID  pExtendedParameter
+);
+LSTATUS RegDeleteKeyValueA(
+  [in]           HKEY   hKey,
+  [in, optional] LPCSTR lpSubKey,
+  [in, optional] LPCSTR lpValueName
+);
+LSTATUS RegDeleteTreeA(
+  [in]           HKEY   hKey,
+  [in, optional] LPCSTR lpSubKey
+);
+LSTATUS RegDeleteValueA(
+  [in]           HKEY   hKey,
+  [in, optional] LPCSTR lpValueName
+);
+LSTATUS RegDisablePredefinedCache();
+LSTATUS RegDisablePredefinedCacheEx();
+LONG RegDisableReflectionKey(
+  [in] HKEY hBase
+);
+LONG RegEnableReflectionKey(
+  [in] HKEY hBase
+);
+LSTATUS RegEnumKeyExA(
+  [in]                HKEY      hKey,
+  [in]                DWORD     dwIndex,
+  [out]               LPSTR     lpName,
+  [in, out]           LPDWORD   lpcchName,
+                      LPDWORD   lpReserved,
+  [in, out]           LPSTR     lpClass,
+  [in, out, optional] LPDWORD   lpcchClass,
+  [out, optional]     PFILETIME lpftLastWriteTime
+);
+LSTATUS RegEnumValueA(
+  [in]                HKEY    hKey,
+  [in]                DWORD   dwIndex,
+  [out]               LPSTR   lpValueName,
+  [in, out]           LPDWORD lpcchValueName,
+                      LPDWORD lpReserved,
+  [out, optional]     LPDWORD lpType,
+  [out, optional]     LPBYTE  lpData,
+  [in, out, optional] LPDWORD lpcbData
+);
+LSTATUS RegFlushKey(
+  [in] HKEY hKey
+);
+LSTATUS RegGetKeySecurity(
+  [in]            HKEY                 hKey,
+  [in]            SECURITY_INFORMATION SecurityInformation,
+  [out, optional] PSECURITY_DESCRIPTOR pSecurityDescriptor,
+  [in, out]       LPDWORD              lpcbSecurityDescriptor
+);
+LSTATUS RegGetValueA(
+  [in]                HKEY    hkey,
+  [in, optional]      LPCSTR  lpSubKey,
+  [in, optional]      LPCSTR  lpValue,
+  [in, optional]      DWORD   dwFlags,
+  [out, optional]     LPDWORD pdwType,
+  [out, optional]     PVOID   pvData,
+  [in, out, optional] LPDWORD pcbData
+);
+LSTATUS RegLoadKeyA(
+  [in]           HKEY   hKey,
+  [in, optional] LPCSTR lpSubKey,
+  [in]           LPCSTR lpFile
+);
+LSTATUS RegLoadMUIStringA(
+  [in]            HKEY    hKey,
+  [in, optional]  LPCSTR  pszValue,
+  [out, optional] LPSTR   pszOutBuf,
+  [in]            DWORD   cbOutBuf,
+  [out, optional] LPDWORD pcbData,
+  [in]            DWORD   Flags,
+  [in, optional]  LPCSTR  pszDirectory
+);
+LSTATUS RegNotifyChangeKeyValue(
+  [in]           HKEY   hKey,
+  [in]           BOOL   bWatchSubtree,
+  [in]           DWORD  dwNotifyFilter,
+  [in, optional] HANDLE hEvent,
+  [in]           BOOL   fAsynchronous
+);
+LSTATUS RegOpenCurrentUser(
+  [in]  REGSAM samDesired,
+  [out] PHKEY  phkResult
+);
+LSTATUS RegOpenKeyExA(
+  [in]           HKEY   hKey,
+  [in, optional] LPCSTR lpSubKey,
+  [in]           DWORD  ulOptions,
+  [in]           REGSAM samDesired,
+  [out]          PHKEY  phkResult
+);
+LSTATUS RegOpenKeyTransactedA(
+  [in]           HKEY   hKey,
+  [in, optional] LPCSTR lpSubKey,
+  [in]           DWORD  ulOptions,
+  [in]           REGSAM samDesired,
+  [out]          PHKEY  phkResult,
+  [in]           HANDLE hTransaction,
+                 PVOID  pExtendedParemeter
+);
+LSTATUS RegOpenUserClassesRoot(
+  [in]  HANDLE hToken,
+        DWORD  dwOptions,
+  [in]  REGSAM samDesired,
+  [out] PHKEY  phkResult
+);
+LSTATUS RegOverridePredefKey(
+  [in]           HKEY hKey,
+  [in, optional] HKEY hNewHKey
+);
+LSTATUS RegQueryInfoKeyA(
+  [in]                HKEY      hKey,
+  [out, optional]     LPSTR     lpClass,
+  [in, out, optional] LPDWORD   lpcchClass,
+                      LPDWORD   lpReserved,
+  [out, optional]     LPDWORD   lpcSubKeys,
+  [out, optional]     LPDWORD   lpcbMaxSubKeyLen,
+  [out, optional]     LPDWORD   lpcbMaxClassLen,
+  [out, optional]     LPDWORD   lpcValues,
+  [out, optional]     LPDWORD   lpcbMaxValueNameLen,
+  [out, optional]     LPDWORD   lpcbMaxValueLen,
+  [out, optional]     LPDWORD   lpcbSecurityDescriptor,
+  [out, optional]     PFILETIME lpftLastWriteTime
+);
+LSTATUS RegQueryMultipleValuesA(
+  [in]                HKEY     hKey,
+  [out]               PVALENTA val_list,
+  [in]                DWORD    num_vals,
+  [out, optional]     LPSTR    lpValueBuf,
+  [in, out, optional] LPDWORD  ldwTotsize
+);
+LONG RegQueryReflectionKey(
+  [in]  HKEY hBase,
+  [out] BOOL *bIsReflectionDisabled
+);
+LSTATUS RegQueryValueExA(
+  [in]                HKEY    hKey,
+  [in, optional]      LPCSTR  lpValueName,
+                      LPDWORD lpReserved,
+  [out, optional]     LPDWORD lpType,
+  [out, optional]     LPBYTE  lpData,
+  [in, out, optional] LPDWORD lpcbData
+);
+LSTATUS RegRenameKey(
+  HKEY    hKey,
+  LPCWSTR lpSubKeyName,
+  LPCWSTR lpNewKeyName
+);
+LSTATUS RegReplaceKeyA(
+  [in]           HKEY   hKey,
+  [in, optional] LPCSTR lpSubKey,
+  [in]           LPCSTR lpNewFile,
+  [in]           LPCSTR lpOldFile
+);
+LSTATUS RegRestoreKeyA(
+  [in] HKEY   hKey,
+  [in] LPCSTR lpFile,
+  [in] DWORD  dwFlags
+);
+LSTATUS RegSaveKeyA(
+  [in]           HKEY                        hKey,
+  [in]           LPCSTR                      lpFile,
+  [in, optional] const LPSECURITY_ATTRIBUTES lpSecurityAttributes
+);
+LSTATUS RegSaveKeyExA(
+  [in]           HKEY                        hKey,
+  [in]           LPCSTR                      lpFile,
+  [in, optional] const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+  [in]           DWORD                       Flags
+);
+LSTATUS RegSetKeyValueA(
+  [in]           HKEY    hKey,
+  [in, optional] LPCSTR  lpSubKey,
+  [in, optional] LPCSTR  lpValueName,
+  [in]           DWORD   dwType,
+  [in, optional] LPCVOID lpData,
+  [in]           DWORD   cbData
+);
+LSTATUS RegSetKeySecurity(
+  [in] HKEY                 hKey,
+  [in] SECURITY_INFORMATION SecurityInformation,
+  [in] PSECURITY_DESCRIPTOR pSecurityDescriptor
+);
+LSTATUS RegSetValueExA(
+  [in]           HKEY       hKey,
+  [in, optional] LPCSTR     lpValueName,
+                 DWORD      Reserved,
+  [in]           DWORD      dwType,
+  [in]           const BYTE *lpData,
+  [in]           DWORD      cbData
+);
+LSTATUS RegUnLoadKeyA(
+  [in]           HKEY   hKey,
+  [in, optional] LPCSTR lpSubKey
+);
+UINT GetPrivateProfileInt(
+  [in] LPCTSTR lpAppName,
+  [in] LPCTSTR lpKeyName,
+  [in] INT     nDefault,
+  [in] LPCTSTR lpFileName
+);
+DWORD GetPrivateProfileSection(
+  [in]  LPCTSTR lpAppName,
+  [out] LPTSTR  lpReturnedString,
+  [in]  DWORD   nSize,
+  [in]  LPCTSTR lpFileName
+);
+DWORD GetPrivateProfileSectionNames(
+  [out] LPTSTR  lpszReturnBuffer,
+  [in]  DWORD   nSize,
+  [in]  LPCTSTR lpFileName
+);
+DWORD GetPrivateProfileString(
+  [in]  LPCTSTR lpAppName,
+  [in]  LPCTSTR lpKeyName,
+  [in]  LPCTSTR lpDefault,
+  [out] LPTSTR  lpReturnedString,
+  [in]  DWORD   nSize,
+  [in]  LPCTSTR lpFileName
+);
+BOOL GetPrivateProfileStruct(
+  [in]  LPCTSTR lpszSection,
+  [in]  LPCTSTR lpszKey,
+  [out] LPVOID  lpStruct,
+  [in]  UINT    uSizeStruct,
+  [in]  LPCTSTR szFile
+);
+UINT GetProfileIntA(
+  [in] LPCSTR lpAppName,
+  [in] LPCSTR lpKeyName,
+  [in] INT    nDefault
+);
+DWORD GetProfileSectionA(
+  [in]  LPCSTR lpAppName,
+  [out] LPSTR  lpReturnedString,
+  [in]  DWORD  nSize
+);
+DWORD GetProfileStringA(
+  [in]  LPCSTR lpAppName,
+  [in]  LPCSTR lpKeyName,
+  [in]  LPCSTR lpDefault,
+  [out] LPSTR  lpReturnedString,
+  [in]  DWORD  nSize
+);
+BOOL WritePrivateProfileSectionA(
+  [in] LPCSTR lpAppName,
+  [in] LPCSTR lpString,
+  [in] LPCSTR lpFileName
+);
+BOOL WritePrivateProfileStringA(
+  [in] LPCSTR lpAppName,
+  [in] LPCSTR lpKeyName,
+  [in] LPCSTR lpString,
+  [in] LPCSTR lpFileName
+);
+BOOL WritePrivateProfileStructA(
+  [in] LPCSTR lpszSection,
+  [in] LPCSTR lpszKey,
+  [in] LPVOID lpStruct,
+  [in] UINT   uSizeStruct,
+  [in] LPCSTR szFile
+);
+BOOL WriteProfileSectionA(
+  [in] LPCSTR lpAppName,
+  [in] LPCSTR lpString
+);
+BOOL WriteProfileStringA(
+  [in] LPCSTR lpAppName,
+  [in] LPCSTR lpKeyName,
+  [in] LPCSTR lpString
+);

@@ -1,3 +1,4 @@
 #pragma once
 #include <string>
-void inject_dll(std::string& file, int size);
+#include <vector>
+void injectDll(std::string& file, int size, std::vector<std::string*>* vec);

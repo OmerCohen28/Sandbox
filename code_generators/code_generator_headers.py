@@ -25,8 +25,16 @@ with open("functions_sockets.txt",'r') as file:
 add = " __stdcall new"
 
 for raw  in data:
-    add = " __stdcall WSAAPI new"
-    raw = raw.replace(" WSAAPI ",add,1)
+    add1 = "WSAAPI __stdcall new"
+    add2 = " __stdcall new"
+    try:
+        raw.index("WSAAPI")
+        raw = raw.replace("WSAAPI ",add1,1)
+
+    except ValueError:
+        raw = raw.replace(" ",add2,1)
+
+    
     
     forbidden = ["[in]","[out]","[optional]","[in, out]","[in, out, optional]","[out, optional]","[in, optional]"]
     for forb in forbidden:

@@ -1,3 +1,5 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include <iostream>
 #include <winsock2.h>
 #include <Windows.h>
@@ -9,11 +11,17 @@
 #include <string>
 #include <vector>
 #include <array>
-#include "newFunctions.h"
 #include <cstring>
 #include <sstream>
 #include <time.h>
+#include <vector>
+#include <cstdio>
+#include <cstdint>
+#include "codeGeneratedFunctionsFileSystem.h"
+#include "codeGeneratedFunctionsRegistry.h"
+#include "codeGeneratedFunctionsSockets.h"
 
+#define _my_addr_ "192.168.0.120"
 
 
 
@@ -60,39 +68,6 @@ void mylog1(const char* buf, int size) {
 	//delete[] buf;
 }
 
-namespace newFunctions {}
-
-
-CHAR noriginal_bytes[6];
-FARPROC nhooked_addr;
-HANDLE __stdcall new_func(
-	LPCSTR lpFileName,
-	DWORD dwDesiredAccess,
-	DWORD dwShareMode,
-	LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-	DWORD  dwCreationDisposition,
-	DWORD dwFlagsAndAttributes,
-	HANDLE hTemplateFile
-) {
-
-	//unhook function
-	WriteProcessMemory(GetCurrentProcess(), (LPVOID)nhooked_addr, noriginal_bytes, 6, NULL);
-	constexpr char msg[] = { "finished hooking function" };
-	HANDLE file = CreateFileA(
-		"..\\hooked.txt",
-		GENERIC_READ | GENERIC_WRITE,
-		0,
-		NULL,
-		4,
-		FILE_ATTRIBUTE_NORMAL,
-		NULL
-	);
-	return file;
-}
-
-
-
-
 void mylog(char* buf, int size) {
 	IsMyCall = true;
 	std::cout << "called my log with msg " << buf << '\n';
@@ -114,24 +89,76 @@ void mylog(char* buf, int size) {
 	//delete[] buf;
 }
 
-void set_up_hook() {
-	HINSTANCE hLib;
-	VOID* myFncAdrr;
-	CHAR patch[6] = { 0 };
 
-	hLib = LoadLibraryA("kernel32.dll");
-	nhooked_addr = GetProcAddress(hLib, "CreateFileA");
+namespace newFunctions {}
 
-	ReadProcessMemory(GetCurrentProcess(), (LPCVOID)nhooked_addr, noriginal_bytes, 6, NULL);
-	myFncAdrr = &new_func;
+SOCKET* SetFunctionsToHookSocket() {
+	WSADATA wsaData;
+	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (iResult != NO_ERROR) {
+		wprintf(L"WSAStartup function failed with error: %d\n", iResult);
+		return nullptr;
+	}
 
-	memcpy_s(patch, 1, "\x68", 1);
-	memcpy_s(patch + 1, 4, &myFncAdrr, 4);
-	memcpy_s(patch + 5, 1, "\xC3", 1);
-
-
-	WriteProcessMemory(GetCurrentProcess(), (LPVOID)nhooked_addr, patch, 6, NULL);
+	SOCKET* sock = new SOCKET{ socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) };
+	if (*sock == INVALID_SOCKET) {
+		std::cout << "socket creation failed\n";
+		wprintf(L"socket function failed with error = %d\n", WSAGetLastError());
+		return nullptr;
+	}
+	sockaddr_in saServer;
+	saServer.sin_family = AF_INET;
+	saServer.sin_addr.S_un.S_addr = inet_addr(_my_addr_);
+	//InetPton(AF_INET, (PCWSTR)_my_addr_, &saServer.sin_addr.S_un.S_addr);
+	saServer.sin_port = htons(55544);
+	iResult = connect(*sock, (SOCKADDR*)&saServer, sizeof(saServer));
+	if (iResult == SOCKET_ERROR) {
+		std::cout << "error connecting to server\n";
+		return nullptr;
+	}
+	return sock;
 }
+
+std::vector<std::string>* getFunctionsToHook() {
+	SOCKET* sock = SetFunctionsToHookSocket();
+	if(sock){}
+	else {
+		std::cout << "Error connecting to injectDll server\nterminating\n";
+		TerminateProcess(GetCurrentProcess(), 1);
+	}
+	std::vector<std::string>* vec = new std::vector<std::string>;
+	int iResult;
+	char* buffer;
+	do {
+		char size;
+		iResult = recv(*sock, &size, 1, 0);
+		if (iResult == SOCKET_ERROR) {
+			std::cout << "Error receving size from injectDll server\nterminating\n";
+			TerminateProcess(GetCurrentProcess(), 1);
+		}
+
+		int i_size = atoi(&size);
+
+		if (i_size == -1) {
+			break;
+		}
+
+		buffer = new char[i_size];
+		iResult = recv(*sock, buffer, i_size, 0);
+		if (iResult == SOCKET_ERROR) {
+			std::cout << "Error receving function from injectDll server\nterminating\n";
+			TerminateProcess(GetCurrentProcess(), 1);
+		}
+
+		vec->push_back(std::string(buffer));
+
+	} while (true);
+
+	return vec;
+
+}
+
+
 
 BOOL APIENTRY DllMain(HANDLE hModule,
 	DWORD ul_reason_for_call,
@@ -143,6 +170,9 @@ NULL,
 FALSE,
 "myMutex"
 ) };
+
+	auto vec = getFunctionsToHook();
+
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
@@ -155,18 +185,11 @@ FALSE,
 		Hook::set_up_vars();
 		mylog(msg, 49);
 		std::cout << "finished setting up vars\n";
-		Hook{ Hook::Functions::CreateFileA }.deploy_hook();
-		std::cout << "finished deploying createfilea hook\n";
-		//Hook{ Hook::Functions::CreateFileW }.deploy_hook();
-		//Hook{ Hook::Functions::DeleteFileA }.deploy_hook();
-		//Hook{ Hook::Functions::DeleteFileW }.deploy_hook();
-		Hook{ Hook::Functions::ReadFile }.deploy_hook();
-		//Hook{ Hook::Functions::ReadFileEx }.deploy_hook();
-		Hook{ Hook::Functions::WriteFile }.deploy_hook();
-		Hook{ Hook::Functions::send }.deploy_hook();
-		Hook{ Hook::Functions::recv }.deploy_hook();
-		Hook{ Hook::Functions::RegCreateKeyExA }.deploy_hook();
-		Hook{ Hook::Functions::RegDeleteKeyExA }.deploy_hook();
+		
+
+		for (auto item : *vec) {
+			std::cout << item << '\n';
+		}
 
 
 	case DLL_THREAD_ATTACH:

@@ -9,7 +9,6 @@
 #include <Windows.h>
 #include <time.h>
 #include <iostream>
-#include "newFunctions.h"
 #include "codeGeneratedFunctionsFileSystem.h"
 #include "codeGeneratedFunctionsRegistry.h"
 #include "codeGeneratedFunctionsSockets.h"
@@ -23,7 +22,6 @@ extern HINSTANCE hLibFiles;
 extern HINSTANCE hLibSock;
 extern HINSTANCE hLibReg;
 
-void set_up_hook();
 void mylog(char* buf, int size);
 void mylog1(const char* buf, int size);
 
@@ -353,6 +351,7 @@ max_functions_number
 			std::cout << "couldn't delete log.txt\n";
 		}
 		time(&begin);
+
 	}
 
 	Functions func_to_hook{};
@@ -680,8 +679,8 @@ private:
 
 			void* get_new_fnc_pointer() {
 		switch (func_to_hook) {
-    		case Functions::AddUsersToEncryptedFile: return &newFunctions::newAddUsersToEncryptedFile;break;
-			case Functions::AreFileApisANSI: return &newFunctions::newAreFileApisANSI;break;
+		//case Functions::AddUsersToEncryptedFile: return &newAddUsersToEncryptedFile;break;
+			/*case Functions::AreFileApisANSI: return &newFunctions::newAreFileApisANSI; break;
 			case Functions::CheckNameLegalDOS8Dot3A: return &newFunctions::newCheckNameLegalDOS8Dot3A;break;
 			case Functions::CloseEncryptedFileRaw: return &newFunctions::newCloseEncryptedFileRaw;break;
 			case Functions::CopyFile: return &newFunctions::newCopyFile;break;
@@ -701,8 +700,6 @@ private:
 			case Functions::DuplicateEncryptionInfoFile: return &newFunctions::newDuplicateEncryptionInfoFile;break;
 			case Functions::EncryptFileA: return &newFunctions::newEncryptFileA;break;
 			case Functions::EncryptionDisable: return &newFunctions::newEncryptionDisable;break;
-			case Functions::FileEncryptionStatusA: return &newFunctions::newFileEncryptionStatusA;break;
-			case Functions::FindClose: return &newFunctions::newFindClose;break;
 			case Functions::FindFirstFileA: return &newFunctions::newFindFirstFileA;break;
 			case Functions::FindFirstFileExA: return &newFunctions::newFindFirstFileExA;break;
 			case Functions::FindFirstFileNameTransactedW: return &newFunctions::newFindFirstFileNameTransactedW;break;
@@ -737,7 +734,6 @@ private:
 			case Functions::GetShortPathNameW: return &newFunctions::newGetShortPathNameW;break;
 			case Functions::GetTempFileNameA: return &newFunctions::newGetTempFileNameA;break;
 			case Functions::GetTempPathA: return &newFunctions::newGetTempPathA;break;
-			case Functions::LockFile: return &newFunctions::newLockFile;break;
 			case Functions::LockFileEx: return &newFunctions::newLockFileEx;break;
 			case Functions::LZClose: return &newFunctions::newLZClose;break;
 			case Functions::LZCopy: return &newFunctions::newLZCopy;break;
@@ -778,7 +774,6 @@ private:
 			case Functions::SetUserFileEncryptionKey: return &newFunctions::newSetUserFileEncryptionKey;break;
 			case Functions::UnlockFile: return &newFunctions::newUnlockFile;break;
 			case Functions::UnlockFileEx: return &newFunctions::newUnlockFileEx;break;
-			case Functions::Wofenumfilesproc: return &newFunctions::newWofenumfilesproc;break;
 			case Functions::WofGetDriverVersion: return &newFunctions::newWofGetDriverVersion;break;
 			case Functions::WofIsExternalFile: return &newFunctions::newWofIsExternalFile;break;
 			case Functions::WofSetFileDataLocation: return &newFunctions::newWofSetFileDataLocation;break;
@@ -792,41 +787,32 @@ private:
 			case Functions::Wow64RevertWow64FsRedirection: return &newFunctions::newWow64RevertWow64FsRedirection;break;
 			case Functions::WriteEncryptedFileRaw: return &newFunctions::newWriteEncryptedFileRaw;break;
 			case Functions::WriteFile: return &newFunctions::newWriteFile;break;
-			case Functions::WriteFileEx: return &newFunctions::newWriteFileEx;break;
-			case Functions::accept: return &newFunctions::newaccept;break;
+			case Functions::WriteFileEx: return &newFunctions::newWriteFileEx;break;*/
+			/*case Functions::accept: return &newFunctions::newaccept; break;
 			case Functions::AcceptEx: return &newFunctions::newAcceptEx;break;
 			case Functions::bind: return &newFunctions::newbind;break;
 			case Functions::closesocket: return &newFunctions::newclosesocket;break;
 			case Functions::connect: return &newFunctions::newconnect;break;
-			case Functions::LpfnConnectex: return &newFunctions::newLpfnConnectex;break;
-			case Functions::DisconnectEx: return &newFunctions::newDisconnectEx;break;
 			case Functions::EnumProtocolsA: return &newFunctions::newEnumProtocolsA;break;
 			case Functions::freeaddrinfo: return &newFunctions::newfreeaddrinfo;break;
 			case Functions::FreeAddrInfoEx: return &newFunctions::newFreeAddrInfoEx;break;
 			case Functions::FreeAddrInfoW: return &newFunctions::newFreeAddrInfoW;break;
 			case Functions::gai_strerrorA: return &newFunctions::newgai_strerrorA;break;
 			case Functions::GetAcceptExSockaddrs: return &newFunctions::newGetAcceptExSockaddrs;break;
-			case Functions::GetAddressByNameA: return &newFunctions::newGetAddressByNameA;break;
 			case Functions::getaddrinfo: return &newFunctions::newgetaddrinfo;break;
-			case Functions::GetAddrInfoExA: return &newFunctions::newGetAddrInfoExA;break;
 			case Functions::GetAddrInfoExCancel: return &newFunctions::newGetAddrInfoExCancel;break;
 			case Functions::GetAddrInfoExOverlappedResult: return &newFunctions::newGetAddrInfoExOverlappedResult;break;
 			case Functions::GetAddrInfoW: return &newFunctions::newGetAddrInfoW;break;
 			case Functions::gethostname: return &newFunctions::newgethostname;break;
 			case Functions::GetHostNameW: return &newFunctions::newGetHostNameW;break;
-			case Functions::getipv4sourcefilter: return &newFunctions::newgetipv4sourcefilter;break;
 			case Functions::GetNameByTypeA: return &newFunctions::newGetNameByTypeA;break;
-			case Functions::getnameinfo: return &newFunctions::newgetnameinfo;break;
-			case Functions::GetNameInfoW: return &newFunctions::newGetNameInfoW;break;
 			case Functions::getpeername: return &newFunctions::newgetpeername;break;
 			case Functions::getprotobyname: return &newFunctions::newgetprotobyname;break;
 			case Functions::getprotobynumber: return &newFunctions::newgetprotobynumber;break;
 			case Functions::getservbyname: return &newFunctions::newgetservbyname;break;
 			case Functions::getservbyport: return &newFunctions::newgetservbyport;break;
-			case Functions::GetServiceA: return &newFunctions::newGetServiceA;break;
 			case Functions::getsockname: return &newFunctions::newgetsockname;break;
 			case Functions::getsockopt: return &newFunctions::newgetsockopt;break;
-			case Functions::getsourcefilter: return &newFunctions::newgetsourcefilter;break;
 			case Functions::GetTypeByNameA: return &newFunctions::newGetTypeByNameA;break;
 			case Functions::htons: return &newFunctions::newhtons;break;
 			case Functions::inet_addr: return &newFunctions::newinet_addr;break;
@@ -844,16 +830,10 @@ private:
 			case Functions::select: return &newFunctions::newselect;break;
 			case Functions::send: return &newFunctions::newsend;break;
 			case Functions::sendto: return &newFunctions::newsendto;break;
-			case Functions::SetAddrInfoExA: return &newFunctions::newSetAddrInfoExA;break;
-			case Functions::setipv4sourcefilter: return &newFunctions::newsetipv4sourcefilter;break;
-			case Functions::SetServiceA: return &newFunctions::newSetServiceA;break;
 			case Functions::SetSocketMediaStreamingMode: return &newFunctions::newSetSocketMediaStreamingMode;break;
 			case Functions::setsockopt: return &newFunctions::newsetsockopt;break;
-			case Functions::setsourcefilter: return &newFunctions::newsetsourcefilter;break;
 			case Functions::shutdown: return &newFunctions::newshutdown;break;
 			case Functions::socket: return &newFunctions::newsocket;break;
-			case Functions::TransmitFile: return &newFunctions::newTransmitFile;break;
-			case Functions::LpfnTransmitpackets: return &newFunctions::newLpfnTransmitpackets;break;
 			case Functions::WSAAccept: return &newFunctions::newWSAAccept;break;
 			case Functions::WSAAddressToStringA: return &newFunctions::newWSAAddressToStringA;break;
 			case Functions::WSAAsyncGetHostByAddr: return &newFunctions::newWSAAsyncGetHostByAddr;break;
@@ -879,7 +859,6 @@ private:
 			case Functions::WSAEventSelect: return &newFunctions::newWSAEventSelect;break;
 			case Functions::__WSAFDIsSet: return &newFunctions::new__WSAFDIsSet;break;
 			case Functions::WSAGetFailConnectOnIcmpError: return &newFunctions::newWSAGetFailConnectOnIcmpError;break;
-			case Functions::WSAGetIcmpErrorInfo: return &newFunctions::newWSAGetIcmpErrorInfo;break;
 			case Functions::WSAGetIPUserMtu: return &newFunctions::newWSAGetIPUserMtu;break;
 			case Functions::WSAGetLastError: return &newFunctions::newWSAGetLastError;break;
 			case Functions::WSAGetOverlappedResult: return &newFunctions::newWSAGetOverlappedResult;break;
@@ -978,9 +957,10 @@ private:
 			case Functions::WritePrivateProfileStringA: return &newFunctions::newWritePrivateProfileStringA;break;
 			case Functions::WritePrivateProfileStructA: return &newFunctions::newWritePrivateProfileStructA;break;
 			case Functions::WriteProfileSectionA: return &newFunctions::newWriteProfileSectionA;break;
-			case Functions::WriteProfileStringA: return &newFunctions::newWriteProfileStringA;break;
+			case Functions::WriteProfileStringA: return &newFunctions::newWriteProfileStringA;break;*/
 
-    }
-}
+			}
+			return nullptr;
+	}
 
 };

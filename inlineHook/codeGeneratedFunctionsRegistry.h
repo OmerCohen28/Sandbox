@@ -16,206 +16,206 @@
 
 namespace newFunctions {
 BOOL __stdcall newGetSystemRegistryQuota(
-  [out, optional] PDWORD pdwQuotaAllowed,
-  [out, optional] PDWORD pdwQuotaUsed
+                  PDWORD pdwQuotaAllowed,
+                  PDWORD pdwQuotaUsed
 );
 LSTATUS __stdcall newRegCloseKey(
-  [in] HKEY hKey
+       HKEY hKey
 );
 LSTATUS __stdcall newRegConnectRegistryA(
-  [in, optional] LPCSTR lpMachineName,
-  [in]           HKEY   hKey,
-  [out]          PHKEY  phkResult
+                 LPCSTR lpMachineName,
+                 HKEY   hKey,
+                 PHKEY  phkResult
 );
 LSTATUS __stdcall newRegCopyTreeA(
-  [in]           HKEY   hKeySrc,
-  [in, optional] LPCSTR lpSubKey,
-  [in]           HKEY   hKeyDest
+                 HKEY   hKeySrc,
+                 LPCSTR lpSubKey,
+                 HKEY   hKeyDest
 );
 LSTATUS __stdcall newRegCreateKeyExA(
-  [in]            HKEY                        hKey,
-  [in]            LPCSTR                      lpSubKey,
+                  HKEY                        hKey,
+                  LPCSTR                      lpSubKey,
                   DWORD                       Reserved,
-  [in, optional]  LPSTR                       lpClass,
-  [in]            DWORD                       dwOptions,
-  [in]            REGSAM                      samDesired,
-  [in, optional]  const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-  [out]           PHKEY                       phkResult,
-  [out, optional] LPDWORD                     lpdwDisposition
+                  LPSTR                       lpClass,
+                  DWORD                       dwOptions,
+                  REGSAM                      samDesired,
+                  const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+                  PHKEY                       phkResult,
+                  LPDWORD                     lpdwDisposition
 );
 LSTATUS __stdcall newRegCreateKeyTransactedA(
-  [in]            HKEY                        hKey,
-  [in]            LPCSTR                      lpSubKey,
+                  HKEY                        hKey,
+                  LPCSTR                      lpSubKey,
                   DWORD                       Reserved,
-  [in, optional]  LPSTR                       lpClass,
-  [in]            DWORD                       dwOptions,
-  [in]            REGSAM                      samDesired,
-  [in, optional]  const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-  [out]           PHKEY                       phkResult,
-  [out, optional] LPDWORD                     lpdwDisposition,
-  [in]            HANDLE                      hTransaction,
+                  LPSTR                       lpClass,
+                  DWORD                       dwOptions,
+                  REGSAM                      samDesired,
+                  const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+                  PHKEY                       phkResult,
+                  LPDWORD                     lpdwDisposition,
+                  HANDLE                      hTransaction,
                   PVOID                       pExtendedParemeter
 );
 LSTATUS __stdcall newRegDeleteKeyA(
-  [in] HKEY   hKey,
-  [in] LPCSTR lpSubKey
+       HKEY   hKey,
+       LPCSTR lpSubKey
 );
 LSTATUS __stdcall newRegDeleteKeyExA(
-  [in] HKEY   hKey,
-  [in] LPCSTR lpSubKey,
-  [in] REGSAM samDesired,
+       HKEY   hKey,
+       LPCSTR lpSubKey,
+       REGSAM samDesired,
        DWORD  Reserved
 );
 LSTATUS __stdcall newRegDeleteKeyTransactedA(
-  [in] HKEY   hKey,
-  [in] LPCSTR lpSubKey,
-  [in] REGSAM samDesired,
+       HKEY   hKey,
+       LPCSTR lpSubKey,
+       REGSAM samDesired,
        DWORD  Reserved,
-  [in] HANDLE hTransaction,
+       HANDLE hTransaction,
        PVOID  pExtendedParameter
 );
 LSTATUS __stdcall newRegDeleteKeyValueA(
-  [in]           HKEY   hKey,
-  [in, optional] LPCSTR lpSubKey,
-  [in, optional] LPCSTR lpValueName
+                 HKEY   hKey,
+                 LPCSTR lpSubKey,
+                 LPCSTR lpValueName
 );
 LSTATUS __stdcall newRegDeleteTreeA(
-  [in]           HKEY   hKey,
-  [in, optional] LPCSTR lpSubKey
+                 HKEY   hKey,
+                 LPCSTR lpSubKey
 );
 LSTATUS __stdcall newRegDeleteValueA(
-  [in]           HKEY   hKey,
-  [in, optional] LPCSTR lpValueName
+                 HKEY   hKey,
+                 LPCSTR lpValueName
 );
 LSTATUS __stdcall newRegDisablePredefinedCache();
 LSTATUS __stdcall newRegDisablePredefinedCacheEx();
 LONG __stdcall newRegDisableReflectionKey(
-  [in] HKEY hBase
+       HKEY hBase
 );
 LONG __stdcall newRegEnableReflectionKey(
-  [in] HKEY hBase
+       HKEY hBase
 );
 LSTATUS __stdcall newRegEnumKeyExA(
-  [in]                HKEY      hKey,
-  [in]                DWORD     dwIndex,
-  [out]               LPSTR     lpName,
-  [in, out]           LPDWORD   lpcchName,
+                      HKEY      hKey,
+                      DWORD     dwIndex,
+                      LPSTR     lpName,
+                      LPDWORD   lpcchName,
                       LPDWORD   lpReserved,
-  [in, out]           LPSTR     lpClass,
-  [in, out, optional] LPDWORD   lpcchClass,
-  [out, optional]     PFILETIME lpftLastWriteTime
+                      LPSTR     lpClass,
+                      LPDWORD   lpcchClass,
+                      PFILETIME lpftLastWriteTime
 );
 LSTATUS __stdcall newRegEnumValueA(
-  [in]                HKEY    hKey,
-  [in]                DWORD   dwIndex,
-  [out]               LPSTR   lpValueName,
-  [in, out]           LPDWORD lpcchValueName,
+                      HKEY    hKey,
+                      DWORD   dwIndex,
+                      LPSTR   lpValueName,
+                      LPDWORD lpcchValueName,
                       LPDWORD lpReserved,
-  [out, optional]     LPDWORD lpType,
-  [out, optional]     LPBYTE  lpData,
-  [in, out, optional] LPDWORD lpcbData
+                      LPDWORD lpType,
+                      LPBYTE  lpData,
+                      LPDWORD lpcbData
 );
 LSTATUS __stdcall newRegFlushKey(
-  [in] HKEY hKey
+       HKEY hKey
 );
 LSTATUS __stdcall newRegGetKeySecurity(
-  [in]            HKEY                 hKey,
-  [in]            SECURITY_INFORMATION SecurityInformation,
-  [out, optional] PSECURITY_DESCRIPTOR pSecurityDescriptor,
-  [in, out]       LPDWORD              lpcbSecurityDescriptor
+                  HKEY                 hKey,
+                  SECURITY_INFORMATION SecurityInformation,
+                  PSECURITY_DESCRIPTOR pSecurityDescriptor,
+                  LPDWORD              lpcbSecurityDescriptor
 );
 LSTATUS __stdcall newRegGetValueA(
-  [in]                HKEY    hkey,
-  [in, optional]      LPCSTR  lpSubKey,
-  [in, optional]      LPCSTR  lpValue,
-  [in, optional]      DWORD   dwFlags,
-  [out, optional]     LPDWORD pdwType,
-  [out, optional]     PVOID   pvData,
-  [in, out, optional] LPDWORD pcbData
+                      HKEY    hkey,
+                      LPCSTR  lpSubKey,
+                      LPCSTR  lpValue,
+                      DWORD   dwFlags,
+                      LPDWORD pdwType,
+                      PVOID   pvData,
+                      LPDWORD pcbData
 );
 LSTATUS __stdcall newRegLoadKeyA(
-  [in]           HKEY   hKey,
-  [in, optional] LPCSTR lpSubKey,
-  [in]           LPCSTR lpFile
+                 HKEY   hKey,
+                 LPCSTR lpSubKey,
+                 LPCSTR lpFile
 );
 LSTATUS __stdcall newRegLoadMUIStringA(
-  [in]            HKEY    hKey,
-  [in, optional]  LPCSTR  pszValue,
-  [out, optional] LPSTR   pszOutBuf,
-  [in]            DWORD   cbOutBuf,
-  [out, optional] LPDWORD pcbData,
-  [in]            DWORD   Flags,
-  [in, optional]  LPCSTR  pszDirectory
+                  HKEY    hKey,
+                  LPCSTR  pszValue,
+                  LPSTR   pszOutBuf,
+                  DWORD   cbOutBuf,
+                  LPDWORD pcbData,
+                  DWORD   Flags,
+                  LPCSTR  pszDirectory
 );
 LSTATUS __stdcall newRegNotifyChangeKeyValue(
-  [in]           HKEY   hKey,
-  [in]           BOOL   bWatchSubtree,
-  [in]           DWORD  dwNotifyFilter,
-  [in, optional] HANDLE hEvent,
-  [in]           BOOL   fAsynchronous
+                 HKEY   hKey,
+                 BOOL   bWatchSubtree,
+                 DWORD  dwNotifyFilter,
+                 HANDLE hEvent,
+                 BOOL   fAsynchronous
 );
 LSTATUS __stdcall newRegOpenCurrentUser(
-  [in]  REGSAM samDesired,
-  [out] PHKEY  phkResult
+        REGSAM samDesired,
+        PHKEY  phkResult
 );
 LSTATUS __stdcall newRegOpenKeyExA(
-  [in]           HKEY   hKey,
-  [in, optional] LPCSTR lpSubKey,
-  [in]           DWORD  ulOptions,
-  [in]           REGSAM samDesired,
-  [out]          PHKEY  phkResult
+                 HKEY   hKey,
+                 LPCSTR lpSubKey,
+                 DWORD  ulOptions,
+                 REGSAM samDesired,
+                 PHKEY  phkResult
 );
 LSTATUS __stdcall newRegOpenKeyTransactedA(
-  [in]           HKEY   hKey,
-  [in, optional] LPCSTR lpSubKey,
-  [in]           DWORD  ulOptions,
-  [in]           REGSAM samDesired,
-  [out]          PHKEY  phkResult,
-  [in]           HANDLE hTransaction,
+                 HKEY   hKey,
+                 LPCSTR lpSubKey,
+                 DWORD  ulOptions,
+                 REGSAM samDesired,
+                 PHKEY  phkResult,
+                 HANDLE hTransaction,
                  PVOID  pExtendedParemeter
 );
 LSTATUS __stdcall newRegOpenUserClassesRoot(
-  [in]  HANDLE hToken,
+        HANDLE hToken,
         DWORD  dwOptions,
-  [in]  REGSAM samDesired,
-  [out] PHKEY  phkResult
+        REGSAM samDesired,
+        PHKEY  phkResult
 );
 LSTATUS __stdcall newRegOverridePredefKey(
-  [in]           HKEY hKey,
-  [in, optional] HKEY hNewHKey
+                 HKEY hKey,
+                 HKEY hNewHKey
 );
 LSTATUS __stdcall newRegQueryInfoKeyA(
-  [in]                HKEY      hKey,
-  [out, optional]     LPSTR     lpClass,
-  [in, out, optional] LPDWORD   lpcchClass,
+                      HKEY      hKey,
+                      LPSTR     lpClass,
+                      LPDWORD   lpcchClass,
                       LPDWORD   lpReserved,
-  [out, optional]     LPDWORD   lpcSubKeys,
-  [out, optional]     LPDWORD   lpcbMaxSubKeyLen,
-  [out, optional]     LPDWORD   lpcbMaxClassLen,
-  [out, optional]     LPDWORD   lpcValues,
-  [out, optional]     LPDWORD   lpcbMaxValueNameLen,
-  [out, optional]     LPDWORD   lpcbMaxValueLen,
-  [out, optional]     LPDWORD   lpcbSecurityDescriptor,
-  [out, optional]     PFILETIME lpftLastWriteTime
+                      LPDWORD   lpcSubKeys,
+                      LPDWORD   lpcbMaxSubKeyLen,
+                      LPDWORD   lpcbMaxClassLen,
+                      LPDWORD   lpcValues,
+                      LPDWORD   lpcbMaxValueNameLen,
+                      LPDWORD   lpcbMaxValueLen,
+                      LPDWORD   lpcbSecurityDescriptor,
+                      PFILETIME lpftLastWriteTime
 );
 LSTATUS __stdcall newRegQueryMultipleValuesA(
-  [in]                HKEY     hKey,
-  [out]               PVALENTA val_list,
-  [in]                DWORD    num_vals,
-  [out, optional]     LPSTR    lpValueBuf,
-  [in, out, optional] LPDWORD  ldwTotsize
+                      HKEY     hKey,
+                      PVALENTA val_list,
+                      DWORD    num_vals,
+                      LPSTR    lpValueBuf,
+                      LPDWORD  ldwTotsize
 );
 LONG __stdcall newRegQueryReflectionKey(
-  [in]  HKEY hBase,
-  [out] BOOL *bIsReflectionDisabled
+        HKEY hBase,
+        BOOL *bIsReflectionDisabled
 );
 LSTATUS __stdcall newRegQueryValueExA(
-  [in]                HKEY    hKey,
-  [in, optional]      LPCSTR  lpValueName,
+                      HKEY    hKey,
+                      LPCSTR  lpValueName,
                       LPDWORD lpReserved,
-  [out, optional]     LPDWORD lpType,
-  [out, optional]     LPBYTE  lpData,
-  [in, out, optional] LPDWORD lpcbData
+                      LPDWORD lpType,
+                      LPBYTE  lpData,
+                      LPDWORD lpcbData
 );
 LSTATUS __stdcall newRegRenameKey(
   HKEY    hKey,
@@ -223,126 +223,126 @@ LSTATUS __stdcall newRegRenameKey(
   LPCWSTR lpNewKeyName
 );
 LSTATUS __stdcall newRegReplaceKeyA(
-  [in]           HKEY   hKey,
-  [in, optional] LPCSTR lpSubKey,
-  [in]           LPCSTR lpNewFile,
-  [in]           LPCSTR lpOldFile
+                 HKEY   hKey,
+                 LPCSTR lpSubKey,
+                 LPCSTR lpNewFile,
+                 LPCSTR lpOldFile
 );
 LSTATUS __stdcall newRegRestoreKeyA(
-  [in] HKEY   hKey,
-  [in] LPCSTR lpFile,
-  [in] DWORD  dwFlags
+       HKEY   hKey,
+       LPCSTR lpFile,
+       DWORD  dwFlags
 );
 LSTATUS __stdcall newRegSaveKeyA(
-  [in]           HKEY                        hKey,
-  [in]           LPCSTR                      lpFile,
-  [in, optional] const LPSECURITY_ATTRIBUTES lpSecurityAttributes
+                 HKEY                        hKey,
+                 LPCSTR                      lpFile,
+                 const LPSECURITY_ATTRIBUTES lpSecurityAttributes
 );
 LSTATUS __stdcall newRegSaveKeyExA(
-  [in]           HKEY                        hKey,
-  [in]           LPCSTR                      lpFile,
-  [in, optional] const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-  [in]           DWORD                       Flags
+                 HKEY                        hKey,
+                 LPCSTR                      lpFile,
+                 const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+                 DWORD                       Flags
 );
 LSTATUS __stdcall newRegSetKeyValueA(
-  [in]           HKEY    hKey,
-  [in, optional] LPCSTR  lpSubKey,
-  [in, optional] LPCSTR  lpValueName,
-  [in]           DWORD   dwType,
-  [in, optional] LPCVOID lpData,
-  [in]           DWORD   cbData
+                 HKEY    hKey,
+                 LPCSTR  lpSubKey,
+                 LPCSTR  lpValueName,
+                 DWORD   dwType,
+                 LPCVOID lpData,
+                 DWORD   cbData
 );
 LSTATUS __stdcall newRegSetKeySecurity(
-  [in] HKEY                 hKey,
-  [in] SECURITY_INFORMATION SecurityInformation,
-  [in] PSECURITY_DESCRIPTOR pSecurityDescriptor
+       HKEY                 hKey,
+       SECURITY_INFORMATION SecurityInformation,
+       PSECURITY_DESCRIPTOR pSecurityDescriptor
 );
 LSTATUS __stdcall newRegSetValueExA(
-  [in]           HKEY       hKey,
-  [in, optional] LPCSTR     lpValueName,
+                 HKEY       hKey,
+                 LPCSTR     lpValueName,
                  DWORD      Reserved,
-  [in]           DWORD      dwType,
-  [in]           const BYTE *lpData,
-  [in]           DWORD      cbData
+                 DWORD      dwType,
+                 const BYTE *lpData,
+                 DWORD      cbData
 );
 LSTATUS __stdcall newRegUnLoadKeyA(
-  [in]           HKEY   hKey,
-  [in, optional] LPCSTR lpSubKey
+                 HKEY   hKey,
+                 LPCSTR lpSubKey
 );
 UINT __stdcall newGetPrivateProfileInt(
-  [in] LPCTSTR lpAppName,
-  [in] LPCTSTR lpKeyName,
-  [in] INT     nDefault,
-  [in] LPCTSTR lpFileName
+       LPCTSTR lpAppName,
+       LPCTSTR lpKeyName,
+       INT     nDefault,
+       LPCTSTR lpFileName
 );
 DWORD __stdcall newGetPrivateProfileSection(
-  [in]  LPCTSTR lpAppName,
-  [out] LPTSTR  lpReturnedString,
-  [in]  DWORD   nSize,
-  [in]  LPCTSTR lpFileName
+        LPCTSTR lpAppName,
+        LPTSTR  lpReturnedString,
+        DWORD   nSize,
+        LPCTSTR lpFileName
 );
 DWORD __stdcall newGetPrivateProfileSectionNames(
-  [out] LPTSTR  lpszReturnBuffer,
-  [in]  DWORD   nSize,
-  [in]  LPCTSTR lpFileName
+        LPTSTR  lpszReturnBuffer,
+        DWORD   nSize,
+        LPCTSTR lpFileName
 );
 DWORD __stdcall newGetPrivateProfileString(
-  [in]  LPCTSTR lpAppName,
-  [in]  LPCTSTR lpKeyName,
-  [in]  LPCTSTR lpDefault,
-  [out] LPTSTR  lpReturnedString,
-  [in]  DWORD   nSize,
-  [in]  LPCTSTR lpFileName
+        LPCTSTR lpAppName,
+        LPCTSTR lpKeyName,
+        LPCTSTR lpDefault,
+        LPTSTR  lpReturnedString,
+        DWORD   nSize,
+        LPCTSTR lpFileName
 );
 BOOL __stdcall newGetPrivateProfileStruct(
-  [in]  LPCTSTR lpszSection,
-  [in]  LPCTSTR lpszKey,
-  [out] LPVOID  lpStruct,
-  [in]  UINT    uSizeStruct,
-  [in]  LPCTSTR szFile
+        LPCTSTR lpszSection,
+        LPCTSTR lpszKey,
+        LPVOID  lpStruct,
+        UINT    uSizeStruct,
+        LPCTSTR szFile
 );
 UINT __stdcall newGetProfileIntA(
-  [in] LPCSTR lpAppName,
-  [in] LPCSTR lpKeyName,
-  [in] INT    nDefault
+       LPCSTR lpAppName,
+       LPCSTR lpKeyName,
+       INT    nDefault
 );
 DWORD __stdcall newGetProfileSectionA(
-  [in]  LPCSTR lpAppName,
-  [out] LPSTR  lpReturnedString,
-  [in]  DWORD  nSize
+        LPCSTR lpAppName,
+        LPSTR  lpReturnedString,
+        DWORD  nSize
 );
 DWORD __stdcall newGetProfileStringA(
-  [in]  LPCSTR lpAppName,
-  [in]  LPCSTR lpKeyName,
-  [in]  LPCSTR lpDefault,
-  [out] LPSTR  lpReturnedString,
-  [in]  DWORD  nSize
+        LPCSTR lpAppName,
+        LPCSTR lpKeyName,
+        LPCSTR lpDefault,
+        LPSTR  lpReturnedString,
+        DWORD  nSize
 );
 BOOL __stdcall newWritePrivateProfileSectionA(
-  [in] LPCSTR lpAppName,
-  [in] LPCSTR lpString,
-  [in] LPCSTR lpFileName
+       LPCSTR lpAppName,
+       LPCSTR lpString,
+       LPCSTR lpFileName
 );
 BOOL __stdcall newWritePrivateProfileStringA(
-  [in] LPCSTR lpAppName,
-  [in] LPCSTR lpKeyName,
-  [in] LPCSTR lpString,
-  [in] LPCSTR lpFileName
+       LPCSTR lpAppName,
+       LPCSTR lpKeyName,
+       LPCSTR lpString,
+       LPCSTR lpFileName
 );
 BOOL __stdcall newWritePrivateProfileStructA(
-  [in] LPCSTR lpszSection,
-  [in] LPCSTR lpszKey,
-  [in] LPVOID lpStruct,
-  [in] UINT   uSizeStruct,
-  [in] LPCSTR szFile
+       LPCSTR lpszSection,
+       LPCSTR lpszKey,
+       LPVOID lpStruct,
+       UINT   uSizeStruct,
+       LPCSTR szFile
 );
 BOOL __stdcall newWriteProfileSectionA(
-  [in] LPCSTR lpAppName,
-  [in] LPCSTR lpString
+       LPCSTR lpAppName,
+       LPCSTR lpString
 );
 BOOL __stdcall newWriteProfileStringA(
-  [in] LPCSTR lpAppName,
-  [in] LPCSTR lpKeyName,
-  [in] LPCSTR lpString
+       LPCSTR lpAppName,
+       LPCSTR lpKeyName,
+       LPCSTR lpString
 );
 }

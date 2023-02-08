@@ -1,12 +1,17 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include <iostream>
 #include <winsock2.h>
+#include <Ws2tcpip.h>
 #include <Windows.h>
 #include <string>
+#include <vector>
 #include "injectDll.h"
 #pragma comment(lib,"ws2_32")
 #pragma warning(disable : 4996)
 
-#define _path_to_virus_ "D:\\Actual sandbox sln\\virus\\Debug\\virus.exe"
+#define _path_to_virus_ "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe"
+#define _my_addr_ "169.254.142.176"
 
 
 SOCKET* SetSocketUp() {
@@ -17,26 +22,27 @@ SOCKET* SetSocketUp() {
         return nullptr;
     }
 
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (sock == INVALID_SOCKET) {
+    SOCKET* sock = new SOCKET{ socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) };
+    if (*sock == INVALID_SOCKET) {
         std::cout << "socket creation failed\n";
         wprintf(L"socket function failed with error = %d\n", WSAGetLastError());
         return nullptr;
     }
-
     sockaddr_in saServer;
     saServer.sin_family = AF_INET;
-    saServer.sin_addr.S_un.S_addr = inet_addr("192.168.0.120");
+    saServer.sin_addr.S_un.S_addr = inet_addr(_my_addr_);
+    //InetPton(AF_INET, (PCWSTR)_my_addr_, &saServer.sin_addr.S_un.S_addr);
     saServer.sin_port = htons(50505);
-    iResult = connect(sock, (SOCKADDR*)&saServer, sizeof(saServer));
+    iResult = connect(*sock, (SOCKADDR*)&saServer, sizeof(saServer));
     if (iResult == SOCKET_ERROR) {
         std::cout << "error connecting to server\n";
         return nullptr;
     }
-    return &sock;
+    return sock;
 }
 
-bool CheckInput(SOCKET& sock,char* buf, int size) {
+bool CheckInput(SOCKET& sock,const char* buf, int size) {
+    std::cout << "verifier got " << buf << '\n';
     int iResult = send(sock, buf, size, 0);
     if (iResult == SOCKET_ERROR) {
         std::cout << "failed to send data\n";
@@ -55,11 +61,35 @@ bool CheckInput(SOCKET& sock,char* buf, int size) {
 
 }
 
+std::vector<std::string*>* GetFunctionsToHook(SOCKET* sock) {
+    std::vector<std::string*>* vec = new std::vector<std::string*>;
+    std::cout << "Enter the function name you would like to use, dont forget to use capital letters!\n";
+    std::cout << "Alternitavly you can select one of these function families:\n";
+    std::cout << "fs - File System\nsock - Sockets and communication\nreg - registry\n";
+    std::cout << "enter \"stop\" if you are finished\n";
+    do {
+        std::string* func = new std::string;
+        std::cout << "function name: ";
+        std::cin >> *func;
+        std::cout << '\n';
+        if (CheckInput(*sock, func->c_str(), func->size())) {
+            vec->push_back(func);
+        }
+        else {
+            if (*func == "stop") { break; }
+            std::cout << "Invalid function name of function family\n";
+        }
+
+    } while (true);
+    return vec;
+}
+
 
 int main()
 {
     SOCKET* sock = SetSocketUp();
-    if (sock) {
+    if (sock) {}
+    else{
         std::cout << "error connecting to python server\n";
         return 1;
     }
@@ -77,12 +107,15 @@ int main()
         if (file == "stop") {
             break;
         }
+
+        auto vec = GetFunctionsToHook(sock);
+
         if (file == "default") {
             std::string path{ _path_to_virus_ };
-            inject_dll(path, size);
+            injectDll(path, size,vec);
         }
         else {
-            inject_dll(file,size);
+            injectDll(file,size,vec);
         }
     }
     std::cout << "thank you for using SafeBox :)\n";
