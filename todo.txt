@@ -1,0 +1,23 @@
+figure out why the functions aren't being identified
+
+print all values the DLL gets through sockets
+
+add into Hook::deploy_hook check wether that function was selected or not
+
+
+current problem - 
+ - all of the above
+
+ - DLL can't connect to the server until I resume the process
+   But than the hooks won't be avialable at start.
+ - the SendInfoToDll function doesnt even work, the sock parameter is incorrect.
+
+
+option how to write the LOG - 
+
+keep all the log messages in a vector. 
+After the process is finished running, in DllEntry - 
+unload the hooks and write the log to file OR 
+send to injectDll, this way it will be easier when graphics are available
+
+DONT FORGET - finish the generic log (by hand), there is a seperate file

@@ -14,7 +14,7 @@
 #include <sstream>
 #include <time.h>
 
-//namespace newFunctions {
+namespace newFunctions {
 DWORD __stdcall newAddUsersToEncryptedFile(
        LPCWSTR                      lpFileName,
        PENCRYPTION_CERTIFICATE_LIST pEncryptionCertificates
@@ -500,48 +500,6 @@ BOOL __stdcall newUnlockFileEx(
             DWORD        nNumberOfBytesToUnlockHigh,
             LPOVERLAPPED lpOverlapped
 );
-HRESULT __stdcall newWofGetDriverVersion(
-        HANDLE FileOrVolumeHandle,
-        ULONG  Provider,
-        PULONG WofVersion
-);
-HRESULT __stdcall newWofIsExternalFile(
-                      LPCWSTR FilePath,
-                      PBOOL   IsExternalFile,
-                      PULONG  Provider,
-                      PVOID   ExternalFileInfo,
-                      PULONG  BufferLength
-);
-HRESULT __stdcall newWofSetFileDataLocation(
-       HANDLE FileHandle,
-       ULONG  Provider,
-       PVOID  ExternalFileInfo,
-       ULONG  Length
-);
-BOOL __stdcall newWofShouldCompressBinaries(
-        LPCWSTR Volume,
-        PULONG  Algorithm
-);
-HRESULT __stdcall newWofWimAddEntry(
-        PCWSTR         VolumeName,
-        PCWSTR         WimPath,
-        DWORD          WimType,
-        DWORD          WimIndex,
-        PLARGE_INTEGER DataSourceId
-);
-HRESULT __stdcall newWofWimRemoveEntry(
-       PCWSTR        VolumeName,
-       LARGE_INTEGER DataSourceId
-);
-HRESULT __stdcall newWofWimSuspendEntry(
-       PCWSTR        VolumeName,
-       LARGE_INTEGER DataSourceId
-);
-HRESULT __stdcall newWofWimUpdateEntry(
-       PCWSTR        VolumeName,
-       LARGE_INTEGER DataSourceId,
-       PCWSTR        NewWimPath
-);
 BOOL __stdcall newWow64DisableWow64FsRedirection(
         PVOID *OldValue
 );
@@ -570,4 +528,4 @@ BOOL __stdcall newWriteFileEx(
                  LPOVERLAPPED                    lpOverlapped,
                  LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 );
-//}
+}

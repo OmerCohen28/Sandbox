@@ -24,7 +24,7 @@ extern HINSTANCE hLibReg;
 extern HANDLE LOGfile;
 extern bool IsMyCall;
 
-//namespace newFunctions {
+namespace newFunctions {
 
 DWORD __stdcall newAddUsersToEncryptedFile(
        LPCWSTR                      lpFileName,
@@ -2080,4 +2080,4 @@ BOOL __stdcall newWriteFileEx(
         return result;
 
 }
-//}
+}

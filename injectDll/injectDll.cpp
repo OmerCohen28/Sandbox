@@ -11,7 +11,7 @@
 #pragma warning(disable : 4996)
 
 #define _path_to_virus_ "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe"
-#define _my_addr_ "169.254.142.176"
+#define _my_addr_ "192.168.0.120"
 
 
 SOCKET* SetSocketUp() {
