@@ -105,9 +105,6 @@ void my_func(T arg) {
     }
     if constexpr (std::is_same_v < T, void*>) {
         std::cout << "void*";
-        if (auto char_ptr = static_cast<char*>(arg)) {
-            std::cout << (char*)arg;
-        }
     }
     if constexpr (std::is_same_v < T, LPCTSTR>) {
         std::cout << "LPCTSTR";
@@ -189,7 +186,8 @@ int main()
     LPHANDLE l{};
     PWSTR w{ (WCHAR*)L"h" };
     LPSTR s{};
-    char hello[]{ "hello" };
-    void* ptr{&hello};
+    bool hello{ true };
+    int x1{ 5 };
+    void* ptr{&x1};
     my_func(ptr);
 }
