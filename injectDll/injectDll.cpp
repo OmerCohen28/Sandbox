@@ -1,5 +1,5 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-
+#define mom
 #include <iostream>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
@@ -11,7 +11,13 @@
 #pragma warning(disable : 4996)
 
 #define _path_to_virus_ "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe"
-#define _my_addr_ "192.168.0.120"
+#define _my_addr_ "10.100.102.5"
+
+#ifdef mom
+#define _path_to_virus_ "D:\\Actual sandbox sln\\virus\\Debug\\virus.exe"
+#else
+#define _path_to_virus_ "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe"
+#endif
 
 
 SOCKET* SetSocketUp() {

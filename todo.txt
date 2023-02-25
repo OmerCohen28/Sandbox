@@ -1,6 +1,6 @@
 gets stuck in "ResizeAndFixFunctionName" function in Dll, check
 the flow of the application, release it where it gets stuck
-and make sure the DLL gets the names
+and make sure the DLL gets the names - done
 
 
 after that create a file in the dLL that instantly hooks 

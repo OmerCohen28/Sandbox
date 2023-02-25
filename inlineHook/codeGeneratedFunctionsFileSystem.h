@@ -57,7 +57,7 @@ BOOL __stdcall newCopyFileTransactedA(
                  DWORD              dwCopyFlags,
                  HANDLE             hTransaction
 );
-HANDLE newCreateFileA(
+HANDLE __stdcall newCreateFileA(
                  LPCSTR                lpFileName,
                  DWORD                 dwDesiredAccess,
                  DWORD                 dwShareMode,

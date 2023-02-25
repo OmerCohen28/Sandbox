@@ -35,4 +35,7 @@ sock,addr = conn_sock.accept()
 
 for name in functions_to_hook:
     stuffed_name = name.ljust(40,"@")
+    print(f"sent {stuffed_name}")
     sock.send(stuffed_name.encode())
+
+sock.send("stop".ljust(40,"@").encode())

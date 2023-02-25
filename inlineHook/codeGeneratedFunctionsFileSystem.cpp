@@ -193,7 +193,7 @@ BOOL __stdcall newCopyFileTransactedA(
         return result;
 
 }
-HANDLE newCreateFileA(
+HANDLE __stdcall newCreateFileA(
                  LPCSTR                lpFileName,
                  DWORD                 dwDesiredAccess,
                  DWORD                 dwShareMode,
@@ -206,7 +206,7 @@ HANDLE newCreateFileA(
     	WriteProcessMemory(GetCurrentProcess(),
     		(LPVOID)hooked_addr[(int)Hook::Functions::CreateFileA],
     		original_bytes[(int)Hook::Functions::CreateFileA], 6, NULL);
-
+        std::cout << "here\n";
         HANDLE result = ::CreateFileA(lpFileName,dwDesiredAccess,dwShareMode,lpSecurityAttributes,dwCreationDisposition,dwFlagsAndAttributes,hTemplateFile
 );
         Hook reset_hook { Hook::Functions::CreateFileA};

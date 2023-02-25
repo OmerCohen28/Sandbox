@@ -24,7 +24,7 @@
 #include "codeGeneratedFunctionsRegistry.h"
 #include "codeGeneratedFunctionsSockets.h"
 
-#define _my_addr_ "192.168.0.120"
+#define _my_addr_ "10.100.102.5"
 
 
 
@@ -369,15 +369,15 @@ std::string* ResizeAndFixFunctionName(char* func) {
 	for (int i{ 0 }; i < 40; ++i) {
 		char ch = *(func + i);
 		if (ch == forbidden) {
-			std::cout << "here11\n";
 			break;
 		}
 		++count;
 	}
-	char* buf = new char[count];
-	for (int i{ 0 }; i < count; ++i) {
-		buf[i] = func[i];
-	}
+	char* buf = new char[count+1];
+	//strncpy_s(buf,count, func, count);
+	memcpy(buf, func, count);
+	char add{ '\0' };
+	memcpy(buf+count, &add, 1);
 	std::string* st = new std::string(buf);
 	return st;
 }
@@ -424,7 +424,12 @@ std::vector<std::string>* getFunctionsToHook() {
 			std::cout << "Error receving function from injectDll server\nterminating\n";
 			TerminateProcess(GetCurrentProcess(), 1);
 		}
+		char add = '\0';
+		strcpy_s(buffer+39, 1, &add);
 		std::string* st = ResizeAndFixFunctionName(buffer);
+		if (strcmp(st->data(),"stop")==0) {
+			break;
+		}
 		vec->push_back(*st);
 
 	} while (true);
@@ -446,7 +451,7 @@ FALSE,
 "myMutex"
 ) };
 	std::cout << "got into DLL!!\n";
-	auto vec = getFunctionsToHook();
+	std::vector<std::string>* vec;
 	void* f;
 	switch (ul_reason_for_call)
 	{
@@ -457,11 +462,12 @@ FALSE,
 		msg = new char[50] {"---------------\nstarted hooking\n---------------\n\n"};
 		Hook::set_up_vars();
 		mylog(msg, 49);		
-
+		vec = getFunctionsToHook();
 		for (auto item : *vec) {
-			std::cout << item << '\n';
+			std::cout << "got " << item << '\n';
 		}
 
+		Hook{ Hook::Functions::CreateFileA }.deploy_hook();
 
 	case DLL_THREAD_ATTACH:
 		// A process is creating a new thread.

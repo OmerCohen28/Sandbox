@@ -3,6 +3,14 @@
 #include <string>
 #include <psapi.h>
 
+#define mom
+
+#ifdef mom
+#define _path_to_dll_ "D:\\Actual sandbox sln\\inlineHook\\Debug\\inlineHook.dll"
+#else
+#define _path_to_dll_ "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\inlineHook\\Debug\\inlineHook.dll"
+#endif
+
 
 struct pass_to_memory_limiter {
     HANDLE hProcess;
@@ -33,7 +41,7 @@ DWORD WINAPI checkProcessMemory(pass_to_memory_limiter& data) {
 }
 
 void inject_dll(std::string& file, int size) {
-    const char name[] = { "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\inlineHook\\Debug\\inlineHook.dll" };
+    const char name[] = { _path_to_dll_ };
     unsigned int len{ sizeof(name) + 1 };
     DWORD result = GetFullPathNameA(name, 0, NULL, NULL);
     char* buf = new char[result];
