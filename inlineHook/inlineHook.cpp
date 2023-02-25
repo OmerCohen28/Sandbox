@@ -17,6 +17,9 @@
 #include <vector>
 #include <cstdio>
 #include <cstdint>
+#include <stdio.h>
+#include <stdlib.h>
+#include <cstring>
 #include "codeGeneratedFunctionsFileSystem.h"
 #include "codeGeneratedFunctionsRegistry.h"
 #include "codeGeneratedFunctionsSockets.h"
@@ -360,7 +363,24 @@ void* Hook::get_new_fnc_pointer() {
 	return nullptr;
 }
 
-
+std::string* ResizeAndFixFunctionName(char* func) {
+	int count{ 0 };
+	char forbidden{ *"@" };
+	for (int i{ 0 }; i < 40; ++i) {
+		char ch = *(func + i);
+		if (ch == forbidden) {
+			std::cout << "here11\n";
+			break;
+		}
+		++count;
+	}
+	char* buf = new char[count];
+	for (int i{ 0 }; i < count; ++i) {
+		buf[i] = func[i];
+	}
+	std::string* st = new std::string(buf);
+	return st;
+}
 
 SOCKET* SetFunctionsToHookSocket() {
 	WSADATA wsaData;
@@ -372,7 +392,6 @@ SOCKET* SetFunctionsToHookSocket() {
 
 	SOCKET* sock = new SOCKET{ socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) };
 	if (*sock == INVALID_SOCKET) {
-		std::cout << "socket creation failed\n";
 		wprintf(L"socket function failed with error = %d\n", WSAGetLastError());
 		return nullptr;
 	}
@@ -380,7 +399,7 @@ SOCKET* SetFunctionsToHookSocket() {
 	saServer.sin_family = AF_INET;
 	saServer.sin_addr.S_un.S_addr = inet_addr(_my_addr_);
 	//InetPton(AF_INET, (PCWSTR)_my_addr_, &saServer.sin_addr.S_un.S_addr);
-	saServer.sin_port = htons(55544);
+	saServer.sin_port = htons(50505);
 	iResult = connect(*sock, (SOCKADDR*)&saServer, sizeof(saServer));
 	if (iResult == SOCKET_ERROR) {
 		std::cout << "error connecting to server\n";
@@ -391,42 +410,22 @@ SOCKET* SetFunctionsToHookSocket() {
 
 std::vector<std::string>* getFunctionsToHook() {
 	SOCKET* sock = SetFunctionsToHookSocket();
-	if(sock){}
-	else {
-		std::cout << "Error connecting to injectDll server\nterminating\n";
+	if (sock == nullptr ||*sock == INVALID_SOCKET || *sock == NULL ) {
+		std::cout << "error connecting to python server\n";
 		TerminateProcess(GetCurrentProcess(), 1);
 	}
 	std::vector<std::string>* vec = new std::vector<std::string>;
 	int iResult;
-	std::string* buffer;
+	char* buffer;
 	do {
-		uint32_t size;
-		iResult = recv(*sock, (char*) & size, sizeof(size), 0);
-		if (iResult == SOCKET_ERROR) {
-			std::cout << "Error receving size from injectDll server\nterminating\n";
-			TerminateProcess(GetCurrentProcess(), 1);
-		}
-
-		size = ntohl(size);
-
-		if (size == -1) {
-			break;
-		}
-
-		buffer = new std::string(size, '\0');
-		iResult = recv(*sock, buffer->data(), size, 0);
+		buffer = new char[40];
+		iResult = recv(*sock, buffer, 40, 0);
 		if (iResult == SOCKET_ERROR) {
 			std::cout << "Error receving function from injectDll server\nterminating\n";
 			TerminateProcess(GetCurrentProcess(), 1);
 		}
-
-		iResult = send(*sock, "1", sizeof(char), 0);
-		if (iResult == SOCKET_ERROR) {
-			std::cout << "Error sending success code to injectDll server\nterminating\n";
-			TerminateProcess(GetCurrentProcess(), 1);
-		}
-
-		vec->push_back(*buffer);
+		std::string* st = ResizeAndFixFunctionName(buffer);
+		vec->push_back(*st);
 
 	} while (true);
 
@@ -446,7 +445,7 @@ NULL,
 FALSE,
 "myMutex"
 ) };
-
+	std::cout << "got into DLL!!\n";
 	auto vec = getFunctionsToHook();
 	void* f;
 	switch (ul_reason_for_call)

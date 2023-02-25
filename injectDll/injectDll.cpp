@@ -61,8 +61,7 @@ bool CheckInput(SOCKET& sock,const char* buf, int size) {
 
 }
 
-std::vector<std::string*>* GetFunctionsToHook(SOCKET* sock) {
-    std::vector<std::string*>* vec = new std::vector<std::string*>;
+void GetFunctionsToHook(SOCKET* sock) {
     std::cout << "Enter the function name you would like to use, dont forget to use capital letters!\n";
     std::cout << "Alternitavly you can select one of these function families:\n";
     std::cout << "fs - File System\nsock - Sockets and communication\nreg - registry\n";
@@ -73,7 +72,6 @@ std::vector<std::string*>* GetFunctionsToHook(SOCKET* sock) {
         std::cin >> *func;
         std::cout << '\n';
         if (CheckInput(*sock, func->c_str(), func->size())) {
-            vec->push_back(func);
         }
         else {
             if (*func == "stop") { break; }
@@ -81,15 +79,15 @@ std::vector<std::string*>* GetFunctionsToHook(SOCKET* sock) {
         }
 
     } while (true);
-    return vec;
+    send(*sock, "end", 5, 0);
+    closesocket(*sock);
 }
 
 
 int main()
 {
     SOCKET* sock = SetSocketUp();
-    if (sock) {}
-    else{
+    if (*sock==INVALID_SOCKET||*sock == NULL || sock == nullptr) {
         std::cout << "error connecting to python server\n";
         return 1;
     }
@@ -107,15 +105,13 @@ int main()
         if (file == "stop") {
             break;
         }
-
-        auto vec = GetFunctionsToHook(sock);
-
+        GetFunctionsToHook(sock);
         if (file == "default") {
             std::string path{ _path_to_virus_ };
-            injectDll(path, size,vec);
+            inject_dll(path, size);
         }
         else {
-            injectDll(file,size,vec);
+            inject_dll(file,size);
         }
     }
     std::cout << "thank you for using SafeBox :)\n";

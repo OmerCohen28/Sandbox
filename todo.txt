@@ -1,16 +1,12 @@
-figure out why the functions aren't being identified
-
-print all values the DLL gets through sockets
-
-add into Hook::deploy_hook check wether that function was selected or not
+gets stuck in "ResizeAndFixFunctionName" function in Dll, check
+the flow of the application, release it where it gets stuck
+and make sure the DLL gets the names
 
 
-current problem - 
- - all of the above
+after that create a file in the dLL that instantly hooks 
+all the possiblr functions and change the hook class
+so it will only log the stuff wanted
 
- - DLL can't connect to the server until I resume the process
-   But than the hooks won't be avialable at start.
- - the SendInfoToDll function doesnt even work, the sock parameter is incorrect.
 
 
 option how to write the LOG - 
