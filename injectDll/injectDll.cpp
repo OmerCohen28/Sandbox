@@ -1,5 +1,5 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define mom
+#define dad
 #include <iostream>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
@@ -11,7 +11,7 @@
 #pragma warning(disable : 4996)
 
 #define _path_to_virus_ "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe"
-#define _my_addr_ "10.100.102.5"
+#define _my_addr_ "192.168.0.120"
 
 #ifdef mom
 #define _path_to_virus_ "D:\\Actual sandbox sln\\virus\\Debug\\virus.exe"
@@ -47,7 +47,7 @@ SOCKET* SetSocketUp() {
     return sock;
 }
 
-bool CheckInput(SOCKET& sock,const char* buf, int size) {
+bool CheckInput(SOCKET& sock, const char* buf, int size) {
     std::cout << "verifier got " << buf << '\n';
     int iResult = send(sock, buf, size, 0);
     if (iResult == SOCKET_ERROR) {
@@ -93,7 +93,7 @@ void GetFunctionsToHook(SOCKET* sock) {
 int main()
 {
     SOCKET* sock = SetSocketUp();
-    if (*sock==INVALID_SOCKET||*sock == NULL || sock == nullptr) {
+    if (*sock == INVALID_SOCKET || *sock == NULL || sock == nullptr) {
         std::cout << "error connecting to python server\n";
         return 1;
     }
@@ -103,7 +103,8 @@ int main()
         std::cout << "type \"stop\" if you would like to stop execution,\ntype defualt to run the default virus provided by the program\n";
         std::cout << "path: ";
         std::string file{};
-        std::cin >> file;
+        //std::cin >> file;
+        std::getline(std::cin, file);
         std::cout << file.c_str() << '\n';
         std::cout << "what is the max size you want to allow for the process? (in MB): ";
         int size;
@@ -117,7 +118,7 @@ int main()
             inject_dll(path, size);
         }
         else {
-            inject_dll(file,size);
+            inject_dll(file, size);
         }
     }
     std::cout << "thank you for using SafeBox :)\n";

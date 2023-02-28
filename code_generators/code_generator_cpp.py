@@ -53,7 +53,7 @@ HANDLE __stdcall newCreateFileA(){
 
 '''
 
-with open("inlineHook\\codeGeneratedFunctionsFilesystem.h",'r') as file:
+with open("C:\\Users\\Omer Cohen\\Documents\\Programming\\Sandbox\\inlineHook\\codeGeneratedFunctionsRegistry.h",'r') as file:
     data = file.read().split("{")[1].strip("}").split(";")
 for func in data:
     try:
@@ -101,5 +101,5 @@ for func in data:
     code+=func
 
 
-with open("inlineHook\\codeGeneratedFunctionsFileSystem.cpp",'w') as file:
+with open("C:\\Users\\Omer Cohen\\Documents\\Programming\\Sandbox\\inlineHook\\codeGeneratedFunctionsRegistry.cpp",'w') as file:
     file.write(code)
