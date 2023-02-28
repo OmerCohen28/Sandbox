@@ -21,13 +21,21 @@ while True:
     if not function_name:
         break
     function_name = function_name.decode().strip("\n").strip("\0")
-    if function_name == "end":break
+    if function_name == "stop":
+        sock.send("0".encode())
+        break
     try:
         functions.index(function_name)
         sock.send("1".encode())
         functions_to_hook.append(function_name)
     except ValueError:
-        sock.send("0".encode())
+        print(function_name)
+        if function_name == "fs" or function_name == "reg" or function_name == "sock":
+            print("wow")
+            sock.send("1".encode())
+            functions_to_hook.append(function_name)
+        else:
+            sock.send("0".encode())
 
 
 print("here")

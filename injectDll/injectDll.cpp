@@ -5,6 +5,7 @@
 #include <Ws2tcpip.h>
 #include <Windows.h>
 #include <string>
+#include <stdio.h>
 #include <vector>
 #include "injectDll.h"
 #pragma comment(lib,"ws2_32")
@@ -60,10 +61,11 @@ bool CheckInput(SOCKET& sock, const char* buf, int size) {
         std::cout << "failed to recv data\n";
     }
     code = atoi(recv_buf);
+    std::cout << "code is: " << code << '\n';
     if (code == 1) {
         return true;
     }
-    return (buf == "fs" || buf == "sock" || buf == "reg") ? true : false;
+    return false;
 
 }
 
@@ -80,12 +82,12 @@ void GetFunctionsToHook(SOCKET* sock) {
         if (CheckInput(*sock, func->c_str(), func->size())) {
         }
         else {
-            if (*func == "stop") { break; }
+            if (strstr(func->data(),"stop")!=NULL) { break; }
             std::cout << "Invalid function name of function family\n";
+            std::cout << "you entered: " << func->data() << '\n';
         }
 
     } while (true);
-    send(*sock, "end", 5, 0);
     closesocket(*sock);
 }
 
