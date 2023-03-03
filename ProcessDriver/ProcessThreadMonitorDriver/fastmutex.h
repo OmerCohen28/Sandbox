@@ -1,6 +1,8 @@
 #pragma once
 #include <ntddk.h>
 
+NTSTATUS myFunc3();
+
 class FastMutex {
 public:
 	void Init();
@@ -9,25 +11,26 @@ public:
 private:
 	FAST_MUTEX _mutex;
 };
-// fastmutex.cpp
-#include "FastMutex.h"
-void FastMutex::Init() {
-	ExInitializeFastMutex(&_mutex);
-}
-void FastMutex::Lock() {
-	ExAcquireFastMutex(&_mutex);
-}
-void FastMutex::Unlock() { 
-	ExReleaseFastMutex(&_mutex);
-}
+
 
 template<typename TLock>
 struct AutoLock {
 	AutoLock(TLock& lock) : _lock(lock) {
-		lock.Lock();
+		__try {
+			lock.Init();
+			lock.Lock();
+		}
+		__except(EXCEPTION_EXECUTE_HANDLER){
+			myFunc3();
+		}
 	}
 	~AutoLock() {
-		_lock.Unlock();
+		__try {
+			_lock.Unlock();
+		}
+		__except(EXCEPTION_EXECUTE_HANDLER){
+			myFunc3();
+		}
 	}
 private:
 	TLock& _lock;

@@ -13,6 +13,7 @@ int main() {
 	int x = 5;
 	if (!::WriteFile(hFile,(LPCVOID)x,sizeof(int),NULL,NULL)) {
 		std::cout << "Writing to driver failed\n";
+		std::cout << GetLastError() << '\n';
 		return 1;
 	}
 	BYTE* buffer = new BYTE[1 << 16]; // 64KB buffer

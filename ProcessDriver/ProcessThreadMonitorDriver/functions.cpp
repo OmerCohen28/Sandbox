@@ -1,4 +1,5 @@
 #include <ntddk.h>
+#include <ntstrsafe.h>
 #include "fastmutex.h"
 #include "helperClasses.h"
 #include "functions.h"
@@ -7,6 +8,45 @@
 
 extern Globals g_Globals;
 
+
+extern "C" NTSTATUS myFunc2() {
+	static int count = -1;
+	++count;
+
+	UNICODE_STRING fileName = RTL_CONSTANT_STRING(L"\\DosDevices\\C:\\temp\\output2.txt");
+	HANDLE fileHandle;
+	OBJECT_ATTRIBUTES objectAttributes;
+	IO_STATUS_BLOCK ioStatusBlock;
+	NTSTATUS status;
+
+	WCHAR buffer[25];
+	RtlStringCchPrintfW(buffer, sizeof(buffer), L"ThreaddExitedd %d", count);
+
+	//*buff = *tmp + *count_str;
+
+	InitializeObjectAttributes(&objectAttributes, &fileName, OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, NULL, NULL);
+
+	status = ZwCreateFile(&fileHandle, GENERIC_WRITE | FILE_WRITE_DATA, &objectAttributes, &ioStatusBlock, NULL, FILE_ATTRIBUTE_NORMAL, 0, FILE_OVERWRITE_IF, FILE_SYNCHRONOUS_IO_NONALERT, NULL, 0);
+
+	if (!NT_SUCCESS(status))
+	{
+		// Handle error
+		return status;
+	}
+
+	status = ZwWriteFile(fileHandle, NULL, NULL, NULL, &ioStatusBlock, buffer,19*sizeof(WCHAR), NULL, NULL);
+
+	if (!NT_SUCCESS(status))
+	{
+		// Handle error
+		ZwClose(fileHandle);
+		return status;
+	}
+
+	ZwClose(fileHandle);
+	return STATUS_SUCCESS;
+}
+
 void PushItem(LIST_ENTRY* entry) {
 	AutoLock<FastMutex> lock(g_Globals.Mutex);
 	if (g_Globals.ItemCount > 1024) {
@@ -14,7 +54,7 @@ void PushItem(LIST_ENTRY* entry) {
 		auto head = RemoveHeadList(&g_Globals.ItemsHead);
 		g_Globals.ItemCount--;
 		auto item = CONTAINING_RECORD(head, FullItem<ItemHeader>, Entry);
-		ExFreePool(item);
+		ExFreePool2(item, DRIVER_TAG,NULL,0);
 	}
 	InsertTailList(&g_Globals.ItemsHead, entry);
 	g_Globals.ItemCount++;
@@ -23,6 +63,7 @@ void PushItem(LIST_ENTRY* entry) {
 
 void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId,
 	PPS_CREATE_NOTIFY_INFO CreateInfo) {
+	UNREFERENCED_PARAMETER(Process);
 	if (CreateInfo) {
 		USHORT allocSize = sizeof(FullItem<ProcessCreateInfo>);
 		USHORT commandLineSize = 0;
@@ -30,7 +71,7 @@ void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId,
 			commandLineSize = CreateInfo->CommandLine->Length;
 			allocSize += commandLineSize;
 		}
-		auto info = (FullItem<ProcessCreateInfo>*)ExAllocatePoolWithTag(PagedPool,
+		auto info = (FullItem<ProcessCreateInfo>*)ExAllocatePool2(POOL_FLAG_NON_PAGED,
 			allocSize, DRIVER_TAG);
 		if (info == nullptr) {
 			KdPrint((DRIVER_PREFIX "failed allocation\n"));
@@ -58,7 +99,7 @@ void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId,
 		PushItem(&info->Entry);
 	}
 	else {
-		auto info = (FullItem<ProcessExitInfo>*)ExAllocatePoolWithTag(PagedPool,
+		auto info = (FullItem<ProcessExitInfo>*)ExAllocatePool2(POOL_FLAG_NON_PAGED,
 			sizeof(FullItem<ProcessExitInfo>), DRIVER_TAG);
 		if (info == nullptr) {
 			KdPrint((DRIVER_PREFIX "failed allocation\n"));
@@ -77,6 +118,7 @@ void OnProcessNotify(PEPROCESS Process, HANDLE ProcessId,
 
 
 NTSTATUS SysMonRead(PDEVICE_OBJECT, PIRP Irp) {
+	UNREFERENCED_PARAMETER(Irp);
 	auto stack = IoGetCurrentIrpStackLocation(Irp);
 	auto len = stack->Parameters.Read.Length;
 	auto status = STATUS_SUCCESS;
@@ -106,33 +148,25 @@ NTSTATUS SysMonRead(PDEVICE_OBJECT, PIRP Irp) {
 			buffer += size;
 			count += size;
 			// free data after copy
-			ExFreePool(info);
+			ExFreePool2(info,DRIVER_TAG,NULL,0);
 		}
 
-		Irp->IoStatus.Status = status;
-		Irp->IoStatus.Information = count;
-		IoCompleteRequest(Irp, 0);
-		return status;
+		
 
 	}
+	Irp->IoStatus.Status = status;
+	Irp->IoStatus.Information = count;
+	IoCompleteRequest(Irp, 0);
+	return status;
+
 }
 
-void SysMonUnload(PDRIVER_OBJECT DriverObject) {
-	// unregister process notifications
-	PsSetCreateProcessNotifyRoutineEx(OnProcessNotify, TRUE);
-	UNICODE_STRING symLink = RTL_CONSTANT_STRING(L"\\??\\sysmon");
-	IoDeleteSymbolicLink(&symLink);
-	IoDeleteDevice(DriverObject->DeviceObject);
-	// free remaining items
-	while (!IsListEmpty(&g_Globals.ItemsHead)) {
-		auto entry = RemoveHeadList(&g_Globals.ItemsHead);
-		ExFreePool(CONTAINING_RECORD(entry, FullItem<ItemHeader>, Entry));
-	}
-}
+
 
 void OnThreadNotify(HANDLE ProcessId, HANDLE ThreadId, BOOLEAN Create) {
+	myFunc2();
 	auto size = sizeof(FullItem<ThreadCreateExitInfo>);
-	auto info = (FullItem<ThreadCreateExitInfo>*)ExAllocatePoolWithTag(PagedPool,
+	auto info = (FullItem<ThreadCreateExitInfo>*)ExAllocatePool2(POOL_FLAG_NON_PAGED,
 		size, DRIVER_TAG);
 	if (info == nullptr) {
 		KdPrint((DRIVER_PREFIX "Failed to allocate memory\n"));
