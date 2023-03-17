@@ -2,6 +2,8 @@
 #include "helperClasses.h"
 #define DRIVER_PREFIX "Moni: "
 #define DRIVER_TAG 'dcba'
+#include <wdmsec.h>
+#include <ntstrsafe.h>
 #include "functions.h"
 
 
@@ -9,6 +11,7 @@
 #define MYDRIVER_WRITE_FILE CTL_CODE(FILE_DEVICE_MYDRIVER, 0x800, METHOD_OUT_DIRECT, FILE_ANY_ACCESS)
 
 Globals g_Globals;
+
 
 NTSTATUS MyFunc() {
 	UNICODE_STRING fileName = RTL_CONSTANT_STRING(L"\\DosDevices\\C:\\temp\\output.txt");
@@ -61,12 +64,14 @@ void SysMonUnload(PDRIVER_OBJECT DriverObject) {
 	// free remaining items
 	while (!IsListEmpty(&g_Globals.ItemsHead)) {
 		auto entry = RemoveHeadList(&g_Globals.ItemsHead);
-		ExFreePool2(CONTAINING_RECORD(entry, FullItem<ItemHeader>, Entry),DRIVER_TAG,NULL,0);
+		//ExFreePool2(CONTAINING_RECORD(entry, FullItem<ItemHeader>, Entry),DRIVER_TAG,NULL,0);
+		ExFreePool(CONTAINING_RECORD(entry, FullItem<ItemHeader>, Entry));
 	}
 }
 
 extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath) {
 	UNREFERENCED_PARAMETER(RegistryPath);
+	g_Globals.idToBlock = 0000;
 	auto status = STATUS_SUCCESS;
 	InitializeListHead(&g_Globals.ItemsHead);
 	g_Globals.Mutex.Init();
@@ -97,12 +102,14 @@ extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING Reg
 				status));
 			break;
 		}
+
 		status = PsSetCreateThreadNotifyRoutine(OnThreadNotify);
 		if (!NT_SUCCESS(status)) {
 			KdPrint((DRIVER_PREFIX "failed to set thread callbacks (status=%08X)\n", status)\
 			);
 			break;
-		}
+		} 
+
 
 	} while (false);
 	if (!NT_SUCCESS(status)) {
@@ -111,11 +118,12 @@ extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING Reg
 		if (DeviceObject)
 			IoDeleteDevice(DeviceObject);
 	}
-	DriverObject->DriverUnload = SysMonUnload;
 	DriverObject->MajorFunction[IRP_MJ_CREATE] =
 		DriverObject->MajorFunction[IRP_MJ_CLOSE] = SysMonCreateClose;
 	DriverObject->MajorFunction[IRP_MJ_READ] = SysMonRead;
 	MyFunc();
+	GetProcessIDToBlock(&g_Globals.idToBlock);
+	DriverObject->DriverUnload = SysMonUnload;
 	KdPrint(("Finished driver entry\n"));
 	return status;
 }

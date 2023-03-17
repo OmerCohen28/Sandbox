@@ -6,3 +6,4 @@ NTSTATUS SysMonRead(PDEVICE_OBJECT, PIRP Irp);
 NTSTATUS SysMonWrite(PDEVICE_OBJECT, PIRP Irp);
 void SysMonUnload(PDRIVER_OBJECT DriverObject);
 void OnThreadNotify(HANDLE ProcessId, HANDLE ThreadId, BOOLEAN Create);
+NTSTATUS GetProcessIDToBlock(DWORD*);

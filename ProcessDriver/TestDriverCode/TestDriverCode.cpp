@@ -3,26 +3,83 @@
 #include "Header.h"
 void DisplayInfo(BYTE* buffer, DWORD size);
 
+bool WriteProcessIDToBuffer() {
+	HANDLE hFile = CreateFileA(
+		"C:\\temp\\id.txt",
+		GENERIC_READ | GENERIC_WRITE,
+		0,
+		NULL,
+		OPEN_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL
+	);
+	if (hFile == INVALID_HANDLE_VALUE) {
+		std::cout << "failed to open file to write process ID with code " << GetLastError() << '\n';
+		return false;
+	}
+	std::cout << GetCurrentProcessId() << '\n';
+	DWORD processID = GetCurrentProcessId();
+	char procID[10];
+	sprintf_s(procID, "%d", processID);
+	std::cout << procID << '\n';
+	if (!WriteFile(
+		hFile,
+		(LPCVOID)procID,
+		sizeof(DWORD),
+		NULL,
+		NULL
+	)) {
+		std::cout << "failed writing to file process ID wtih code " << GetLastError() << '\n';
+		CloseHandle(hFile);
+		return false;
+	}
+	CloseHandle(hFile);
+
+}
+
+DWORD WINAPI f(LPVOID lpParameter) {
+	std::cout << "inside new funcution for thread\n";
+	return 1;
+}
+
+
 int main() {
+
+	if (!WriteProcessIDToBuffer()) {
+		return 1;
+	}
+	HANDLE hThread = CreateThread(NULL, 0, f, NULL, 0, NULL);
+	if (hThread == NULL) {
+		std::cout << "thread creation failed with error: " << GetLastError() << '\n';
+		return 1;
+	}
+	std::cout << "when would you like to continue? ";
+	int x;
+	std::cin >> x;
+	std::cin >> x;
+
+
+
 	auto hFile = ::CreateFile(L"\\\\.\\SysMon", GENERIC_READ | GENERIC_WRITE, 0,
 		nullptr, OPEN_EXISTING, 0, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		std::cout << "Failed to open file\n";
 		return 1;
 	}
-	int x = 5;
-	if (!::WriteFile(hFile,(LPCVOID)x,sizeof(int),NULL,NULL)) {
-		std::cout << "Writing to driver failed\n";
-		std::cout << GetLastError() << '\n';
-		return 1;
-	}
+
 	BYTE* buffer = new BYTE[1 << 16]; // 64KB buffer
 	int count=0;
+	std::cout << "started reading\n";
+	int x1 = 1 << 16;
+	std::cout << x1 << '\n';
 	while (true) {
 		DWORD bytes;
-		if (!::ReadFile(hFile, buffer, sizeof(buffer), &bytes, nullptr)) {
+		if (!::ReadFile(hFile, buffer, x1, &bytes, nullptr)) {
 			std::cout << "Failed to read\n";
 			return 1;
+		}
+		else {
+			std::cout << "read from driver " << bytes << " bytes\n";
 		}
 		if (bytes != 0)
 			DisplayInfo(buffer, bytes);

@@ -1,6 +1,11 @@
 #pragma once
 #include <ntddk.h>
 #include "fastmutex.h"
+#include <wdmsec.h>
+#include <ntstrsafe.h>
+
+
+
 
 enum class ItemType : short {
 	None,
@@ -32,6 +37,7 @@ struct Globals {
 	LIST_ENTRY ItemsHead;
 	int ItemCount;
 	FastMutex Mutex;
+	DWORD idToBlock;
 };
 
 struct ProcessCreateInfo : ItemHeader {

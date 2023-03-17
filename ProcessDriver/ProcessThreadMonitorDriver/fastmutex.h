@@ -21,7 +21,6 @@ struct AutoLock {
 			lock.Lock();
 		}
 		__except(EXCEPTION_EXECUTE_HANDLER){
-			myFunc3();
 		}
 	}
 	~AutoLock() {
