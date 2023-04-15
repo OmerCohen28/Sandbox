@@ -1,0 +1,2 @@
+in parameter selection - how much ram is allowed
+in log - amount of packet's sent, amount of ram used (real time)
