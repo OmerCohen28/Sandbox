@@ -99,6 +99,9 @@ namespace Graphics
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.label16 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -116,10 +119,10 @@ namespace Graphics
             // 
             this.textBox1.BackColor = System.Drawing.Color.LightGreen;
             this.textBox1.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.textBox1.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.textBox1.Font = new System.Drawing.Font("Segoe UI Symbol", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.textBox1.Location = new System.Drawing.Point(21, 183);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(228, 27);
+            this.textBox1.Size = new System.Drawing.Size(228, 29);
             this.textBox1.TabIndex = 1;
             this.textBox1.Text = "Enter Function Name";
             // 
@@ -193,7 +196,7 @@ namespace Graphics
             // 
             this.listBox1.BackColor = System.Drawing.Color.Black;
             this.listBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.listBox1.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.listBox1.Font = new System.Drawing.Font("Segoe UI Symbol", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.listBox1.ForeColor = System.Drawing.Color.LightGreen;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 20;
@@ -222,7 +225,7 @@ namespace Graphics
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(474, 97);
+            this.label3.Location = new System.Drawing.Point(475, 72);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(38, 15);
             this.label3.TabIndex = 8;
@@ -234,7 +237,7 @@ namespace Graphics
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Showcard Gothic", 14.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label4.ForeColor = System.Drawing.Color.LightGreen;
-            this.label4.Location = new System.Drawing.Point(474, 97);
+            this.label4.Location = new System.Drawing.Point(475, 72);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(287, 23);
             this.label4.TabIndex = 9;
@@ -246,7 +249,7 @@ namespace Graphics
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Showcard Gothic", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label5.ForeColor = System.Drawing.Color.LightYellow;
-            this.label5.Location = new System.Drawing.Point(564, 146);
+            this.label5.Location = new System.Drawing.Point(565, 121);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(185, 17);
             this.label5.TabIndex = 10;
@@ -263,7 +266,7 @@ namespace Graphics
             this.radioButton3.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton3.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton3.ForeColor = System.Drawing.Color.Black;
-            this.radioButton3.Location = new System.Drawing.Point(541, 146);
+            this.radioButton3.Location = new System.Drawing.Point(542, 121);
             this.radioButton3.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton3.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton3.Name = "radioButton3";
@@ -283,7 +286,7 @@ namespace Graphics
             this.radioButton4.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton4.Font = new System.Drawing.Font("Showcard Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton4.ForeColor = System.Drawing.Color.Black;
-            this.radioButton4.Location = new System.Drawing.Point(495, 146);
+            this.radioButton4.Location = new System.Drawing.Point(496, 121);
             this.radioButton4.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton4.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton4.Name = "radioButton4";
@@ -303,7 +306,7 @@ namespace Graphics
             this.radioButton5.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton5.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton5.ForeColor = System.Drawing.Color.Black;
-            this.radioButton5.Location = new System.Drawing.Point(518, 146);
+            this.radioButton5.Location = new System.Drawing.Point(519, 121);
             this.radioButton5.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton5.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton5.Name = "radioButton5";
@@ -323,7 +326,7 @@ namespace Graphics
             this.radioButton6.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton6.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton6.ForeColor = System.Drawing.Color.Black;
-            this.radioButton6.Location = new System.Drawing.Point(518, 183);
+            this.radioButton6.Location = new System.Drawing.Point(519, 158);
             this.radioButton6.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton6.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton6.Name = "radioButton6";
@@ -343,7 +346,7 @@ namespace Graphics
             this.radioButton7.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton7.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton7.ForeColor = System.Drawing.Color.Black;
-            this.radioButton7.Location = new System.Drawing.Point(495, 183);
+            this.radioButton7.Location = new System.Drawing.Point(496, 158);
             this.radioButton7.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton7.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton7.Name = "radioButton7";
@@ -363,7 +366,7 @@ namespace Graphics
             this.radioButton8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton8.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton8.ForeColor = System.Drawing.Color.Black;
-            this.radioButton8.Location = new System.Drawing.Point(541, 183);
+            this.radioButton8.Location = new System.Drawing.Point(542, 158);
             this.radioButton8.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton8.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton8.Name = "radioButton8";
@@ -378,7 +381,7 @@ namespace Graphics
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Showcard Gothic", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label6.ForeColor = System.Drawing.Color.LightYellow;
-            this.label6.Location = new System.Drawing.Point(564, 183);
+            this.label6.Location = new System.Drawing.Point(565, 158);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(221, 17);
             this.label6.TabIndex = 14;
@@ -394,7 +397,7 @@ namespace Graphics
             this.radioButton9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton9.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton9.ForeColor = System.Drawing.Color.Black;
-            this.radioButton9.Location = new System.Drawing.Point(518, 220);
+            this.radioButton9.Location = new System.Drawing.Point(519, 195);
             this.radioButton9.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton9.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton9.Name = "radioButton9";
@@ -414,7 +417,7 @@ namespace Graphics
             this.radioButton10.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton10.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton10.ForeColor = System.Drawing.Color.Black;
-            this.radioButton10.Location = new System.Drawing.Point(495, 220);
+            this.radioButton10.Location = new System.Drawing.Point(496, 195);
             this.radioButton10.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton10.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton10.Name = "radioButton10";
@@ -434,7 +437,7 @@ namespace Graphics
             this.radioButton11.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton11.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton11.ForeColor = System.Drawing.Color.Black;
-            this.radioButton11.Location = new System.Drawing.Point(541, 220);
+            this.radioButton11.Location = new System.Drawing.Point(542, 195);
             this.radioButton11.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton11.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton11.Name = "radioButton11";
@@ -449,7 +452,7 @@ namespace Graphics
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Showcard Gothic", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label7.ForeColor = System.Drawing.Color.LightYellow;
-            this.label7.Location = new System.Drawing.Point(564, 220);
+            this.label7.Location = new System.Drawing.Point(565, 195);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(167, 17);
             this.label7.TabIndex = 18;
@@ -460,7 +463,7 @@ namespace Graphics
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Showcard Gothic", 14.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label8.ForeColor = System.Drawing.Color.LightGreen;
-            this.label8.Location = new System.Drawing.Point(474, 282);
+            this.label8.Location = new System.Drawing.Point(475, 257);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(173, 23);
             this.label8.TabIndex = 22;
@@ -476,7 +479,7 @@ namespace Graphics
             this.radioButton12.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton12.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton12.ForeColor = System.Drawing.Color.Black;
-            this.radioButton12.Location = new System.Drawing.Point(518, 390);
+            this.radioButton12.Location = new System.Drawing.Point(519, 365);
             this.radioButton12.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton12.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton12.Name = "radioButton12";
@@ -496,7 +499,7 @@ namespace Graphics
             this.radioButton13.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton13.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton13.ForeColor = System.Drawing.Color.Black;
-            this.radioButton13.Location = new System.Drawing.Point(495, 390);
+            this.radioButton13.Location = new System.Drawing.Point(496, 365);
             this.radioButton13.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton13.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton13.Name = "radioButton13";
@@ -516,7 +519,7 @@ namespace Graphics
             this.radioButton14.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton14.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton14.ForeColor = System.Drawing.Color.Black;
-            this.radioButton14.Location = new System.Drawing.Point(541, 390);
+            this.radioButton14.Location = new System.Drawing.Point(542, 365);
             this.radioButton14.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton14.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton14.Name = "radioButton14";
@@ -531,7 +534,7 @@ namespace Graphics
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Showcard Gothic", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label9.ForeColor = System.Drawing.Color.LightYellow;
-            this.label9.Location = new System.Drawing.Point(564, 390);
+            this.label9.Location = new System.Drawing.Point(565, 365);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(196, 17);
             this.label9.TabIndex = 31;
@@ -547,7 +550,7 @@ namespace Graphics
             this.radioButton15.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton15.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton15.ForeColor = System.Drawing.Color.Black;
-            this.radioButton15.Location = new System.Drawing.Point(518, 353);
+            this.radioButton15.Location = new System.Drawing.Point(519, 328);
             this.radioButton15.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton15.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton15.Name = "radioButton15";
@@ -567,7 +570,7 @@ namespace Graphics
             this.radioButton16.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton16.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton16.ForeColor = System.Drawing.Color.Black;
-            this.radioButton16.Location = new System.Drawing.Point(495, 353);
+            this.radioButton16.Location = new System.Drawing.Point(496, 328);
             this.radioButton16.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton16.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton16.Name = "radioButton16";
@@ -587,7 +590,7 @@ namespace Graphics
             this.radioButton17.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton17.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton17.ForeColor = System.Drawing.Color.Black;
-            this.radioButton17.Location = new System.Drawing.Point(541, 353);
+            this.radioButton17.Location = new System.Drawing.Point(542, 328);
             this.radioButton17.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton17.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton17.Name = "radioButton17";
@@ -602,7 +605,7 @@ namespace Graphics
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Showcard Gothic", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label10.ForeColor = System.Drawing.Color.LightYellow;
-            this.label10.Location = new System.Drawing.Point(564, 353);
+            this.label10.Location = new System.Drawing.Point(565, 328);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(192, 17);
             this.label10.TabIndex = 27;
@@ -618,7 +621,7 @@ namespace Graphics
             this.radioButton18.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton18.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton18.ForeColor = System.Drawing.Color.Black;
-            this.radioButton18.Location = new System.Drawing.Point(518, 316);
+            this.radioButton18.Location = new System.Drawing.Point(519, 291);
             this.radioButton18.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton18.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton18.Name = "radioButton18";
@@ -638,7 +641,7 @@ namespace Graphics
             this.radioButton19.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton19.Font = new System.Drawing.Font("Showcard Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton19.ForeColor = System.Drawing.Color.Black;
-            this.radioButton19.Location = new System.Drawing.Point(495, 316);
+            this.radioButton19.Location = new System.Drawing.Point(496, 291);
             this.radioButton19.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton19.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton19.Name = "radioButton19";
@@ -658,7 +661,7 @@ namespace Graphics
             this.radioButton20.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.radioButton20.Font = new System.Drawing.Font("Showcard Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.radioButton20.ForeColor = System.Drawing.Color.Black;
-            this.radioButton20.Location = new System.Drawing.Point(541, 316);
+            this.radioButton20.Location = new System.Drawing.Point(542, 291);
             this.radioButton20.MaximumSize = new System.Drawing.Size(10, 10);
             this.radioButton20.MinimumSize = new System.Drawing.Size(17, 17);
             this.radioButton20.Name = "radioButton20";
@@ -673,7 +676,7 @@ namespace Graphics
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Showcard Gothic", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label11.ForeColor = System.Drawing.Color.LightYellow;
-            this.label11.Location = new System.Drawing.Point(564, 316);
+            this.label11.Location = new System.Drawing.Point(565, 291);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(156, 17);
             this.label11.TabIndex = 23;
@@ -813,12 +816,38 @@ namespace Graphics
             this.button4.Text = "back";
             this.button4.UseVisualStyleBackColor = false;
             // 
+            // trackBar1
+            // 
+            this.trackBar1.AutoSize = false;
+            this.trackBar1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.trackBar1.Location = new System.Drawing.Point(155, 415);
+            this.trackBar1.Maximum = 100;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(336, 45);
+            this.trackBar1.TabIndex = 44;
+            this.trackBar1.TickFrequency = 10;
+            this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Showcard Gothic", 14.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this.label16.ForeColor = System.Drawing.Color.LightGreen;
+            this.label16.Location = new System.Drawing.Point(496, 415);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(215, 23);
+            this.label16.TabIndex = 45;
+            this.label16.Text = "RAM allowed: 0 MB";
+            this.label16.Click += new System.EventHandler(this.label16_Click);
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(800, 516);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.label14);
@@ -863,8 +892,10 @@ namespace Graphics
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
+            this.ForeColor = System.Drawing.Color.LightGreen;
             this.Name = "Form2";
             this.Text = "Form2";
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -921,5 +952,7 @@ namespace Graphics
         private Label label14;
         private Label label15;
         private Button button4;
+        private TrackBar trackBar1;
+        private Label label16;
     }
 }

@@ -230,5 +230,15 @@ namespace Graphics
         {
 
         }
+
+        private void label16_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            label16.Text = $"RAM allowed: {trackBar1.Value} MB";
+        }
     }
 }
