@@ -10,7 +10,7 @@
 
 #include "windivert.h"
 
-#define _my_addr_ "192.168.0.120"
+#define _my_addr_ "127.0.0.1"
 
 #define INET6_ADDRSTRLEN    45
 SOCKET* sock;
