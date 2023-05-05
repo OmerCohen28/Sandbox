@@ -12,7 +12,7 @@
 #pragma warning(disable : 4996)
 
 #define _path_to_virus_ "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe"
-#define _my_addr_ "192.168.0.120"
+#define _my_addr_ "127.0.0.1"
 
 #ifdef mom
 #define _path_to_virus_ "D:\\Actual sandbox sln\\virus\\Debug\\virus.exe"
