@@ -20,16 +20,6 @@ SOCKET WSAAPI __stdcall newaccept(
             sockaddr *addr,
             int      *addrlen
 );
-BOOL __stdcall newAcceptEx(
-        SOCKET       sListenSocket,
-        SOCKET       sAcceptSocket,
-        PVOID        lpOutputBuffer,
-        DWORD        dwReceiveDataLength,
-        DWORD        dwLocalAddressLength,
-        DWORD        dwRemoteAddressLength,
-        LPDWORD      lpdwBytesReceived,
-        LPOVERLAPPED lpOverlapped
-);
 int __stdcall newbind(
        SOCKET         s,
        const sockaddr *addr,
@@ -43,63 +33,13 @@ int WSAAPI __stdcall newconnect(
        const sockaddr *name,
        int            namelen
 );
-INT __stdcall newEnumProtocolsA(
-                 LPINT   lpiProtocols,
-                 LPVOID  lpProtocolBuffer,
-                 LPDWORD lpdwBufferLength
-);
-VOID WSAAPI __stdcall newfreeaddrinfo(
-       PADDRINFOA pAddrInfo
-);
-void WSAAPI __stdcall newFreeAddrInfoEx(
-       PADDRINFOEXA pAddrInfoEx
-);
-VOID WSAAPI __stdcall newFreeAddrInfoW(
-       PADDRINFOW pAddrInfo
-);
 char* __stdcall newgai_strerrorA(
        int ecode
 );
-void __stdcall newGetAcceptExSockaddrs(
-        PVOID    lpOutputBuffer,
-        DWORD    dwReceiveDataLength,
-        DWORD    dwLocalAddressLength,
-        DWORD    dwRemoteAddressLength,
-        sockaddr **LocalSockaddr,
-        LPINT    LocalSockaddrLength,
-        sockaddr **RemoteSockaddr,
-        LPINT    RemoteSockaddrLength
-);
-INT WSAAPI __stdcall newgetaddrinfo(
-                 PCSTR           pNodeName,
-                 PCSTR           pServiceName,
-                 const ADDRINFOA *pHints,
-                 PADDRINFOA      *ppResult
-);
-INT WSAAPI __stdcall newGetAddrInfoExCancel(
-       LPHANDLE lpHandle
-);
-INT WSAAPI __stdcall newGetAddrInfoExOverlappedResult(
-  LPOVERLAPPED lpOverlapped
-);
-INT WSAAPI __stdcall newGetAddrInfoW(
-                 PCWSTR          pNodeName,
-                 PCWSTR          pServiceName,
-                 const ADDRINFOW *pHints,
-                 PADDRINFOW      *ppResult
-);
+
 int __stdcall newgethostname(
         char *name,
         int  namelen
-);
-int WSAAPI __stdcall newGetHostNameW(
-        PWSTR name,
-        int   namelen
-);
-INT __stdcall newGetNameByTypeA(
-        LPGUID lpServiceType,
-        LPSTR  lpServiceName,
-        DWORD  dwNameLength
 );
 int __stdcall newgetpeername(
             SOCKET   s,
@@ -132,10 +72,6 @@ int __stdcall newgetsockopt(
             char   *optval,
             int    *optlen
 );
-INT __stdcall newGetTypeByNameA(
-            LPSTR  lpServiceName,
-            LPGUID lpServiceType
-);
 u_short __stdcall newhtons(
        u_short hostshort
 );
@@ -164,12 +100,6 @@ int __stdcall newioctlsocket(
 int WSAAPI __stdcall newlisten(
        SOCKET s,
        int    backlog
-);
-double __stdcall newntohd(
-  unsigned __int64 Value
-);
-float __stdcall newntohf(
-  unsigned __int32 Value
 );
 u_long __stdcall newntohl(
        u_long netlong
@@ -211,9 +141,6 @@ int __stdcall newsendto(
        int            flags,
        const sockaddr *to,
        int            tolen
-);
-HRESULT __stdcall newSetSocketMediaStreamingMode(
-  BOOL value
 );
 int __stdcall newsetsockopt(
        SOCKET     s,
@@ -335,13 +262,6 @@ BOOL __stdcall newWSAConnectByNameA(
             LPWSAOVERLAPPED Reserved
 );
 WSAEVENT WSAAPI __stdcall newWSACreateEvent();
-INT WSAAPI __stdcall newWSADeleteSocketPeerTargetName(
-                 SOCKET                             Socket,
-                 const sockaddr                     *PeerAddr,
-                 ULONG                              PeerAddrLen,
-                 LPWSAOVERLAPPED                    Overlapped,
-                 LPWSAOVERLAPPED_COMPLETION_ROUTINE CompletionRoutine
-);
 int WSAAPI __stdcall newWSADuplicateSocketA(
         SOCKET              s,
         DWORD               dwProcessId,
@@ -374,14 +294,6 @@ int __stdcall new__WSAFDIsSet(
   SOCKET unnamedParam1,
   fd_set *unnamedParam2
 );
-INT __stdcall newWSAGetFailConnectOnIcmpError(
-        SOCKET Socket,
-        DWORD  *Enabled
-);
-INT __stdcall newWSAGetIPUserMtu(
-        SOCKET Socket,
-        DWORD  *Mtu
-);
 int __stdcall newWSAGetLastError();
 BOOL WSAAPI __stdcall newWSAGetOverlappedResult(
         SOCKET          s,
@@ -405,14 +317,6 @@ INT WSAAPI __stdcall newWSAGetServiceClassNameByClassIdA(
             LPGUID  lpServiceClassId,
             LPSTR   lpszServiceClassName,
             LPDWORD lpdwBufferLength
-);
-INT __stdcall newWSAGetUdpRecvMaxCoalescedSize(
-        SOCKET Socket,
-        DWORD  *MaxCoalescedMsgSize
-);
-INT __stdcall newWSAGetUdpSendMessageSize(
-        SOCKET Socket,
-        DWORD  *MsgSize
 );
 int WSAAPI __stdcall newWSAHtonl(
         SOCKET s,
@@ -510,12 +414,6 @@ int WSAAPI __stdcall newWSARecvDisconnect(
         SOCKET   s,
         LPWSABUF lpInboundDisconnectData
 );
-int __stdcall newWSARecvEx(
-            SOCKET s,
-            char   *buf,
-            int    len,
-            int    *flags
-);
 int WSAAPI __stdcall newWSARecvFrom(
             SOCKET                             s,
             LPWSABUF                           lpBuffers,
@@ -569,14 +467,6 @@ int WSAAPI __stdcall newWSASendTo(
 BOOL WSAAPI __stdcall newWSASetEvent(
        WSAEVENT hEvent
 );
-INT __stdcall newWSASetFailConnectOnIcmpError(
-       SOCKET Socket,
-       DWORD  Enabled
-);
-INT __stdcall newWSASetIPUserMtu(
-       SOCKET Socket,
-       DWORD  Mtu
-);
 void __stdcall newWSASetLastError(
        int iError
 );
@@ -584,14 +474,6 @@ INT WSAAPI __stdcall newWSASetServiceA(
        LPWSAQUERYSETA   lpqsRegInfo,
        WSAESETSERVICEOP essoperation,
        DWORD            dwControlFlags
-);
-INT __stdcall newWSASetUdpRecvMaxCoalescedSize(
-       SOCKET Socket,
-       DWORD  MaxCoalescedMsgSize
-);
-INT __stdcall newWSASetUdpSendMessageSize(
-       SOCKET Socket,
-       DWORD  MsgSize
 );
 SOCKET WSAAPI __stdcall newWSASocketA(
        int                 af,

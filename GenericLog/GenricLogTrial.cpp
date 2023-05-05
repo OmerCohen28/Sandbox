@@ -3,175 +3,145 @@
 #include <WinSock2.h>
 #include <Windows.h>
 #include <sstream>
+#include <stdio.h>
+#include <ws2tcpip.h> 
+#include <locale>
+#include <codecvt>
+#include <ctime>
+#include <sys/time.h>
 
-class Logger {
-    std::vector<char> data;
-public:
-    Logger() {}
+std::string ToStringSocket(SOCKET s)
+{
+    SOCKADDR_IN src_addr, dst_addr;
+    int src_len = sizeof(src_addr), dst_len = sizeof(dst_addr);
+    std::string result;
 
-    template<typename T>
-    Logger(T&& t) {
-        if constexpr (std::is_pointer_v<T>) {
-            if constexpr (std::is_same_v<T, HANDLE>) {
-                char buffer[50];
-                sprintf_s(buffer, 50, "%p", t);
-                for (int i = 0; i < strlen(buffer); i++) {
-                    data.push_back(buffer[i]);
-                }
-            }
-            else if constexpr (std::is_same_v<T, LPCSTR>) {
-                std::string str = t;
-                for (char c : str) {
-                    data.push_back(c);
-                }
-            }
-            else if constexpr (std::is_same_v<T, char*>) {
-                std::string str = t;
-                for (char c : str) {
-                    data.push_back(c);
-                }
-            }
-            else {
-                char buffer[50];
-                sprintf_s(buffer, 50, "%p", *t);
-                for (int i = 0; i < strlen(buffer); i++) {
-                    data.push_back(buffer[i]);
-                }
-            }
-        }
-        else {
-            if constexpr (std::is_same_v<T, HANDLE>) {
-                char buffer[50];
-                sprintf_s(buffer, 50, "%p", t);
-                for (int i = 0; i < strlen(buffer); i++) {
-                    data.push_back(buffer[i]);
-                }
-            }
-            else if constexpr (std::is_same_v<T, int>) {
-                char buffer[50];
-                sprintf_s(buffer, 50, "%d", t);
-                for (int i = 0; i < strlen(buffer); i++) {
-                    data.push_back(buffer[i]);
-                }
-            }
-            else if constexpr (std::is_same_v<T, DWORD>) {
-                char buffer[50];
-                sprintf_s(buffer, 50, "%lu", t);
-                for (int i = 0; i < strlen(buffer); i++) {
-                    data.push_back(buffer[i]);
-                }
-            }
-            else if constexpr (std::is_same_v<T, bool>) {
-                char buffer[50];
-                sprintf_s(buffer, 50, "%d", t);
-                for (int i = 0; i < strlen(buffer); i++) {
-                    data.push_back(buffer[i]);
-                }
-            }
-            else {
-                char buffer[50];
-                sprintf_s(buffer, 50, "Unable to cast %s to char array", typeid(t).name());
-                for (int i = 0; i < strlen(buffer); i++) {
-                    data.push_back(buffer[i]);
-                }
-            }
-        }
+    if (getsockname(s, (SOCKADDR*)&src_addr, &src_len) == SOCKET_ERROR) {
+        result = "Error getting local endpoint address and port.";
+        return result;
+    }
+    if (getpeername(s, (SOCKADDR*)&dst_addr, &dst_len) == SOCKET_ERROR) {
+        result = "Error getting remote endpoint address and port.";
+        return result;
     }
 
-    std::string get_str() {
-        std::string str;
-        for (char c : data) {
-            str.push_back(c);
-        }
-        return str;
+    char src_ip[16], dst_ip[16];
+    inet_ntop(AF_INET, &src_addr.sin_addr, src_ip, sizeof(src_ip));
+    inet_ntop(AF_INET, &dst_addr.sin_addr, dst_ip, sizeof(dst_ip));
+
+    result = std::string(src_ip) + ":" + std::to_string(ntohs(src_addr.sin_port))
+           + " -> " + std::string(dst_ip) + ":" + std::to_string(ntohs(dst_addr.sin_port));
+
+    return result;
+}
+
+std::string sockaddrToString(const sockaddr* sa) {
+    std::stringstream ss;
+    if (sa->sa_family == AF_INET) {
+        // IPv4
+        const sockaddr_in* sin = reinterpret_cast<const sockaddr_in*>(sa);
+        char ip[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &(sin->sin_addr), ip, INET_ADDRSTRLEN);
+        ss << ip << ":" << ntohs(sin->sin_port);
+    } else if (sa->sa_family == AF_INET6) {
+        // IPv6
+        const sockaddr_in6* sin6 = reinterpret_cast<const sockaddr_in6*>(sa);
+        char ip[INET6_ADDRSTRLEN];
+        inet_ntop(AF_INET6, &(sin6->sin6_addr), ip, INET6_ADDRSTRLEN);
+        ss << "[" << ip << "]:" << ntohs(sin6->sin6_port);
+    } else {
+        ss << "Unknown family type: " << sa->sa_family;
     }
-};
+    return ss.str();
+}
+
 
 template <typename T>
-void my_func(T arg) {
+std::string my_func(T arg) {
     if constexpr (std::is_same_v<T, int>) {
-        std::cout << "int";
+        return std::to_string(arg);
     }
     if constexpr (std::is_same_v < T, char*>) {
-        char* c = new char[] {"char*"};
-        std::cout << c;
+        return std::string(arg);
     } 
     if constexpr (std::is_same_v < T, DWORD>) {
-        char* c = new char[] {"DWORD"};
-        std::cout << c;
+        return std::to_string(static_cast<unsigned long>(arg));
     }
     if constexpr (std::is_same_v < T, char>) {
-        std::cout << arg;
-    }
-    if constexpr (std::is_same_v < T, void*>) {
-        std::cout << "void*";
+        return std::string(arg);
     }
     if constexpr (std::is_same_v < T, LPCTSTR>) {
-        std::cout << "LPCTSTR";
+        std::wstring wstr(arg);
+        return std::string(wstr.begin(),wstr.end());
     }
     if constexpr (std::is_same_v < T, LPCSTR>) {
-        std::cout << "LPCSTR";
+        return std::string(arg);
     }
     if constexpr (std::is_same_v < T, UINT>) {
-        std::cout << "UINT";
+        return std::to_string(arg);
     }
     if constexpr (std::is_same_v < T, BYTE>){
-        std::cout << "BYTE";
-    }
-    if constexpr (std::is_same_v < T, HKEY>) {
-        std::cout << "HKEY";
-    }
-    if constexpr (std::is_same_v < T, LPCVOID>) {
-        std::cout << "LPCVOID";
+        return std::to_string(arg);
     }
     if constexpr (std::is_same_v < T, LPBYTE>) {
-        std::cout << "LPBYTE";
+        int length = 0;
+        while (arg[length] != '\0') {
+            length++;
+        }
+        std::string s(arg, arg + length);
     }
     if constexpr (std::is_same_v < T, LPDWORD>) {
-        std::cout << "LPDWORD";
+        return std::to_string(*arg);
     }
     if constexpr (std::is_same_v < T, SOCKET>) {
-        std::cout << "SOCKET";
+        return ToStringSocket(arg);
     }
     if constexpr (std::is_same_v < T, SOCKET*>) {
-        std::cout << "SOCKET*";
-    }
-    if constexpr (std::is_same_v < T, HANDLE*>) {
-        std::cout << "HANDLE*";
+        return ToStringSocket(*arg);
     }
     if constexpr (std::is_same_v < T, sockaddr>) {
-        std::cout << "sockaddr";
+        return sockaddrToString(arg);
     }
     if constexpr (std::is_same_v < T, sockaddr*>) {
-        std::cout << "sockaddr*";
+        return sockaddrToString(arg);
     }
     if constexpr (std::is_same_v < T, LPINT>) {
-        std::cout << "LPINT";
-    }
-    if constexpr (std::is_same_v < T, PADDRINFOEXA>) {
-        std::cout << "PADDRINFOEXA";
-    }
-    if constexpr (std::is_same_v < T, ADDRINFOEXA>) {
-        std::cout << "ADDRINFOEXA";
+        std::stringstream ss;
+        ss << *arg;
+        return ss.str();
     }
     if constexpr (std::is_same_v < T, PWSTR>) {
-        std::cout << "PWSTR";
+        std::wstring wide(arg);
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        return converter.to_bytes(wide);
     }
     if constexpr (std::is_same_v < T, size_t>) {
-        std::cout << "size_t";
+        return std::to_string(arg);
     }
     if constexpr (std::is_same_v < T, long>) {
-        std::cout << "long";
+        return std::to_string(arg);
     }
     if constexpr (std::is_same_v < T, u_long>) {
-        std::cout << "u_long";
+        in_addr addr;
+        addr.s_addr = arg;
+        char* ip = inet_ntoa(addr);
+        return std::string(ip);
     }
     if constexpr (std::is_same_v < T, timeval>) {
-        std::cout << "timeval";
+        char buffer[32];
+        time_t now = arg.tv_sec;
+        struct tm* timeinfo = localtime(&now);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+        return std::string(buffer);
     }
     if constexpr (std::is_same_v < T, timeval*>) {
-        std::cout << "timeval*";
+        char buffer[32];
+        time_t now = (*arg).tv_sec;
+        struct tm* timeinfo = localtime(&now);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+        return std::string(buffer);
     }
+    return "Can't Parse Data";
 }
 
 int main()
@@ -182,12 +152,11 @@ int main()
     int y = 6;
     int* x{ &y };
     const sockaddr addr{};
-    PADDRINFOEXA p{};
     LPHANDLE l{};
     PWSTR w{ (WCHAR*)L"h" };
     LPSTR s{};
     bool hello{ true };
     int x1{ 5 };
     void* ptr{&x1};
-    my_func(ptr);
+    std::cout << my_func(ptr);
 }

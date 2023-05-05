@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
+#include <cstdarg>
 #include "codeGeneratedFunctionsFileSystem.h"
 #include "codeGeneratedFunctionsRegistry.h"
 #include "codeGeneratedFunctionsRegistry.h"
@@ -31,6 +32,7 @@
 
 std::vector<CHAR*> original_bytes{};
 std::vector<FARPROC> hooked_addr{};
+std::vector<std::string>* functions;
 time_t begin, end;
 
 
@@ -41,7 +43,7 @@ HINSTANCE hLibReg{ LoadLibraryA("Advapi32.dll") };
 HANDLE LOGfile = CreateFileA(
 	"..\\log.txt",
 	GENERIC_READ | GENERIC_WRITE,
-	0,
+	FILE_SHARE_READ,
 	NULL,
 	4,
 	FILE_ATTRIBUTE_NORMAL,
@@ -90,6 +92,14 @@ void mylog(char* buf, int size) {
 	WriteFile(LOGfile, buf, size, NULL, NULL);
 	IsMyCall = false;
 	//delete[] buf;
+}
+
+void log(std::string* buffer){
+	if (LOGfile == INVALID_HANDLE_VALUE) {
+		std::cout << "Log file could not be opened\n";
+		return;
+	}
+	WriteFile(LOGfile,buffer->data(),buffer->size(),NULL,NULL);
 }
 
 void* Hook::get_new_fnc_pointer() {
@@ -188,176 +198,150 @@ void* Hook::get_new_fnc_pointer() {
 	case Functions::WriteEncryptedFileRaw: return &newFunctions::newWriteEncryptedFileRaw; break;
 	case Functions::WriteFile: return &newFunctions::newWriteFile; break;
 	case Functions::WriteFileEx: return &newFunctions::newWriteFileEx; break;
-		/*case Functions::accept: return &newFunctions::newaccept; break;
-		case Functions::AcceptEx: return &newFunctions::newAcceptEx;break;
-		case Functions::bind: return &newFunctions::newbind;break;
-		case Functions::closesocket: return &newFunctions::newclosesocket;break;
-		case Functions::connect: return &newFunctions::newconnect;break;
-		case Functions::EnumProtocolsA: return &newFunctions::newEnumProtocolsA;break;
-		case Functions::freeaddrinfo: return &newFunctions::newfreeaddrinfo;break;
-		case Functions::FreeAddrInfoEx: return &newFunctions::newFreeAddrInfoEx;break;
-		case Functions::FreeAddrInfoW: return &newFunctions::newFreeAddrInfoW;break;
-		case Functions::gai_strerrorA: return &newFunctions::newgai_strerrorA;break;
-		case Functions::GetAcceptExSockaddrs: return &newFunctions::newGetAcceptExSockaddrs;break;
-		case Functions::getaddrinfo: return &newFunctions::newgetaddrinfo;break;
-		case Functions::GetAddrInfoExCancel: return &newFunctions::newGetAddrInfoExCancel;break;
-		case Functions::GetAddrInfoExOverlappedResult: return &newFunctions::newGetAddrInfoExOverlappedResult;break;
-		case Functions::GetAddrInfoW: return &newFunctions::newGetAddrInfoW;break;
-		case Functions::gethostname: return &newFunctions::newgethostname;break;
-		case Functions::GetHostNameW: return &newFunctions::newGetHostNameW;break;
-		case Functions::GetNameByTypeA: return &newFunctions::newGetNameByTypeA;break;
-		case Functions::getpeername: return &newFunctions::newgetpeername;break;
-		case Functions::getprotobyname: return &newFunctions::newgetprotobyname;break;
-		case Functions::getprotobynumber: return &newFunctions::newgetprotobynumber;break;
-		case Functions::getservbyname: return &newFunctions::newgetservbyname;break;
-		case Functions::getservbyport: return &newFunctions::newgetservbyport;break;
-		case Functions::getsockname: return &newFunctions::newgetsockname;break;
-		case Functions::getsockopt: return &newFunctions::newgetsockopt;break;
-		case Functions::GetTypeByNameA: return &newFunctions::newGetTypeByNameA;break;
-		case Functions::htons: return &newFunctions::newhtons;break;
-		case Functions::inet_addr: return &newFunctions::newinet_addr;break;
-		case Functions::inet_ntoa: return &newFunctions::newinet_ntoa;break;
-		case Functions::InetNtopW: return &newFunctions::newInetNtopW;break;
-		case Functions::InetPtonW: return &newFunctions::newInetPtonW;break;
-		case Functions::ioctlsocket: return &newFunctions::newioctlsocket;break;
-		case Functions::listen: return &newFunctions::newlisten;break;
-		case Functions::ntohd: return &newFunctions::newntohd;break;
-		case Functions::ntohf: return &newFunctions::newntohf;break;
-		case Functions::ntohl: return &newFunctions::newntohl;break;
-		case Functions::ntohs: return &newFunctions::newntohs;break;
-		case Functions::recv: return &newFunctions::newrecv;break;
-		case Functions::recvfrom: return &newFunctions::newrecvfrom;break;
-		case Functions::select: return &newFunctions::newselect;break;
-		case Functions::send: return &newFunctions::newsend;break;
-		case Functions::sendto: return &newFunctions::newsendto;break;
-		case Functions::SetSocketMediaStreamingMode: return &newFunctions::newSetSocketMediaStreamingMode;break;
-		case Functions::setsockopt: return &newFunctions::newsetsockopt;break;
-		case Functions::shutdown: return &newFunctions::newshutdown;break;
-		case Functions::socket: return &newFunctions::newsocket;break;
-		case Functions::WSAAccept: return &newFunctions::newWSAAccept;break;
-		case Functions::WSAAddressToStringA: return &newFunctions::newWSAAddressToStringA;break;
-		case Functions::WSAAsyncGetHostByAddr: return &newFunctions::newWSAAsyncGetHostByAddr;break;
-		case Functions::WSAAsyncGetHostByName: return &newFunctions::newWSAAsyncGetHostByName;break;
-		case Functions::WSAAsyncGetProtoByName: return &newFunctions::newWSAAsyncGetProtoByName;break;
-		case Functions::WSAAsyncGetProtoByNumber: return &newFunctions::newWSAAsyncGetProtoByNumber;break;
-		case Functions::WSAAsyncGetServByName: return &newFunctions::newWSAAsyncGetServByName;break;
-		case Functions::WSAAsyncGetServByPort: return &newFunctions::newWSAAsyncGetServByPort;break;
-		case Functions::WSAAsyncSelect: return &newFunctions::newWSAAsyncSelect;break;
-		case Functions::WSACancelAsyncRequest: return &newFunctions::newWSACancelAsyncRequest;break;
-		case Functions::WSACleanup: return &newFunctions::newWSACleanup;break;
-		case Functions::WSACloseEvent: return &newFunctions::newWSACloseEvent;break;
-		case Functions::WSAConnect: return &newFunctions::newWSAConnect;break;
-		case Functions::WSAConnectByList: return &newFunctions::newWSAConnectByList;break;
-		case Functions::WSAConnectByNameA: return &newFunctions::newWSAConnectByNameA;break;
-		case Functions::WSACreateEvent: return &newFunctions::newWSACreateEvent;break;
-		case Functions::WSADeleteSocketPeerTargetName: return &newFunctions::newWSADeleteSocketPeerTargetName;break;
-		case Functions::WSADuplicateSocketA: return &newFunctions::newWSADuplicateSocketA;break;
-		case Functions::WSAEnumNameSpaceProvidersA: return &newFunctions::newWSAEnumNameSpaceProvidersA;break;
-		case Functions::WSAEnumNameSpaceProvidersExA: return &newFunctions::newWSAEnumNameSpaceProvidersExA;break;
-		case Functions::WSAEnumNetworkEvents: return &newFunctions::newWSAEnumNetworkEvents;break;
-		case Functions::WSAEnumProtocolsA: return &newFunctions::newWSAEnumProtocolsA;break;
-		case Functions::WSAEventSelect: return &newFunctions::newWSAEventSelect;break;
-		case Functions::__WSAFDIsSet: return &newFunctions::new__WSAFDIsSet;break;
-		case Functions::WSAGetFailConnectOnIcmpError: return &newFunctions::newWSAGetFailConnectOnIcmpError;break;
-		case Functions::WSAGetIPUserMtu: return &newFunctions::newWSAGetIPUserMtu;break;
-		case Functions::WSAGetLastError: return &newFunctions::newWSAGetLastError;break;
-		case Functions::WSAGetOverlappedResult: return &newFunctions::newWSAGetOverlappedResult;break;
-		case Functions::WSAGetQOSByName: return &newFunctions::newWSAGetQOSByName;break;
-		case Functions::WSAGetServiceClassInfoA: return &newFunctions::newWSAGetServiceClassInfoA;break;
-		case Functions::WSAGetServiceClassNameByClassIdA: return &newFunctions::newWSAGetServiceClassNameByClassIdA;break;
-		case Functions::WSAGetUdpRecvMaxCoalescedSize: return &newFunctions::newWSAGetUdpRecvMaxCoalescedSize;break;
-		case Functions::WSAGetUdpSendMessageSize: return &newFunctions::newWSAGetUdpSendMessageSize;break;
-		case Functions::WSAHtonl: return &newFunctions::newWSAHtonl;break;
-		case Functions::WSAHtons: return &newFunctions::newWSAHtons;break;
-		case Functions::WSAImpersonateSocketPeer: return &newFunctions::newWSAImpersonateSocketPeer;break;
-		case Functions::WSAInstallServiceClassA: return &newFunctions::newWSAInstallServiceClassA;break;
-		case Functions::WSAIoctl: return &newFunctions::newWSAIoctl;break;
-		case Functions::WSAJoinLeaf: return &newFunctions::newWSAJoinLeaf;break;
-		case Functions::WSALookupServiceBeginA: return &newFunctions::newWSALookupServiceBeginA;break;
-		case Functions::WSALookupServiceEnd: return &newFunctions::newWSALookupServiceEnd;break;
-		case Functions::WSALookupServiceNextA: return &newFunctions::newWSALookupServiceNextA;break;
-		case Functions::WSANSPIoctl: return &newFunctions::newWSANSPIoctl;break;
-		case Functions::WSANtohl: return &newFunctions::newWSANtohl;break;
-		case Functions::WSANtohs: return &newFunctions::newWSANtohs;break;
-		case Functions::WSAPoll: return &newFunctions::newWSAPoll;break;
-		case Functions::WSAProviderConfigChange: return &newFunctions::newWSAProviderConfigChange;break;
-		case Functions::WSARecv: return &newFunctions::newWSARecv;break;
-		case Functions::WSARecvDisconnect: return &newFunctions::newWSARecvDisconnect;break;
-		case Functions::WSARecvEx: return &newFunctions::newWSARecvEx;break;
-		case Functions::WSARecvFrom: return &newFunctions::newWSARecvFrom;break;
-		case Functions::WSARemoveServiceClass: return &newFunctions::newWSARemoveServiceClass;break;
-		case Functions::WSAResetEvent: return &newFunctions::newWSAResetEvent;break;
-		case Functions::WSARevertImpersonation: return &newFunctions::newWSARevertImpersonation;break;
-		case Functions::WSASend: return &newFunctions::newWSASend;break;
-		case Functions::WSASendDisconnect: return &newFunctions::newWSASendDisconnect;break;
-		case Functions::WSASendMsg: return &newFunctions::newWSASendMsg;break;
-		case Functions::WSASendTo: return &newFunctions::newWSASendTo;break;
-		case Functions::WSASetEvent: return &newFunctions::newWSASetEvent;break;
-		case Functions::WSASetFailConnectOnIcmpError: return &newFunctions::newWSASetFailConnectOnIcmpError;break;
-		case Functions::WSASetIPUserMtu: return &newFunctions::newWSASetIPUserMtu;break;
-		case Functions::WSASetLastError: return &newFunctions::newWSASetLastError;break;
-		case Functions::WSASetServiceA: return &newFunctions::newWSASetServiceA;break;
-		case Functions::WSASetUdpRecvMaxCoalescedSize: return &newFunctions::newWSASetUdpRecvMaxCoalescedSize;break;
-		case Functions::WSASetUdpSendMessageSize: return &newFunctions::newWSASetUdpSendMessageSize;break;
-		case Functions::WSASocketA: return &newFunctions::newWSASocketA;break;
-		case Functions::WSAStartup: return &newFunctions::newWSAStartup;break;
-		case Functions::WSAStringToAddressA: return &newFunctions::newWSAStringToAddressA;break;
-		case Functions::WSAWaitForMultipleEvents: return &newFunctions::newWSAWaitForMultipleEvents;break;
-		*/case Functions::GetSystemRegistryQuota: return &newFunctions::newGetSystemRegistryQuota;break;
-		case Functions::RegCloseKey: return &newFunctions::newRegCloseKey;break;
-		case Functions::RegConnectRegistryA: return &newFunctions::newRegConnectRegistryA;break;
-		case Functions::RegCopyTreeA: return &newFunctions::newRegCopyTreeA;break;
-		case Functions::RegCreateKeyExA: return &newFunctions::newRegCreateKeyExA;break;
-		case Functions::RegCreateKeyTransactedA: return &newFunctions::newRegCreateKeyTransactedA;break;
-		case Functions::RegDeleteKeyA: return &newFunctions::newRegDeleteKeyA;break;
-		case Functions::RegDeleteKeyExA: return &newFunctions::newRegDeleteKeyExA;break;
-		case Functions::RegDeleteKeyTransactedA: return &newFunctions::newRegDeleteKeyTransactedA;break;
-		case Functions::RegDeleteKeyValueA: return &newFunctions::newRegDeleteKeyValueA;break;
-		case Functions::RegDeleteTreeA: return &newFunctions::newRegDeleteTreeA;break;
-		case Functions::RegDeleteValueA: return &newFunctions::newRegDeleteValueA;break;
-		case Functions::RegDisablePredefinedCache: return &newFunctions::newRegDisablePredefinedCache;break;
-		case Functions::RegDisablePredefinedCacheEx: return &newFunctions::newRegDisablePredefinedCacheEx;break;
-		case Functions::RegDisableReflectionKey: return &newFunctions::newRegDisableReflectionKey;break;
-		case Functions::RegEnableReflectionKey: return &newFunctions::newRegEnableReflectionKey;break;
-		case Functions::RegEnumKeyExA: return &newFunctions::newRegEnumKeyExA;break;
-		case Functions::RegEnumValueA: return &newFunctions::newRegEnumValueA;break;
-		case Functions::RegFlushKey: return &newFunctions::newRegFlushKey;break;
-		case Functions::RegGetKeySecurity: return &newFunctions::newRegGetKeySecurity;break;
-		case Functions::RegGetValueA: return &newFunctions::newRegGetValueA;break;
-		case Functions::RegLoadKeyA: return &newFunctions::newRegLoadKeyA;break;
-		case Functions::RegLoadMUIStringA: return &newFunctions::newRegLoadMUIStringA;break;
-		case Functions::RegNotifyChangeKeyValue: return &newFunctions::newRegNotifyChangeKeyValue;break;
-		case Functions::RegOpenCurrentUser: return &newFunctions::newRegOpenCurrentUser;break;
-		case Functions::RegOpenKeyExA: return &newFunctions::newRegOpenKeyExA;break;
-		case Functions::RegOpenKeyTransactedA: return &newFunctions::newRegOpenKeyTransactedA;break;
-		case Functions::RegOpenUserClassesRoot: return &newFunctions::newRegOpenUserClassesRoot;break;
-		case Functions::RegOverridePredefKey: return &newFunctions::newRegOverridePredefKey;break;
-		case Functions::RegQueryInfoKeyA: return &newFunctions::newRegQueryInfoKeyA;break;
-		case Functions::RegQueryMultipleValuesA: return &newFunctions::newRegQueryMultipleValuesA;break;
-		case Functions::RegQueryReflectionKey: return &newFunctions::newRegQueryReflectionKey;break;
-		case Functions::RegQueryValueExA: return &newFunctions::newRegQueryValueExA;break;
-		case Functions::RegRenameKey: return &newFunctions::newRegRenameKey;break;
-		case Functions::RegReplaceKeyA: return &newFunctions::newRegReplaceKeyA;break;
-		case Functions::RegRestoreKeyA: return &newFunctions::newRegRestoreKeyA;break;
-		case Functions::RegSaveKeyA: return &newFunctions::newRegSaveKeyA;break;
-		case Functions::RegSaveKeyExA: return &newFunctions::newRegSaveKeyExA;break;
-		case Functions::RegSetKeyValueA: return &newFunctions::newRegSetKeyValueA;break;
-		case Functions::RegSetKeySecurity: return &newFunctions::newRegSetKeySecurity;break;
-		case Functions::RegSetValueExA: return &newFunctions::newRegSetValueExA;break;
-		case Functions::RegUnLoadKeyA: return &newFunctions::newRegUnLoadKeyA;break;
-		case Functions::GetPrivateProfileInt: return &newFunctions::newGetPrivateProfileInt;break;
-		case Functions::GetPrivateProfileSection: return &newFunctions::newGetPrivateProfileSection;break;
-		case Functions::GetPrivateProfileSectionNames: return &newFunctions::newGetPrivateProfileSectionNames;break;
-		case Functions::GetPrivateProfileString: return &newFunctions::newGetPrivateProfileString;break;
-		case Functions::GetPrivateProfileStruct: return &newFunctions::newGetPrivateProfileStruct;break;
-		case Functions::GetProfileIntA: return &newFunctions::newGetProfileIntA;break;
-		case Functions::GetProfileSectionA: return &newFunctions::newGetProfileSectionA;break;
-		case Functions::GetProfileStringA: return &newFunctions::newGetProfileStringA;break;
-		case Functions::WritePrivateProfileSectionA: return &newFunctions::newWritePrivateProfileSectionA;break;
-		case Functions::WritePrivateProfileStringA: return &newFunctions::newWritePrivateProfileStringA;break;
-		case Functions::WritePrivateProfileStructA: return &newFunctions::newWritePrivateProfileStructA;break;
-		case Functions::WriteProfileSectionA: return &newFunctions::newWriteProfileSectionA;break;
-		case Functions::WriteProfileStringA: return &newFunctions::newWriteProfileStringA;break;
+	case Functions::accept: return &newFunctions::newaccept; break;
+	case Functions::bind: return &newFunctions::newbind;break;
+	case Functions::closesocket: return &newFunctions::newclosesocket;break;
+	case Functions::connect: return &newFunctions::newconnect;break;
+	case Functions::gai_strerrorA: return &newFunctions::newgai_strerrorA;break;
+	case Functions::gethostname: return &newFunctions::newgethostname;break;
+	case Functions::getpeername: return &newFunctions::newgetpeername;break;
+	case Functions::getprotobyname: return &newFunctions::newgetprotobyname;break;
+	case Functions::getprotobynumber: return &newFunctions::newgetprotobynumber;break;
+	case Functions::getservbyname: return &newFunctions::newgetservbyname;break;
+	case Functions::getservbyport: return &newFunctions::newgetservbyport;break;
+	case Functions::getsockname: return &newFunctions::newgetsockname;break;
+	case Functions::getsockopt: return &newFunctions::newgetsockopt;break;
+	case Functions::htons: return &newFunctions::newhtons;break;
+	case Functions::inet_addr: return &newFunctions::newinet_addr;break;
+	case Functions::inet_ntoa: return &newFunctions::newinet_ntoa;break;
+	case Functions::InetNtopW: return &newFunctions::newInetNtopW;break;
+	case Functions::InetPtonW: return &newFunctions::newInetPtonW;break;
+	case Functions::ioctlsocket: return &newFunctions::newioctlsocket;break;
+	case Functions::listen: return &newFunctions::newlisten;break;
+	case Functions::ntohl: return &newFunctions::newntohl;break;
+	case Functions::ntohs: return &newFunctions::newntohs;break;
+	case Functions::recv: return &newFunctions::newrecv;break;
+	case Functions::recvfrom: return &newFunctions::newrecvfrom;break;
+	case Functions::select: return &newFunctions::newselect;break;
+	case Functions::send: return &newFunctions::newsend;break;
+	case Functions::sendto: return &newFunctions::newsendto;break;
+	case Functions::setsockopt: return &newFunctions::newsetsockopt;break;
+	case Functions::shutdown: return &newFunctions::newshutdown;break;
+	case Functions::socket: return &newFunctions::newsocket;break;
+	case Functions::WSAAccept: return &newFunctions::newWSAAccept;break;
+	case Functions::WSAAddressToStringA: return &newFunctions::newWSAAddressToStringA;break;
+	case Functions::WSAAsyncGetHostByAddr: return &newFunctions::newWSAAsyncGetHostByAddr;break;
+	case Functions::WSAAsyncGetHostByName: return &newFunctions::newWSAAsyncGetHostByName;break;
+	case Functions::WSAAsyncGetProtoByName: return &newFunctions::newWSAAsyncGetProtoByName;break;
+	case Functions::WSAAsyncGetProtoByNumber: return &newFunctions::newWSAAsyncGetProtoByNumber;break;
+	case Functions::WSAAsyncGetServByName: return &newFunctions::newWSAAsyncGetServByName;break;
+	case Functions::WSAAsyncGetServByPort: return &newFunctions::newWSAAsyncGetServByPort;break;
+	case Functions::WSAAsyncSelect: return &newFunctions::newWSAAsyncSelect;break;
+	case Functions::WSACancelAsyncRequest: return &newFunctions::newWSACancelAsyncRequest;break;
+	case Functions::WSACleanup: return &newFunctions::newWSACleanup;break;
+	case Functions::WSACloseEvent: return &newFunctions::newWSACloseEvent;break;
+	case Functions::WSAConnect: return &newFunctions::newWSAConnect;break;
+	case Functions::WSAConnectByList: return &newFunctions::newWSAConnectByList;break;
+	case Functions::WSAConnectByNameA: return &newFunctions::newWSAConnectByNameA;break;
+	case Functions::WSACreateEvent: return &newFunctions::newWSACreateEvent;break;
+	case Functions::WSADuplicateSocketA: return &newFunctions::newWSADuplicateSocketA;break;
+	case Functions::WSAEnumNameSpaceProvidersA: return &newFunctions::newWSAEnumNameSpaceProvidersA;break;
+	case Functions::WSAEnumNameSpaceProvidersExA: return &newFunctions::newWSAEnumNameSpaceProvidersExA;break;
+	case Functions::WSAEnumNetworkEvents: return &newFunctions::newWSAEnumNetworkEvents;break;
+	case Functions::WSAEnumProtocolsA: return &newFunctions::newWSAEnumProtocolsA;break;
+	case Functions::WSAEventSelect: return &newFunctions::newWSAEventSelect;break;
+	case Functions::__WSAFDIsSet: return &newFunctions::new__WSAFDIsSet;break;
+	case Functions::WSAGetLastError: return &newFunctions::newWSAGetLastError;break;
+	case Functions::WSAGetOverlappedResult: return &newFunctions::newWSAGetOverlappedResult;break;
+	case Functions::WSAGetQOSByName: return &newFunctions::newWSAGetQOSByName;break;
+	case Functions::WSAGetServiceClassInfoA: return &newFunctions::newWSAGetServiceClassInfoA;break;
+	case Functions::WSAGetServiceClassNameByClassIdA: return &newFunctions::newWSAGetServiceClassNameByClassIdA;break;
+	case Functions::WSAHtonl: return &newFunctions::newWSAHtonl;break;
+	case Functions::WSAHtons: return &newFunctions::newWSAHtons;break;
+	case Functions::WSAImpersonateSocketPeer: return &newFunctions::newWSAImpersonateSocketPeer;break;
+	case Functions::WSAInstallServiceClassA: return &newFunctions::newWSAInstallServiceClassA;break;
+	case Functions::WSAIoctl: return &newFunctions::newWSAIoctl;break;
+	case Functions::WSAJoinLeaf: return &newFunctions::newWSAJoinLeaf;break;
+	case Functions::WSALookupServiceBeginA: return &newFunctions::newWSALookupServiceBeginA;break;
+	case Functions::WSALookupServiceEnd: return &newFunctions::newWSALookupServiceEnd;break;
+	case Functions::WSALookupServiceNextA: return &newFunctions::newWSALookupServiceNextA;break;
+	case Functions::WSANSPIoctl: return &newFunctions::newWSANSPIoctl;break;
+	case Functions::WSANtohl: return &newFunctions::newWSANtohl;break;
+	case Functions::WSANtohs: return &newFunctions::newWSANtohs;break;
+	case Functions::WSAPoll: return &newFunctions::newWSAPoll;break;
+	case Functions::WSAProviderConfigChange: return &newFunctions::newWSAProviderConfigChange;break;
+	case Functions::WSARecv: return &newFunctions::newWSARecv;break;
+	case Functions::WSARecvDisconnect: return &newFunctions::newWSARecvDisconnect;break;
+	case Functions::WSARecvFrom: return &newFunctions::newWSARecvFrom;break;
+	case Functions::WSARemoveServiceClass: return &newFunctions::newWSARemoveServiceClass;break;
+	case Functions::WSAResetEvent: return &newFunctions::newWSAResetEvent;break;
+	case Functions::WSARevertImpersonation: return &newFunctions::newWSARevertImpersonation;break;
+	case Functions::WSASend: return &newFunctions::newWSASend;break;
+	case Functions::WSASendDisconnect: return &newFunctions::newWSASendDisconnect;break;
+	case Functions::WSASendMsg: return &newFunctions::newWSASendMsg;break;
+	case Functions::WSASendTo: return &newFunctions::newWSASendTo;break;
+	case Functions::WSASetEvent: return &newFunctions::newWSASetEvent;break;
+	case Functions::WSASetLastError: return &newFunctions::newWSASetLastError;break;
+	case Functions::WSASetServiceA: return &newFunctions::newWSASetServiceA;break;
+	case Functions::WSASocketA: return &newFunctions::newWSASocketA;break;
+	case Functions::WSAStartup: return &newFunctions::newWSAStartup;break;
+	case Functions::WSAStringToAddressA: return &newFunctions::newWSAStringToAddressA;break;
+	case Functions::WSAWaitForMultipleEvents: return &newFunctions::newWSAWaitForMultipleEvents;break;
+	case Functions::GetSystemRegistryQuota: return &newFunctions::newGetSystemRegistryQuota;break;
+	case Functions::RegCloseKey: return &newFunctions::newRegCloseKey;break;
+	case Functions::RegConnectRegistryA: return &newFunctions::newRegConnectRegistryA;break;
+	case Functions::RegCopyTreeA: return &newFunctions::newRegCopyTreeA;break;
+	case Functions::RegCreateKeyExA: return &newFunctions::newRegCreateKeyExA;break;
+	case Functions::RegCreateKeyTransactedA: return &newFunctions::newRegCreateKeyTransactedA;break;
+	case Functions::RegDeleteKeyA: return &newFunctions::newRegDeleteKeyA;break;
+	case Functions::RegDeleteKeyExA: return &newFunctions::newRegDeleteKeyExA;break;
+	case Functions::RegDeleteKeyTransactedA: return &newFunctions::newRegDeleteKeyTransactedA;break;
+	case Functions::RegDeleteKeyValueA: return &newFunctions::newRegDeleteKeyValueA;break;
+	case Functions::RegDeleteTreeA: return &newFunctions::newRegDeleteTreeA;break;
+	case Functions::RegDeleteValueA: return &newFunctions::newRegDeleteValueA;break;
+	case Functions::RegDisablePredefinedCache: return &newFunctions::newRegDisablePredefinedCache;break;
+	case Functions::RegDisablePredefinedCacheEx: return &newFunctions::newRegDisablePredefinedCacheEx;break;
+	case Functions::RegDisableReflectionKey: return &newFunctions::newRegDisableReflectionKey;break;
+	case Functions::RegEnableReflectionKey: return &newFunctions::newRegEnableReflectionKey;break;
+	case Functions::RegEnumKeyExA: return &newFunctions::newRegEnumKeyExA;break;
+	case Functions::RegEnumValueA: return &newFunctions::newRegEnumValueA;break;
+	case Functions::RegFlushKey: return &newFunctions::newRegFlushKey;break;
+	case Functions::RegGetKeySecurity: return &newFunctions::newRegGetKeySecurity;break;
+	case Functions::RegGetValueA: return &newFunctions::newRegGetValueA;break;
+	case Functions::RegLoadKeyA: return &newFunctions::newRegLoadKeyA;break;
+	case Functions::RegLoadMUIStringA: return &newFunctions::newRegLoadMUIStringA;break;
+	case Functions::RegNotifyChangeKeyValue: return &newFunctions::newRegNotifyChangeKeyValue;break;
+	case Functions::RegOpenCurrentUser: return &newFunctions::newRegOpenCurrentUser;break;
+	case Functions::RegOpenKeyExA: return &newFunctions::newRegOpenKeyExA;break;
+	case Functions::RegOpenKeyTransactedA: return &newFunctions::newRegOpenKeyTransactedA;break;
+	case Functions::RegOpenUserClassesRoot: return &newFunctions::newRegOpenUserClassesRoot;break;
+	case Functions::RegOverridePredefKey: return &newFunctions::newRegOverridePredefKey;break;
+	case Functions::RegQueryInfoKeyA: return &newFunctions::newRegQueryInfoKeyA;break;
+	case Functions::RegQueryMultipleValuesA: return &newFunctions::newRegQueryMultipleValuesA;break;
+	case Functions::RegQueryReflectionKey: return &newFunctions::newRegQueryReflectionKey;break;
+	case Functions::RegQueryValueExA: return &newFunctions::newRegQueryValueExA;break;
+	case Functions::RegRenameKey: return &newFunctions::newRegRenameKey;break;
+	case Functions::RegReplaceKeyA: return &newFunctions::newRegReplaceKeyA;break;
+	case Functions::RegRestoreKeyA: return &newFunctions::newRegRestoreKeyA;break;
+	case Functions::RegSaveKeyA: return &newFunctions::newRegSaveKeyA;break;
+	case Functions::RegSaveKeyExA: return &newFunctions::newRegSaveKeyExA;break;
+	case Functions::RegSetKeyValueA: return &newFunctions::newRegSetKeyValueA;break;
+	case Functions::RegSetKeySecurity: return &newFunctions::newRegSetKeySecurity;break;
+	case Functions::RegSetValueExA: return &newFunctions::newRegSetValueExA;break;
+	case Functions::RegUnLoadKeyA: return &newFunctions::newRegUnLoadKeyA;break;
+	case Functions::GetPrivateProfileInt: return &newFunctions::newGetPrivateProfileInt;break;
+	case Functions::GetPrivateProfileSection: return &newFunctions::newGetPrivateProfileSection;break;
+	case Functions::GetPrivateProfileSectionNames: return &newFunctions::newGetPrivateProfileSectionNames;break;
+	case Functions::GetPrivateProfileString: return &newFunctions::newGetPrivateProfileString;break;
+	case Functions::GetPrivateProfileStruct: return &newFunctions::newGetPrivateProfileStruct;break;
+	case Functions::GetProfileIntA: return &newFunctions::newGetProfileIntA;break;
+	case Functions::GetProfileSectionA: return &newFunctions::newGetProfileSectionA;break;
+	case Functions::GetProfileStringA: return &newFunctions::newGetProfileStringA;break;
+	case Functions::WritePrivateProfileSectionA: return &newFunctions::newWritePrivateProfileSectionA;break;
+	case Functions::WritePrivateProfileStringA: return &newFunctions::newWritePrivateProfileStringA;break;
+	case Functions::WritePrivateProfileStructA: return &newFunctions::newWritePrivateProfileStructA;break;
+	case Functions::WriteProfileSectionA: return &newFunctions::newWriteProfileSectionA;break;
+	case Functions::WriteProfileStringA: return &newFunctions::newWriteProfileStringA;break;
 
 	}
 	return nullptr;
@@ -438,7 +422,20 @@ std::vector<std::string>* getFunctionsToHook() {
 
 }
 
+char WhatToDoInFunction(char* func_name){
+	for(auto func : *functions){
+		if(strcmp(&func.c_str()[1],func_name)==0){
+			return func.at(0);
+		}
+	}
+	return *"p";
+}
 
+void deployInitialHook(){
+	for(int i{0};i<(int)Hook::Functions::max_functions_number;++i){
+		Hook{(Hook::Functions)i}.deploy_hook();
+	}
+}
 
 BOOL APIENTRY DllMain(HANDLE hModule,
 	DWORD ul_reason_for_call,
@@ -451,7 +448,6 @@ FALSE,
 "myMutex"
 ) };
 	std::cout << "got into DLL!!\n";
-	std::vector<std::string>* vec;
 	void* f;
 	switch (ul_reason_for_call)
 	{
@@ -462,8 +458,8 @@ FALSE,
 		msg = new char[50] {"---------------\nstarted hooking\n---------------\n\n"};
 		Hook::set_up_vars();
 		mylog(msg, 49);
-		vec = getFunctionsToHook();
-		for (auto item : *vec) {
+		functions = getFunctionsToHook();
+		for (auto item : *functions) {
 			std::cout << "got " << item << '\n';
 		}
 

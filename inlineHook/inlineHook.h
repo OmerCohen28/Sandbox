@@ -23,6 +23,8 @@ extern HINSTANCE hLibReg;
 
 void mylog(char* buf, int size);
 void mylog1(const char* buf, int size);
+char WhatToDoInFunction(char);
+void log(std::string);
 
 class Hook {
 public:
@@ -360,6 +362,9 @@ public:
 		VOID* myFncAdrr;
 		CHAR patch[6] = { 0 };
 		myFncAdrr = get_new_fnc_pointer();
+		if(myFncAdrr == nullptr){
+			return;
+		}
 		memcpy_s(patch, 1, "\x68", 1);
 		memcpy_s(patch + 1, 4, &myFncAdrr, 4);
 		memcpy_s(patch + 5, 1, "\xC3", 1);

@@ -12,16 +12,20 @@ def get_data(raw):
 
     pa = params.split(",")
     params_list = []
+    params_type_list = []
     for p in pa:
         param = p.split(" ")[-1]
+        # print("param",p)
+        params_type_list += re.findall(string=p, pattern=r".+?\s+(.{0,}?)\s.+")
         try:
             param.index("[")
             continue
         except:
             pass
         param = param.strip("*")
+        param = param.replace("\n","")
         params_list.append(param)
-    return (func_name,return_type,params_list)
+    return (func_name,return_type,params_list,params_type_list)
 
 
 
@@ -66,12 +70,13 @@ def get_all_function_names():
     return names
 
 raw = """
-BOOL __stdcall newReadFile(
-  [in]                HANDLE       hFile,
-  [out]               LPVOID       lpBuffer,
-  [in]                DWORD        nNumberOfBytesToRead,
-  [out, optional]     LPDWORD      lpNumberOfBytesRead,
-  [in, out, optional] LPOVERLAPPED lpOverlapped
+BOOL __stdcall newWriteFileEx(
+    HANDLE                          hFile,
+    LPCVOID                         lpBuffer,
+    DWORD                           nNumberOfBytesToWrite,
+    LPOVERLAPPED                    lpOverlapped,
+    LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 );"""
 
 
+# print(get_data(raw)[-1])
