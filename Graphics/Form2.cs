@@ -223,6 +223,8 @@ namespace Graphics
         {
             Program.form2.Hide();
             Program.form3.ShowDialog();
+            Thread thread = new Thread(Program.form3.updateGUIData);
+            thread.Start();
             this.Dispose();
         }
 
@@ -239,6 +241,11 @@ namespace Graphics
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
             label16.Text = $"RAM allowed: {trackBar1.Value} MB";
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
