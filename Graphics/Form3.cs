@@ -37,44 +37,58 @@ namespace Graphics
 
         private void label3_Click(object sender, EventArgs e)
         {
-            FlowLayoutPanel p = new FlowLayoutPanel();
-            p.Dock = DockStyle.Top;
-            p.FlowDirection = FlowDirection.TopDown;
-            p.WrapContents= false;
-            p.AutoScroll= true;
-            p.AutoSize = true;
-            p.AutoSizeMode= AutoSizeMode.GrowAndShrink;
+            
 
-            string s = "WriteFile$hFile: Can't Parse Data$lpBuffer: nami swannn\r\n$nNumberOfBytesToWrite: 12$lpNumberOfBytesWritten: NULL$lpOverlapped: NULL$dsajhkdjsadas$";
-            string[] data = s.Split("$");
-
-            Label name = new Label();
-            name.Font = new System.Drawing.Font("Segoe Print", 16F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point);
-            name.ForeColor = System.Drawing.Color.LightGreen;
-            name.Text = data[0];
-            name.AutoSize = true;
-
-            p.Controls.Add(name);
-
-            for (int i = 1; i < data.Length - 1; i++)
+            //string s = "WriteFile$hFile: Can't Parse Data$lpBuffer: nami swannn\r\n$nNumberOfBytesToWrite: 12$lpNumberOfBytesWritten: NULL$lpOverlapped: NULL$dsajhkdjsadas$";
+            //string[] data = s.Split("$");
+            WinApiHooksData[] dataArray = GetData.GetDLLData();
+            if (dataArray.Length == 0) { return; }
+            foreach(WinApiHooksData data in dataArray)
             {
-                Label param = new Label();
-                param.Font = new System.Drawing.Font("Segoe Print", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-                param.ForeColor = System.Drawing.Color.LightGreen;
-                param.Text = data[i];
-                param.AutoSize = true;
+                //MessageBox.Show(data.ToString());
+                FlowLayoutPanel p = new FlowLayoutPanel();
+                p.Dock = DockStyle.Top;
+                p.FlowDirection = FlowDirection.TopDown;
+                p.WrapContents = false;
+                p.AutoScroll = true;
+                p.AutoSize = true;
+                p.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                Label name = new Label();
+                name.Font = new System.Drawing.Font("Segoe Print", 16F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point);
+                name.ForeColor = System.Drawing.Color.LightGreen;
+                name.Text = data.funcName;
+                name.AutoSize = true;
 
-                p.Controls.Add(param);
+                p.Controls.Add(name);
+
+                for (int i = 0; i < data.parameters.Length; i++)
+                {
+                    Label param = new Label();
+                    param.Font = new System.Drawing.Font("Segoe Print", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+                    param.ForeColor = System.Drawing.Color.LightGreen;
+                    param.Text = data.parameters[i];
+                    param.AutoSize = true;
+
+                    p.Controls.Add(param);
 
 
+                }
+                Label time = new Label();
+                time.Font = new System.Drawing.Font("Segoe Print", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+                time.ForeColor = System.Drawing.Color.LightGreen;
+                time.Text = data.timeCalled;
+                time.AutoSize = true;
+
+                p.Controls.Add(time);
+
+                Label space = new Label();
+                space.Height = 20;
+                p.Controls.Add(space);
+
+
+                panel1.Controls.Add(p);
             }
-
-            Label space = new Label();
-            space.Height = 20;
-            p.Controls.Add(space);
-
-
-            panel1.Controls.Add(p);
+            
             panel1.AutoScroll = true;
 
 

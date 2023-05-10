@@ -15,14 +15,50 @@ namespace Graphics
         {
 
         }
+
+        public static WinApiHooksData[] GetDLLData()
+        {
+            string content;
+            using (FileStream fileStream = new FileStream("D:\\Sandbox\\log.txt", FileMode.Open, FileAccess.Read))
+            {
+                fileStream.Seek(WinApiHooksData.filePosition, SeekOrigin.Begin);
+
+                using (StreamReader reader = new StreamReader(fileStream))
+                {
+                    content = reader.ReadToEnd();
+
+                    //Console.WriteLine(content);
+
+                    WinApiHooksData.filePosition = fileStream.Position;
+                }
+            }
+            string[] data = content.Split("%");
+            WinApiHooksData[] result = new WinApiHooksData[data.Length-1];
+            int index = 0;
+            foreach (string d in data)
+            {
+                if (index == data.Length - 1) { return result; }
+                string funcName = d.Split("$")[0];
+                string timeCalled = System.DateTime.Now.ToString();
+                string[] parameters = new string[d.Split("$").Length - 1];
+                for (int i = 1; i < d.Split("$").Length; i++)
+                {
+                    parameters[i - 1] = d.Split("$")[i];
+                }
+                result[index] = new WinApiHooksData(funcName, timeCalled, parameters);
+                index++;
+            }
+            return result;
+            
+        }
     }
 
     class WinApiHooksData
     {
-        static private long filePosition = 0;
-        private string funcName { get; set; }
-        private string timeCalled { get; set; }
-        private string[] parameters { get; set; }
+        static public long filePosition = 0;
+        public string funcName { get; set; }
+        public string timeCalled { get; set; }
+        public string[] parameters { get; set; }
         
         void GetDataFromFile(string filename)
         {
@@ -33,29 +69,21 @@ namespace Graphics
                 Console.WriteLine(content);
             }
         }
-        WinApiHooksData()
+        public WinApiHooksData(string func_name,string timeCalled, string[] param)
         {
-            string content;
-            using (FileStream fileStream = new FileStream("C:\\Users\\Omer Cohen\\Documents\\Programming\\Sandbox\\functions_sockets.txt", FileMode.Open, FileAccess.Read))
+            this.funcName= func_name;
+            this.timeCalled= timeCalled;
+            this.parameters= new string[param.Length];
+            for(int i=0;i<param.Length;i++)
             {
-                fileStream.Seek(filePosition, SeekOrigin.Begin);
-
-                using (StreamReader reader = new StreamReader(fileStream))
-                {
-                    content = reader.ReadToEnd();
-
-                    //Console.WriteLine(content);
-
-                    filePosition = fileStream.Position;
-                }
+                this.parameters[i] = param[i];
             }
-            funcName = content.Split("$")[0];
-            timeCalled = System.DateTime.Now.ToString();
-            parameters = new string[content.Split("$").Length - 1];
-            for (int i = 1; i < content.Split("$").Length; i++)
-            {
-                parameters[i - 1] = content.Split("$")[i];
-            }
+
+        }
+
+        public override string ToString()
+        {
+            return $"func: {funcName}, param_length: {parameters.Length}";
         }
 
     }

@@ -11,7 +11,7 @@ NOT_ALLOWED_PORTS = []
 GLOBAL_MUTEX = win32event.CreateMutex(None,False,"portMutex11")
 
 conn_sock = socket(AF_INET,SOCK_STREAM)
-conn_sock.bind(("172.17.158.237",50123))
+conn_sock.bind(("localhost",50123))
 conn_sock.listen(1)
 sock,addr = conn_sock.accept()
 
@@ -27,7 +27,7 @@ def update_not_allowed_ports():
     print(data)
     sign,port = data[0],data[1:]
     if(sign == "x"):
-        return
+        # return
         try:
             NOT_ALLOWED_PORTS.remove(port)
         except ValueError:
@@ -76,11 +76,11 @@ def is_port_allowed(port: int) -> bool:
     result = win32event.WaitForSingleObject(GLOBAL_MUTEX, 0)
     if result == win32event.WAIT_OBJECT_0:
         win32event.ReleaseMutex(GLOBAL_MUTEX)
+        update_not_allowed_ports()
         if(NOT_ALLOWED_PORTS.count(port) == 0):
             return True
         return False
     elif result == win32event.WAIT_TIMEOUT:
-        update_not_allowed_ports()
         return is_port_allowed(port)
     
 
@@ -88,8 +88,6 @@ def is_port_allowed(port: int) -> bool:
 while True:
     with pydivert.WinDivert("outbound or inbound") as w:
         for packet in w:
-            log(packet,None)
-            exit(1)
             if packet.is_inbound:
                 #print(f"dst_port: {packet.dst_port}, src_port: {packet.src_port}, pid: {is_port_allowed(packet.dst_port,packet.is_outbound)}, INBOUND")
                 if not is_port_allowed(packet.dst_port):
