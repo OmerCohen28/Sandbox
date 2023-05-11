@@ -9,41 +9,9 @@ struct pass_to_memory_limiter {
     int max_size;
 };
 
-SOCKET* SetSocketToGraphics() {
-    WSADATA wsaData;
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != NO_ERROR) {
-        wprintf(L"WSAStartup function failed with error: %d\n", iResult);
-        return nullptr;
-    }
-
-    SOCKET* sock = new SOCKET{ socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) };
-    if (*sock == INVALID_SOCKET) {
-        std::cout << "socket creation failed\n";
-        wprintf(L"socket function failed with error = %d\n", WSAGetLastError());
-        return nullptr;
-    }
-    sockaddr_in saServer;
-    saServer.sin_family = AF_INET;
-    saServer.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
-    //InetPton(AF_INET, (PCWSTR)_my_addr_, &saServer.sin_addr.S_un.S_addr);
-    saServer.sin_port = htons(50505);
-    iResult = connect(*sock, (SOCKADDR*)&saServer, sizeof(saServer));
-    if (iResult == SOCKET_ERROR) {
-        std::cout << "error connecting to server\n";
-        return nullptr;
-    }
-    return sock;
-}
-
 DWORD WINAPI checkProcessMemory(pass_to_memory_limiter& data) {
     if (data.hProcess == NULL) {
         std::cout << "Failed to open process with error " << GetLastError() << std::endl;
-        return 1;
-    }
-    SOCKET* sock = SetSocketToGraphics();
-    if (*sock == INVALID_SOCKET || *sock == NULL || sock == nullptr) {
-        std::cout << "error connecting to python server\n";
         return 1;
     }
     while (true) {

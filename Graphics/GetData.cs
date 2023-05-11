@@ -19,7 +19,7 @@ namespace Graphics
         public static WinApiHooksData[] GetDLLData()
         {
             string content;
-            using (FileStream fileStream = new FileStream("D:\\Sandbox\\log.txt", FileMode.Open, FileAccess.Read))
+            using (FileStream fileStream = new FileStream("C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\injectDll\\log.txt", FileMode.Open, FileAccess.Read))
             {
                 fileStream.Seek(WinApiHooksData.filePosition, SeekOrigin.Begin);
 
@@ -33,7 +33,7 @@ namespace Graphics
                 }
             }
             string[] data = content.Split("%");
-            WinApiHooksData[] result = new WinApiHooksData[data.Length-1];
+            WinApiHooksData[] result = new WinApiHooksData[data.Length - 1];
             int index = 0;
             foreach (string d in data)
             {
@@ -49,7 +49,7 @@ namespace Graphics
                 index++;
             }
             return result;
-            
+
         }
     }
 
@@ -59,7 +59,7 @@ namespace Graphics
         public string funcName { get; set; }
         public string timeCalled { get; set; }
         public string[] parameters { get; set; }
-        
+
         void GetDataFromFile(string filename)
         {
             using (StreamReader reader = new StreamReader(filename))
@@ -69,12 +69,12 @@ namespace Graphics
                 Console.WriteLine(content);
             }
         }
-        public WinApiHooksData(string func_name,string timeCalled, string[] param)
+        public WinApiHooksData(string func_name, string timeCalled, string[] param)
         {
-            this.funcName= func_name;
-            this.timeCalled= timeCalled;
-            this.parameters= new string[param.Length];
-            for(int i=0;i<param.Length;i++)
+            this.funcName = func_name;
+            this.timeCalled = timeCalled;
+            this.parameters = new string[param.Length];
+            for (int i = 0; i < param.Length; i++)
             {
                 this.parameters[i] = param[i];
             }

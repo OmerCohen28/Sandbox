@@ -1,3 +1,8 @@
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Diagnostics;
+
 namespace Graphics
 {
     internal static class Program
@@ -14,6 +19,7 @@ namespace Graphics
         {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
+            
             ApplicationConfiguration.Initialize();
             Application.Run(form);
         }

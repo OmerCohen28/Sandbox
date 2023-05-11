@@ -37,13 +37,9 @@ namespace Graphics
 
         private void label3_Click(object sender, EventArgs e)
         {
-            
-
-            //string s = "WriteFile$hFile: Can't Parse Data$lpBuffer: nami swannn\r\n$nNumberOfBytesToWrite: 12$lpNumberOfBytesWritten: NULL$lpOverlapped: NULL$dsajhkdjsadas$";
-            //string[] data = s.Split("$");
             WinApiHooksData[] dataArray = GetData.GetDLLData();
             if (dataArray.Length == 0) { return; }
-            foreach(WinApiHooksData data in dataArray)
+            foreach (WinApiHooksData data in dataArray)
             {
                 //MessageBox.Show(data.ToString());
                 FlowLayoutPanel p = new FlowLayoutPanel();
@@ -88,7 +84,7 @@ namespace Graphics
 
                 panel1.Controls.Add(p);
             }
-            
+
             panel1.AutoScroll = true;
 
 

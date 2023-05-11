@@ -30,52 +30,6 @@ extern HINSTANCE hLibReg;
 extern HANDLE LOGfile;
 extern bool IsMyCall;
 
-std::string ToStringSocket(SOCKET s)
-{
-    SOCKADDR_IN src_addr, dst_addr;
-    int src_len = sizeof(src_addr), dst_len = sizeof(dst_addr);
-    std::string result;
-
-    if (getsockname(s, (SOCKADDR*)&src_addr, &src_len) == SOCKET_ERROR) {
-        result = "Error getting local endpoint address and port.";
-        return result;
-    }
-    if (getpeername(s, (SOCKADDR*)&dst_addr, &dst_len) == SOCKET_ERROR) {
-        result = "Error getting remote endpoint address and port.";
-        return result;
-    }
-
-    char src_ip[16], dst_ip[16];
-    inet_ntop(AF_INET, &src_addr.sin_addr, src_ip, sizeof(src_ip));
-    inet_ntop(AF_INET, &dst_addr.sin_addr, dst_ip, sizeof(dst_ip));
-
-    result = std::string(src_ip) + ":" + std::to_string(ntohs(src_addr.sin_port))
-        + " -> " + std::string(dst_ip) + ":" + std::to_string(ntohs(dst_addr.sin_port));
-
-    return result;
-}
-
-std::string sockaddrToString(const sockaddr* sa) {
-    std::stringstream ss;
-    if (sa->sa_family == AF_INET) {
-        // IPv4
-        const sockaddr_in* sin = reinterpret_cast<const sockaddr_in*>(sa);
-        char ip[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &(sin->sin_addr), ip, INET_ADDRSTRLEN);
-        ss << ip << ":" << ntohs(sin->sin_port);
-    }
-    else if (sa->sa_family == AF_INET6) {
-        // IPv6
-        const sockaddr_in6* sin6 = reinterpret_cast<const sockaddr_in6*>(sa);
-        char ip[INET6_ADDRSTRLEN];
-        inet_ntop(AF_INET6, &(sin6->sin6_addr), ip, INET6_ADDRSTRLEN);
-        ss << "[" << ip << "]:" << ntohs(sin6->sin6_port);
-    }
-    else {
-        ss << "Unknown family type: " << sa->sa_family;
-    }
-    return ss.str();
-}
 
 
 template <typename T>
@@ -150,14 +104,14 @@ std::string generic_log(T arg) {
         char buffer[32];
         time_t now = arg.tv_sec;
         struct tm* timeinfo = localtime(&now);
-        strftime(buffer, sizeof(buffer), %Y-%m-%d %H:%M:%S, timeinfo);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
         return std::string(buffer);
     }
     if constexpr (std::is_same_v < T, timeval*>) {
         char buffer[32];
         time_t now = (*arg).tv_sec;
         struct tm* timeinfo = localtime(&now);
-        strftime(buffer, sizeof(buffer), %Y-%m-%d %H:%M:%S, timeinfo);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
         return std::string(buffer);
     }
     return "Can't Parse Data";
@@ -170,7 +124,7 @@ SOCKET WSAAPI __stdcall newaccept(
             sockaddr *addr,
             int      *addrlen
 ){
-            char whatToDo = WhatToDoInFunction(*"accept");
+            char whatToDo = WhatToDoInFunction("accept");
             if(whatToDo == *"b"){
                 std::string logMsg("accept$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("addr: ") + generic_log(addr)+std::string("$");
@@ -202,7 +156,7 @@ int __stdcall newbind(
        const sockaddr *addr,
        int            namelen
 ){
-            char whatToDo = WhatToDoInFunction(*"bind");
+            char whatToDo = WhatToDoInFunction("bind");
             if(whatToDo == *"b"){
                 std::string logMsg("bind$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("addr: ") + generic_log(addr)+std::string("$");
@@ -232,7 +186,7 @@ logMsg += std::string("namelen: ") + generic_log(namelen)+std::string("$");
 int __stdcall newclosesocket(
        SOCKET s
 ){
-            char whatToDo = WhatToDoInFunction(*"closesocket");
+            char whatToDo = WhatToDoInFunction("closesocket");
             if(whatToDo == *"b"){
                 std::string logMsg("closesocket$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 
@@ -260,7 +214,7 @@ int WSAAPI __stdcall newconnect(
        const sockaddr *name,
        int            namelen
 ){
-            char whatToDo = WhatToDoInFunction(*"connect");
+            char whatToDo = WhatToDoInFunction("connect");
             if(whatToDo == *"b"){
                 std::string logMsg("connect$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("name: ") + generic_log(name)+std::string("$");
@@ -287,11 +241,10 @@ logMsg += std::string("namelen: ") + generic_log(namelen)+std::string("$");
             return result;
 
 }
-
 char* __stdcall newgai_strerrorA(
        int ecode
 ){
-            char whatToDo = WhatToDoInFunction(*"gai_strerrorA");
+            char whatToDo = WhatToDoInFunction("gai_strerrorA");
             if(whatToDo == *"b"){
                 std::string logMsg("gai_strerrorA$");logMsg += std::string("ecode: ") + generic_log(ecode)+std::string("$");
 
@@ -319,7 +272,7 @@ int __stdcall newgethostname(
         char *name,
         int  namelen
 ){
-            char whatToDo = WhatToDoInFunction(*"gethostname");
+            char whatToDo = WhatToDoInFunction("gethostname");
             if(whatToDo == *"b"){
                 std::string logMsg("gethostname$");logMsg += std::string("name: ") + generic_log(name)+std::string("$");
 logMsg += std::string("namelen: ") + generic_log(namelen)+std::string("$");
@@ -349,7 +302,7 @@ int __stdcall newgetpeername(
             sockaddr *name,
             int      *namelen
 ){
-            char whatToDo = WhatToDoInFunction(*"getpeername");
+            char whatToDo = WhatToDoInFunction("getpeername");
             if(whatToDo == *"b"){
                 std::string logMsg("getpeername$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("name: ") + generic_log(name)+std::string("$");
@@ -379,7 +332,7 @@ logMsg += std::string("namelen: ") + generic_log(namelen)+std::string("$");
 protoent* __stdcall newgetprotobyname(
        const char *name
 ){
-            char whatToDo = WhatToDoInFunction(*"getprotobyname");
+            char whatToDo = WhatToDoInFunction("getprotobyname");
             if(whatToDo == *"b"){
                 std::string logMsg("getprotobyname$");logMsg += std::string("name: ") + generic_log(name)+std::string("$");
 
@@ -405,7 +358,7 @@ protoent* __stdcall newgetprotobyname(
 protoent* __stdcall newgetprotobynumber(
   int proto
 ){
-            char whatToDo = WhatToDoInFunction(*"getprotobynumber");
+            char whatToDo = WhatToDoInFunction("getprotobynumber");
             if(whatToDo == *"b"){
                 std::string logMsg("getprotobynumber$");logMsg += std::string("proto: ") + generic_log(proto)+std::string("$");
 
@@ -432,7 +385,7 @@ servent* __stdcall newgetservbyname(
        const char *name,
        const char *proto
 ){
-            char whatToDo = WhatToDoInFunction(*"getservbyname");
+            char whatToDo = WhatToDoInFunction("getservbyname");
             if(whatToDo == *"b"){
                 std::string logMsg("getservbyname$");logMsg += std::string("name: ") + generic_log(name)+std::string("$");
 logMsg += std::string("proto: ") + generic_log(proto)+std::string("$");
@@ -461,7 +414,7 @@ servent* __stdcall newgetservbyport(
        int        port,
        const char *proto
 ){
-            char whatToDo = WhatToDoInFunction(*"getservbyport");
+            char whatToDo = WhatToDoInFunction("getservbyport");
             if(whatToDo == *"b"){
                 std::string logMsg("getservbyport$");logMsg += std::string("port: ") + generic_log(port)+std::string("$");
 logMsg += std::string("proto: ") + generic_log(proto)+std::string("$");
@@ -491,7 +444,7 @@ int __stdcall newgetsockname(
             sockaddr *name,
             int      *namelen
 ){
-            char whatToDo = WhatToDoInFunction(*"getsockname");
+            char whatToDo = WhatToDoInFunction("getsockname");
             if(whatToDo == *"b"){
                 std::string logMsg("getsockname$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("name: ") + generic_log(name)+std::string("$");
@@ -525,7 +478,7 @@ int __stdcall newgetsockopt(
             char   *optval,
             int    *optlen
 ){
-            char whatToDo = WhatToDoInFunction(*"getsockopt");
+            char whatToDo = WhatToDoInFunction("getsockopt");
             if(whatToDo == *"b"){
                 std::string logMsg("getsockopt$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("level: ") + generic_log(level)+std::string("$");
@@ -559,7 +512,7 @@ logMsg += std::string("optlen: ") + generic_log(optlen)+std::string("$");
 u_short __stdcall newhtons(
        u_short hostshort
 ){
-            char whatToDo = WhatToDoInFunction(*"htons");
+            char whatToDo = WhatToDoInFunction("htons");
             if(whatToDo == *"b"){
                 std::string logMsg("htons$");logMsg += std::string("hostshort: ") + generic_log(hostshort)+std::string("$");
 
@@ -585,7 +538,7 @@ u_short __stdcall newhtons(
 unsigned long WSAAPI __stdcall newinet_addr(
   const char *cp
 ){
-            char whatToDo = WhatToDoInFunction(*"inet_addr");
+            char whatToDo = WhatToDoInFunction("inet_addr");
             if(whatToDo == *"b"){
                 std::string logMsg("inet_addr$");logMsg += std::string("cp: ") + generic_log(cp)+std::string("$");
 
@@ -611,7 +564,7 @@ unsigned long WSAAPI __stdcall newinet_addr(
 char *WSAAPI __stdcall newinet_ntoa(
   in_addr in
 ){
-            char whatToDo = WhatToDoInFunction(*"inet_ntoa");
+            char whatToDo = WhatToDoInFunction("inet_ntoa");
             if(whatToDo == *"b"){
                 std::string logMsg("inet_ntoa$");logMsg += std::string("in: ") + generic_log(in)+std::string("$");
 
@@ -640,7 +593,7 @@ PCWSTR WSAAPI __stdcall newInetNtopW(
         PWSTR      pStringBuf,
         size_t     StringBufSize
 ){
-            char whatToDo = WhatToDoInFunction(*"InetNtopW");
+            char whatToDo = WhatToDoInFunction("InetNtopW");
             if(whatToDo == *"b"){
                 std::string logMsg("InetNtopW$");logMsg += std::string("Family: ") + generic_log(Family)+std::string("$");
 logMsg += std::string("pAddr: ") + generic_log(pAddr)+std::string("$");
@@ -674,7 +627,7 @@ INT WSAAPI __stdcall newInetPtonW(
         PCWSTR pszAddrString,
         PVOID  pAddrBuf
 ){
-            char whatToDo = WhatToDoInFunction(*"InetPtonW");
+            char whatToDo = WhatToDoInFunction("InetPtonW");
             if(whatToDo == *"b"){
                 std::string logMsg("InetPtonW$");logMsg += std::string("Family: ") + generic_log(Family)+std::string("$");
 logMsg += std::string("pszAddrString: ") + generic_log(pszAddrString)+std::string("$");
@@ -706,7 +659,7 @@ int __stdcall newioctlsocket(
             long   cmd,
             u_long *argp
 ){
-            char whatToDo = WhatToDoInFunction(*"ioctlsocket");
+            char whatToDo = WhatToDoInFunction("ioctlsocket");
             if(whatToDo == *"b"){
                 std::string logMsg("ioctlsocket$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("cmd: ") + generic_log(cmd)+std::string("$");
@@ -737,7 +690,7 @@ int WSAAPI __stdcall newlisten(
        SOCKET s,
        int    backlog
 ){
-            char whatToDo = WhatToDoInFunction(*"listen");
+            char whatToDo = WhatToDoInFunction("listen");
             if(whatToDo == *"b"){
                 std::string logMsg("listen$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("backlog: ") + generic_log(backlog)+std::string("$");
@@ -765,7 +718,7 @@ logMsg += std::string("backlog: ") + generic_log(backlog)+std::string("$");
 u_long __stdcall newntohl(
        u_long netlong
 ){
-            char whatToDo = WhatToDoInFunction(*"ntohl");
+            char whatToDo = WhatToDoInFunction("ntohl");
             if(whatToDo == *"b"){
                 std::string logMsg("ntohl$");logMsg += std::string("netlong: ") + generic_log(netlong)+std::string("$");
 
@@ -791,7 +744,7 @@ u_long __stdcall newntohl(
 u_short __stdcall newntohs(
        u_short netshort
 ){
-            char whatToDo = WhatToDoInFunction(*"ntohs");
+            char whatToDo = WhatToDoInFunction("ntohs");
             if(whatToDo == *"b"){
                 std::string logMsg("ntohs$");logMsg += std::string("netshort: ") + generic_log(netshort)+std::string("$");
 
@@ -820,7 +773,7 @@ int __stdcall newrecv(
         int    len,
         int    flags
 ){
-            char whatToDo = WhatToDoInFunction(*"recv");
+            char whatToDo = WhatToDoInFunction("recv");
             if(whatToDo == *"b"){
                 std::string logMsg("recv$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("buf: ") + generic_log(buf)+std::string("$");
@@ -857,7 +810,7 @@ int __stdcall newrecvfrom(
                       sockaddr *from,
                       int      *fromlen
 ){
-            char whatToDo = WhatToDoInFunction(*"recvfrom");
+            char whatToDo = WhatToDoInFunction("recvfrom");
             if(whatToDo == *"b"){
                 std::string logMsg("recvfrom$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("buf: ") + generic_log(buf)+std::string("$");
@@ -897,7 +850,7 @@ int WSAAPI __stdcall newselect(
             fd_set        *exceptfds,
             const timeval *timeout
 ){
-            char whatToDo = WhatToDoInFunction(*"select");
+            char whatToDo = WhatToDoInFunction("select");
             if(whatToDo == *"b"){
                 std::string logMsg("select$");logMsg += std::string("nfds: ") + generic_log(nfds)+std::string("$");
 logMsg += std::string("readfds: ") + generic_log(readfds)+std::string("$");
@@ -921,7 +874,7 @@ logMsg += std::string("timeout: ") + generic_log(timeout)+std::string("$");
     	        	(LPVOID)hooked_addr[(int)Hook::Functions::select],
     	        	original_bytes[(int)Hook::Functions::select], 6, NULL);
 
-            int result = select(nfds,readfds,writefds,exceptfds,(PTIMEVAL)timeout);
+            int result = select(nfds,readfds,writefds,exceptfds,timeout);
             Hook reset_hook { Hook::Functions::select};
             reset_hook.deploy_hook();
 
@@ -934,7 +887,7 @@ int WSAAPI __stdcall newsend(
        int        len,
        int        flags
 ){
-            char whatToDo = WhatToDoInFunction(*"send");
+            char whatToDo = WhatToDoInFunction("send");
             if(whatToDo == *"b"){
                 std::string logMsg("send$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("buf: ") + generic_log(buf)+std::string("$");
@@ -971,7 +924,7 @@ int __stdcall newsendto(
        const sockaddr *to,
        int            tolen
 ){
-            char whatToDo = WhatToDoInFunction(*"sendto");
+            char whatToDo = WhatToDoInFunction("sendto");
             if(whatToDo == *"b"){
                 std::string logMsg("sendto$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("buf: ") + generic_log(buf)+std::string("$");
@@ -1011,7 +964,7 @@ int __stdcall newsetsockopt(
        const char *optval,
        int        optlen
 ){
-            char whatToDo = WhatToDoInFunction(*"setsockopt");
+            char whatToDo = WhatToDoInFunction("setsockopt");
             if(whatToDo == *"b"){
                 std::string logMsg("setsockopt$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("level: ") + generic_log(level)+std::string("$");
@@ -1046,7 +999,7 @@ int __stdcall newshutdown(
        SOCKET s,
        int    how
 ){
-            char whatToDo = WhatToDoInFunction(*"shutdown");
+            char whatToDo = WhatToDoInFunction("shutdown");
             if(whatToDo == *"b"){
                 std::string logMsg("shutdown$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("how: ") + generic_log(how)+std::string("$");
@@ -1076,7 +1029,7 @@ SOCKET WSAAPI __stdcall newsocket(
        int type,
        int protocol
 ){
-            char whatToDo = WhatToDoInFunction(*"socket");
+            char whatToDo = WhatToDoInFunction("socket");
             if(whatToDo == *"b"){
                 std::string logMsg("socket$");logMsg += std::string("af: ") + generic_log(af)+std::string("$");
 logMsg += std::string("type: ") + generic_log(type)+std::string("$");
@@ -1110,7 +1063,7 @@ SOCKET WSAAPI __stdcall newWSAAccept(
             LPCONDITIONPROC lpfnCondition,
             DWORD_PTR       dwCallbackData
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAccept");
+            char whatToDo = WhatToDoInFunction("WSAAccept");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAccept$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("addr: ") + generic_log(addr)+std::string("$");
@@ -1148,7 +1101,7 @@ INT WSAAPI __stdcall newWSAAddressToStringA(
                  LPSTR               lpszAddressString,
                  LPDWORD             lpdwAddressStringLength
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAddressToStringA");
+            char whatToDo = WhatToDoInFunction("WSAAddressToStringA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAddressToStringA$");logMsg += std::string("lpsaAddress: ") + generic_log(lpsaAddress)+std::string("$");
 logMsg += std::string("dwAddressLength: ") + generic_log(dwAddressLength)+std::string("$");
@@ -1188,7 +1141,7 @@ HANDLE __stdcall newWSAAsyncGetHostByAddr(
   char       *buf,
   int        buflen
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAsyncGetHostByAddr");
+            char whatToDo = WhatToDoInFunction("WSAAsyncGetHostByAddr");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAsyncGetHostByAddr$");logMsg += std::string("hWnd: ") + generic_log(hWnd)+std::string("$");
 logMsg += std::string("wMsg: ") + generic_log(wMsg)+std::string("$");
@@ -1230,7 +1183,7 @@ HANDLE __stdcall newWSAAsyncGetHostByName(
   char       *buf,
   int        buflen
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAsyncGetHostByName");
+            char whatToDo = WhatToDoInFunction("WSAAsyncGetHostByName");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAsyncGetHostByName$");logMsg += std::string("hWnd: ") + generic_log(hWnd)+std::string("$");
 logMsg += std::string("wMsg: ") + generic_log(wMsg)+std::string("$");
@@ -1268,7 +1221,7 @@ HANDLE __stdcall newWSAAsyncGetProtoByName(
         char       *buf,
         int        buflen
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAsyncGetProtoByName");
+            char whatToDo = WhatToDoInFunction("WSAAsyncGetProtoByName");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAsyncGetProtoByName$");logMsg += std::string("hWnd: ") + generic_log(hWnd)+std::string("$");
 logMsg += std::string("wMsg: ") + generic_log(wMsg)+std::string("$");
@@ -1306,7 +1259,7 @@ HANDLE __stdcall newWSAAsyncGetProtoByNumber(
         char  *buf,
         int   buflen
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAsyncGetProtoByNumber");
+            char whatToDo = WhatToDoInFunction("WSAAsyncGetProtoByNumber");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAsyncGetProtoByNumber$");logMsg += std::string("hWnd: ") + generic_log(hWnd)+std::string("$");
 logMsg += std::string("wMsg: ") + generic_log(wMsg)+std::string("$");
@@ -1345,7 +1298,7 @@ HANDLE __stdcall newWSAAsyncGetServByName(
         char       *buf,
         int        buflen
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAsyncGetServByName");
+            char whatToDo = WhatToDoInFunction("WSAAsyncGetServByName");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAsyncGetServByName$");logMsg += std::string("hWnd: ") + generic_log(hWnd)+std::string("$");
 logMsg += std::string("wMsg: ") + generic_log(wMsg)+std::string("$");
@@ -1386,7 +1339,7 @@ HANDLE __stdcall newWSAAsyncGetServByPort(
         char       *buf,
         int        buflen
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAsyncGetServByPort");
+            char whatToDo = WhatToDoInFunction("WSAAsyncGetServByPort");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAsyncGetServByPort$");logMsg += std::string("hWnd: ") + generic_log(hWnd)+std::string("$");
 logMsg += std::string("wMsg: ") + generic_log(wMsg)+std::string("$");
@@ -1425,7 +1378,7 @@ int __stdcall newWSAAsyncSelect(
        u_int  wMsg,
        long   lEvent
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAAsyncSelect");
+            char whatToDo = WhatToDoInFunction("WSAAsyncSelect");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAAsyncSelect$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("hWnd: ") + generic_log(hWnd)+std::string("$");
@@ -1457,7 +1410,7 @@ logMsg += std::string("lEvent: ") + generic_log(lEvent)+std::string("$");
 int __stdcall newWSACancelAsyncRequest(
        HANDLE hAsyncTaskHandle
 ){
-            char whatToDo = WhatToDoInFunction(*"WSACancelAsyncRequest");
+            char whatToDo = WhatToDoInFunction("WSACancelAsyncRequest");
             if(whatToDo == *"b"){
                 std::string logMsg("WSACancelAsyncRequest$");logMsg += std::string("hAsyncTaskHandle: ") + generic_log(hAsyncTaskHandle)+std::string("$");
 
@@ -1481,7 +1434,7 @@ int __stdcall newWSACancelAsyncRequest(
 
 }
 int __stdcall newWSACleanup(){
-            char whatToDo = WhatToDoInFunction(*"WSACleanup");
+            char whatToDo = WhatToDoInFunction("WSACleanup");
             if(whatToDo == *"b"){
                 std::string logMsg("WSACleanup$");
                 log(logMsg);
@@ -1505,7 +1458,7 @@ int __stdcall newWSACleanup(){
 BOOL WSAAPI __stdcall newWSACloseEvent(
        WSAEVENT hEvent
 ){
-            char whatToDo = WhatToDoInFunction(*"WSACloseEvent");
+            char whatToDo = WhatToDoInFunction("WSACloseEvent");
             if(whatToDo == *"b"){
                 std::string logMsg("WSACloseEvent$");logMsg += std::string("hEvent: ") + generic_log(hEvent)+std::string("$");
 
@@ -1537,7 +1490,7 @@ int WSAAPI __stdcall newWSAConnect(
         LPQOS          lpSQOS,
         LPQOS          lpGQOS
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAConnect");
+            char whatToDo = WhatToDoInFunction("WSAConnect");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAConnect$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("name: ") + generic_log(name)+std::string("$");
@@ -1582,7 +1535,7 @@ BOOL __stdcall newWSAConnectByList(
             const timeval        *timeout,
             LPWSAOVERLAPPED      Reserved
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAConnectByList");
+            char whatToDo = WhatToDoInFunction("WSAConnectByList");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAConnectByList$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("SocketAddress: ") + generic_log(SocketAddress)+std::string("$");
@@ -1612,7 +1565,7 @@ logMsg += std::string("Reserved: ") + generic_log(Reserved)+std::string("$");
     	        	(LPVOID)hooked_addr[(int)Hook::Functions::WSAConnectByList],
     	        	original_bytes[(int)Hook::Functions::WSAConnectByList], 6, NULL);
 
-            BOOL result = WSAConnectByList(s,SocketAddress,LocalAddressLength,LocalAddress,RemoteAddressLength,RemoteAddress,(PTIMEVAL)timeout,Reserved);
+            BOOL result = WSAConnectByList(s,SocketAddress,LocalAddressLength,LocalAddress,RemoteAddressLength,RemoteAddress,timeout,Reserved);
             Hook reset_hook { Hook::Functions::WSAConnectByList};
             reset_hook.deploy_hook();
 
@@ -1630,7 +1583,7 @@ BOOL __stdcall newWSAConnectByNameA(
             const timeval   *timeout,
             LPWSAOVERLAPPED Reserved
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAConnectByNameA");
+            char whatToDo = WhatToDoInFunction("WSAConnectByNameA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAConnectByNameA$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("nodename: ") + generic_log(nodename)+std::string("$");
@@ -1661,13 +1614,8 @@ logMsg += std::string("Reserved: ") + generic_log(Reserved)+std::string("$");
              WriteProcessMemory(GetCurrentProcess(),
     	        	(LPVOID)hooked_addr[(int)Hook::Functions::WSAConnectByNameA],
     	        	original_bytes[(int)Hook::Functions::WSAConnectByNameA], 6, NULL);
-            int length1 = lstrlenA(nodename); 
-            LPSTR nodename2 = new CHAR[length1 + 1]; 
-            strcpy_s(nodename2, length1 + 1, nodename);
-            int length2 = lstrlenA(servicename); 
-            LPSTR servicename2 = new CHAR[length2 + 1]; 
-            strcpy_s(servicename2, length1 + 1, servicename);
-            BOOL result = WSAConnectByNameA(s,nodename2,servicename2,LocalAddressLength,LocalAddress,RemoteAddressLength,RemoteAddress,(PTIMEVAL )timeout,Reserved);
+
+            BOOL result = WSAConnectByNameA(s,nodename,servicename,LocalAddressLength,LocalAddress,RemoteAddressLength,RemoteAddress,timeout,Reserved);
             Hook reset_hook { Hook::Functions::WSAConnectByNameA};
             reset_hook.deploy_hook();
 
@@ -1675,7 +1623,7 @@ logMsg += std::string("Reserved: ") + generic_log(Reserved)+std::string("$");
 
 }
 WSAEVENT WSAAPI __stdcall newWSACreateEvent(){
-            char whatToDo = WhatToDoInFunction(*"WSACreateEvent");
+            char whatToDo = WhatToDoInFunction("WSACreateEvent");
             if(whatToDo == *"b"){
                 std::string logMsg("WSACreateEvent$");
                 log(logMsg);
@@ -1701,7 +1649,7 @@ int WSAAPI __stdcall newWSADuplicateSocketA(
         DWORD               dwProcessId,
         LPWSAPROTOCOL_INFOA lpProtocolInfo
 ){
-            char whatToDo = WhatToDoInFunction(*"WSADuplicateSocketA");
+            char whatToDo = WhatToDoInFunction("WSADuplicateSocketA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSADuplicateSocketA$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("dwProcessId: ") + generic_log(dwProcessId)+std::string("$");
@@ -1732,7 +1680,7 @@ INT WSAAPI __stdcall newWSAEnumNameSpaceProvidersA(
             LPDWORD              lpdwBufferLength,
             LPWSANAMESPACE_INFOA lpnspBuffer
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAEnumNameSpaceProvidersA");
+            char whatToDo = WhatToDoInFunction("WSAEnumNameSpaceProvidersA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAEnumNameSpaceProvidersA$");logMsg += std::string("lpdwBufferLength: ") + generic_log(lpdwBufferLength)+std::string("$");
 logMsg += std::string("lpnspBuffer: ") + generic_log(lpnspBuffer)+std::string("$");
@@ -1761,7 +1709,7 @@ INT WSAAPI __stdcall newWSAEnumNameSpaceProvidersExA(
             LPDWORD                lpdwBufferLength,
             LPWSANAMESPACE_INFOEXA lpnspBuffer
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAEnumNameSpaceProvidersExA");
+            char whatToDo = WhatToDoInFunction("WSAEnumNameSpaceProvidersExA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAEnumNameSpaceProvidersExA$");logMsg += std::string("lpdwBufferLength: ") + generic_log(lpdwBufferLength)+std::string("$");
 logMsg += std::string("lpnspBuffer: ") + generic_log(lpnspBuffer)+std::string("$");
@@ -1791,7 +1739,7 @@ int WSAAPI __stdcall newWSAEnumNetworkEvents(
         WSAEVENT           hEventObject,
         LPWSANETWORKEVENTS lpNetworkEvents
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAEnumNetworkEvents");
+            char whatToDo = WhatToDoInFunction("WSAEnumNetworkEvents");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAEnumNetworkEvents$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("hEventObject: ") + generic_log(hEventObject)+std::string("$");
@@ -1823,7 +1771,7 @@ int WSAAPI __stdcall newWSAEnumProtocolsA(
             LPWSAPROTOCOL_INFOA lpProtocolBuffer,
             LPDWORD             lpdwBufferLength
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAEnumProtocolsA");
+            char whatToDo = WhatToDoInFunction("WSAEnumProtocolsA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAEnumProtocolsA$");logMsg += std::string("lpiProtocols: ") + generic_log(lpiProtocols)+std::string("$");
 logMsg += std::string("lpProtocolBuffer: ") + generic_log(lpProtocolBuffer)+std::string("$");
@@ -1855,7 +1803,7 @@ int WSAAPI __stdcall newWSAEventSelect(
        WSAEVENT hEventObject,
        long     lNetworkEvents
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAEventSelect");
+            char whatToDo = WhatToDoInFunction("WSAEventSelect");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAEventSelect$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("hEventObject: ") + generic_log(hEventObject)+std::string("$");
@@ -1886,7 +1834,7 @@ int __stdcall new__WSAFDIsSet(
   SOCKET unnamedParam1,
   fd_set *unnamedParam2
 ){
-            char whatToDo = WhatToDoInFunction(*"__WSAFDIsSet");
+            char whatToDo = WhatToDoInFunction("__WSAFDIsSet");
             if(whatToDo == *"b"){
                 std::string logMsg("__WSAFDIsSet$");logMsg += std::string("unnamedParam1: ") + generic_log(unnamedParam1)+std::string("$");
 logMsg += std::string("unnamedParam2: ") + generic_log(unnamedParam2)+std::string("$");
@@ -1912,7 +1860,7 @@ logMsg += std::string("unnamedParam2: ") + generic_log(unnamedParam2)+std::strin
 
 }
 int __stdcall newWSAGetLastError(){
-            char whatToDo = WhatToDoInFunction(*"WSAGetLastError");
+            char whatToDo = WhatToDoInFunction("WSAGetLastError");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAGetLastError$");
                 log(logMsg);
@@ -1940,7 +1888,7 @@ BOOL WSAAPI __stdcall newWSAGetOverlappedResult(
         BOOL            fWait,
         LPDWORD         lpdwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAGetOverlappedResult");
+            char whatToDo = WhatToDoInFunction("WSAGetOverlappedResult");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAGetOverlappedResult$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("lpOverlapped: ") + generic_log(lpOverlapped)+std::string("$");
@@ -1976,7 +1924,7 @@ BOOL WSAAPI __stdcall newWSAGetQOSByName(
             LPWSABUF lpQOSName,
             LPQOS    lpQOS
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAGetQOSByName");
+            char whatToDo = WhatToDoInFunction("WSAGetQOSByName");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAGetQOSByName$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("lpQOSName: ") + generic_log(lpQOSName)+std::string("$");
@@ -2009,7 +1957,7 @@ INT WSAAPI __stdcall newWSAGetServiceClassInfoA(
             LPDWORD                lpdwBufSize,
             LPWSASERVICECLASSINFOA lpServiceClassInfo
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAGetServiceClassInfoA");
+            char whatToDo = WhatToDoInFunction("WSAGetServiceClassInfoA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAGetServiceClassInfoA$");logMsg += std::string("lpProviderId: ") + generic_log(lpProviderId)+std::string("$");
 logMsg += std::string("lpServiceClassId: ") + generic_log(lpServiceClassId)+std::string("$");
@@ -2043,7 +1991,7 @@ INT WSAAPI __stdcall newWSAGetServiceClassNameByClassIdA(
             LPSTR   lpszServiceClassName,
             LPDWORD lpdwBufferLength
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAGetServiceClassNameByClassIdA");
+            char whatToDo = WhatToDoInFunction("WSAGetServiceClassNameByClassIdA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAGetServiceClassNameByClassIdA$");logMsg += std::string("lpServiceClassId: ") + generic_log(lpServiceClassId)+std::string("$");
 logMsg += std::string("lpszServiceClassName: ") + generic_log(lpszServiceClassName)+std::string("$");
@@ -2075,7 +2023,7 @@ int WSAAPI __stdcall newWSAHtonl(
         u_long hostlong,
         u_long *lpnetlong
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAHtonl");
+            char whatToDo = WhatToDoInFunction("WSAHtonl");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAHtonl$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("hostlong: ") + generic_log(hostlong)+std::string("$");
@@ -2107,7 +2055,7 @@ int WSAAPI __stdcall newWSAHtons(
         u_short hostshort,
         u_short *lpnetshort
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAHtons");
+            char whatToDo = WhatToDoInFunction("WSAHtons");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAHtons$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("hostshort: ") + generic_log(hostshort)+std::string("$");
@@ -2134,42 +2082,11 @@ logMsg += std::string("lpnetshort: ") + generic_log(lpnetshort)+std::string("$")
             return result;
 
 }
-INT WSAAPI __stdcall newWSAImpersonateSocketPeer(
-                 SOCKET         Socket,
-                 const sockaddr *PeerAddr,
-                 ULONG          PeerAddrLen
-){
-            char whatToDo = WhatToDoInFunction(*"WSAImpersonateSocketPeer");
-            if(whatToDo == *"b"){
-                std::string logMsg("WSAImpersonateSocketPeer$");logMsg += std::string("Socket: ") + generic_log(Socket)+std::string("$");
-logMsg += std::string("PeerAddr: ") + generic_log(PeerAddr)+std::string("$");
-logMsg += std::string("PeerAddrLen: ") + generic_log(PeerAddrLen)+std::string("$");
 
-                log(logMsg);
-                return NULL;
-            }
-            if(whatToDo == *"w"){    	       
-                std::string logMsg("WSAImpersonateSocketPeer$");logMsg += std::string("Socket: ") + generic_log(Socket)+std::string("$");
-logMsg += std::string("PeerAddr: ") + generic_log(PeerAddr)+std::string("$");
-logMsg += std::string("PeerAddrLen: ") + generic_log(PeerAddrLen)+std::string("$");
-
-                log(logMsg);
-            }
-             WriteProcessMemory(GetCurrentProcess(),
-    	        	(LPVOID)hooked_addr[(int)Hook::Functions::WSAImpersonateSocketPeer],
-    	        	original_bytes[(int)Hook::Functions::WSAImpersonateSocketPeer], 6, NULL);
-
-            INT result = WSAImpersonateSocketPeer(Socket,PeerAddr,PeerAddrLen);
-            Hook reset_hook { Hook::Functions::WSAImpersonateSocketPeer};
-            reset_hook.deploy_hook();
-
-            return result;
-
-}
 INT WSAAPI __stdcall newWSAInstallServiceClassA(
        LPWSASERVICECLASSINFOA lpServiceClassInfo
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAInstallServiceClassA");
+            char whatToDo = WhatToDoInFunction("WSAInstallServiceClassA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAInstallServiceClassA$");logMsg += std::string("lpServiceClassInfo: ") + generic_log(lpServiceClassInfo)+std::string("$");
 
@@ -2203,7 +2120,7 @@ int WSAAPI __stdcall newWSAIoctl(
         LPWSAOVERLAPPED                    lpOverlapped,
         LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAIoctl");
+            char whatToDo = WhatToDoInFunction("WSAIoctl");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAIoctl$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("dwIoControlCode: ") + generic_log(dwIoControlCode)+std::string("$");
@@ -2252,7 +2169,7 @@ SOCKET WSAAPI __stdcall newWSAJoinLeaf(
         LPQOS          lpGQOS,
         DWORD          dwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAJoinLeaf");
+            char whatToDo = WhatToDoInFunction("WSAJoinLeaf");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAJoinLeaf$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("name: ") + generic_log(name)+std::string("$");
@@ -2294,7 +2211,7 @@ INT WSAAPI __stdcall newWSALookupServiceBeginA(
         DWORD          dwControlFlags,
         LPHANDLE       lphLookup
 ){
-            char whatToDo = WhatToDoInFunction(*"WSALookupServiceBeginA");
+            char whatToDo = WhatToDoInFunction("WSALookupServiceBeginA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSALookupServiceBeginA$");logMsg += std::string("lpqsRestrictions: ") + generic_log(lpqsRestrictions)+std::string("$");
 logMsg += std::string("dwControlFlags: ") + generic_log(dwControlFlags)+std::string("$");
@@ -2324,7 +2241,7 @@ logMsg += std::string("lphLookup: ") + generic_log(lphLookup)+std::string("$");
 INT WSAAPI __stdcall newWSALookupServiceEnd(
        HANDLE hLookup
 ){
-            char whatToDo = WhatToDoInFunction(*"WSALookupServiceEnd");
+            char whatToDo = WhatToDoInFunction("WSALookupServiceEnd");
             if(whatToDo == *"b"){
                 std::string logMsg("WSALookupServiceEnd$");logMsg += std::string("hLookup: ") + generic_log(hLookup)+std::string("$");
 
@@ -2353,7 +2270,7 @@ INT WSAAPI __stdcall newWSALookupServiceNextA(
             LPDWORD        lpdwBufferLength,
             LPWSAQUERYSETA lpqsResults
 ){
-            char whatToDo = WhatToDoInFunction(*"WSALookupServiceNextA");
+            char whatToDo = WhatToDoInFunction("WSALookupServiceNextA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSALookupServiceNextA$");logMsg += std::string("hLookup: ") + generic_log(hLookup)+std::string("$");
 logMsg += std::string("dwControlFlags: ") + generic_log(dwControlFlags)+std::string("$");
@@ -2392,7 +2309,7 @@ INT WSAAPI __stdcall newWSANSPIoctl(
             LPDWORD         lpcbBytesReturned,
             LPWSACOMPLETION lpCompletion
 ){
-            char whatToDo = WhatToDoInFunction(*"WSANSPIoctl");
+            char whatToDo = WhatToDoInFunction("WSANSPIoctl");
             if(whatToDo == *"b"){
                 std::string logMsg("WSANSPIoctl$");logMsg += std::string("hLookup: ") + generic_log(hLookup)+std::string("$");
 logMsg += std::string("dwControlCode: ") + generic_log(dwControlCode)+std::string("$");
@@ -2434,7 +2351,7 @@ int WSAAPI __stdcall newWSANtohl(
         u_long netlong,
         u_long *lphostlong
 ){
-            char whatToDo = WhatToDoInFunction(*"WSANtohl");
+            char whatToDo = WhatToDoInFunction("WSANtohl");
             if(whatToDo == *"b"){
                 std::string logMsg("WSANtohl$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("netlong: ") + generic_log(netlong)+std::string("$");
@@ -2466,7 +2383,7 @@ int WSAAPI __stdcall newWSANtohs(
         u_short netshort,
         u_short *lphostshort
 ){
-            char whatToDo = WhatToDoInFunction(*"WSANtohs");
+            char whatToDo = WhatToDoInFunction("WSANtohs");
             if(whatToDo == *"b"){
                 std::string logMsg("WSANtohs$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("netshort: ") + generic_log(netshort)+std::string("$");
@@ -2498,7 +2415,7 @@ int WSAAPI __stdcall newWSAPoll(
             ULONG       fds,
             INT         timeout
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAPoll");
+            char whatToDo = WhatToDoInFunction("WSAPoll");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAPoll$");logMsg += std::string("fdArray: ") + generic_log(fdArray)+std::string("$");
 logMsg += std::string("fds: ") + generic_log(fds)+std::string("$");
@@ -2530,7 +2447,7 @@ INT WSAAPI __stdcall newWSAProviderConfigChange(
             LPWSAOVERLAPPED                    lpOverlapped,
             LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAProviderConfigChange");
+            char whatToDo = WhatToDoInFunction("WSAProviderConfigChange");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAProviderConfigChange$");logMsg += std::string("lpNotificationHandle: ") + generic_log(lpNotificationHandle)+std::string("$");
 logMsg += std::string("lpOverlapped: ") + generic_log(lpOverlapped)+std::string("$");
@@ -2566,7 +2483,7 @@ int WSAAPI __stdcall newWSARecv(
             LPWSAOVERLAPPED                    lpOverlapped,
             LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"WSARecv");
+            char whatToDo = WhatToDoInFunction("WSARecv");
             if(whatToDo == *"b"){
                 std::string logMsg("WSARecv$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("lpBuffers: ") + generic_log(lpBuffers)+std::string("$");
@@ -2605,7 +2522,7 @@ int WSAAPI __stdcall newWSARecvDisconnect(
         SOCKET   s,
         LPWSABUF lpInboundDisconnectData
 ){
-            char whatToDo = WhatToDoInFunction(*"WSARecvDisconnect");
+            char whatToDo = WhatToDoInFunction("WSARecvDisconnect");
             if(whatToDo == *"b"){
                 std::string logMsg("WSARecvDisconnect$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("lpInboundDisconnectData: ") + generic_log(lpInboundDisconnectData)+std::string("$");
@@ -2630,7 +2547,6 @@ logMsg += std::string("lpInboundDisconnectData: ") + generic_log(lpInboundDiscon
             return result;
 
 }
-
 int WSAAPI __stdcall newWSARecvFrom(
             SOCKET                             s,
             LPWSABUF                           lpBuffers,
@@ -2642,7 +2558,7 @@ int WSAAPI __stdcall newWSARecvFrom(
             LPWSAOVERLAPPED                    lpOverlapped,
             LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"WSARecvFrom");
+            char whatToDo = WhatToDoInFunction("WSARecvFrom");
             if(whatToDo == *"b"){
                 std::string logMsg("WSARecvFrom$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("lpBuffers: ") + generic_log(lpBuffers)+std::string("$");
@@ -2684,7 +2600,7 @@ logMsg += std::string("lpCompletionRoutine: ") + generic_log(lpCompletionRoutine
 INT WSAAPI __stdcall newWSARemoveServiceClass(
        LPGUID lpServiceClassId
 ){
-            char whatToDo = WhatToDoInFunction(*"WSARemoveServiceClass");
+            char whatToDo = WhatToDoInFunction("WSARemoveServiceClass");
             if(whatToDo == *"b"){
                 std::string logMsg("WSARemoveServiceClass$");logMsg += std::string("lpServiceClassId: ") + generic_log(lpServiceClassId)+std::string("$");
 
@@ -2710,7 +2626,7 @@ INT WSAAPI __stdcall newWSARemoveServiceClass(
 BOOL WSAAPI __stdcall newWSAResetEvent(
        WSAEVENT hEvent
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAResetEvent");
+            char whatToDo = WhatToDoInFunction("WSAResetEvent");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAResetEvent$");logMsg += std::string("hEvent: ") + generic_log(hEvent)+std::string("$");
 
@@ -2733,28 +2649,6 @@ BOOL WSAAPI __stdcall newWSAResetEvent(
             return result;
 
 }
-INT WSAAPI __stdcall newWSARevertImpersonation(){
-            char whatToDo = WhatToDoInFunction(*"WSARevertImpersonation");
-            if(whatToDo == *"b"){
-                std::string logMsg("WSARevertImpersonation$");
-                log(logMsg);
-                return NULL;
-            }
-            if(whatToDo == *"w"){    	       
-                std::string logMsg("WSARevertImpersonation$");
-                log(logMsg);
-            }
-             WriteProcessMemory(GetCurrentProcess(),
-    	        	(LPVOID)hooked_addr[(int)Hook::Functions::WSARevertImpersonation],
-    	        	original_bytes[(int)Hook::Functions::WSARevertImpersonation], 6, NULL);
-
-            INT result = WSARevertImpersonation();
-            Hook reset_hook { Hook::Functions::WSARevertImpersonation};
-            reset_hook.deploy_hook();
-
-            return result;
-
-}
 int WSAAPI __stdcall newWSASend(
         SOCKET                             s,
         LPWSABUF                           lpBuffers,
@@ -2764,7 +2658,7 @@ int WSAAPI __stdcall newWSASend(
         LPWSAOVERLAPPED                    lpOverlapped,
         LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"WSASend");
+            char whatToDo = WhatToDoInFunction("WSASend");
             if(whatToDo == *"b"){
                 std::string logMsg("WSASend$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("lpBuffers: ") + generic_log(lpBuffers)+std::string("$");
@@ -2803,7 +2697,7 @@ int WSAAPI __stdcall newWSASendDisconnect(
        SOCKET   s,
        LPWSABUF lpOutboundDisconnectData
 ){
-            char whatToDo = WhatToDoInFunction(*"WSASendDisconnect");
+            char whatToDo = WhatToDoInFunction("WSASendDisconnect");
             if(whatToDo == *"b"){
                 std::string logMsg("WSASendDisconnect$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("lpOutboundDisconnectData: ") + generic_log(lpOutboundDisconnectData)+std::string("$");
@@ -2836,7 +2730,7 @@ int WSAAPI __stdcall newWSASendMsg(
         LPWSAOVERLAPPED                    lpOverlapped,
         LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"WSASendMsg");
+            char whatToDo = WhatToDoInFunction("WSASendMsg");
             if(whatToDo == *"b"){
                 std::string logMsg("WSASendMsg$");logMsg += std::string("Handle: ") + generic_log(Handle)+std::string("$");
 logMsg += std::string("lpMsg: ") + generic_log(lpMsg)+std::string("$");
@@ -2880,7 +2774,7 @@ int WSAAPI __stdcall newWSASendTo(
         LPWSAOVERLAPPED                    lpOverlapped,
         LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"WSASendTo");
+            char whatToDo = WhatToDoInFunction("WSASendTo");
             if(whatToDo == *"b"){
                 std::string logMsg("WSASendTo$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("lpBuffers: ") + generic_log(lpBuffers)+std::string("$");
@@ -2922,7 +2816,7 @@ logMsg += std::string("lpCompletionRoutine: ") + generic_log(lpCompletionRoutine
 BOOL WSAAPI __stdcall newWSASetEvent(
        WSAEVENT hEvent
 ){
-            char whatToDo = WhatToDoInFunction(*"WSASetEvent");
+            char whatToDo = WhatToDoInFunction("WSASetEvent");
             if(whatToDo == *"b"){
                 std::string logMsg("WSASetEvent$");logMsg += std::string("hEvent: ") + generic_log(hEvent)+std::string("$");
 
@@ -2948,7 +2842,7 @@ BOOL WSAAPI __stdcall newWSASetEvent(
 void __stdcall newWSASetLastError(
        int iError
 ){
-            char whatToDo = WhatToDoInFunction(*"WSASetLastError");
+            char whatToDo = WhatToDoInFunction("WSASetLastError");
             if(whatToDo == *"b"){
                 std::string logMsg("WSASetLastError$");logMsg += std::string("iError: ") + generic_log(iError)+std::string("$");
 
@@ -2973,7 +2867,7 @@ INT WSAAPI __stdcall newWSASetServiceA(
        WSAESETSERVICEOP essoperation,
        DWORD            dwControlFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"WSASetServiceA");
+            char whatToDo = WhatToDoInFunction("WSASetServiceA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSASetServiceA$");logMsg += std::string("lpqsRegInfo: ") + generic_log(lpqsRegInfo)+std::string("$");
 logMsg += std::string("essoperation: ") + generic_log(essoperation)+std::string("$");
@@ -3008,7 +2902,7 @@ SOCKET WSAAPI __stdcall newWSASocketA(
        GROUP               g,
        DWORD               dwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"WSASocketA");
+            char whatToDo = WhatToDoInFunction("WSASocketA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSASocketA$");logMsg += std::string("af: ") + generic_log(af)+std::string("$");
 logMsg += std::string("type: ") + generic_log(type)+std::string("$");
@@ -3045,7 +2939,7 @@ int __stdcall newWSAStartup(
         WORD      wVersionRequired,
         LPWSADATA lpWSAData
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAStartup");
+            char whatToDo = WhatToDoInFunction("WSAStartup");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAStartup$");logMsg += std::string("wVersionRequired: ") + generic_log(wVersionRequired)+std::string("$");
 logMsg += std::string("lpWSAData: ") + generic_log(lpWSAData)+std::string("$");
@@ -3077,7 +2971,7 @@ INT WSAAPI __stdcall newWSAStringToAddressA(
                  LPSOCKADDR          lpAddress,
                  LPINT               lpAddressLength
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAStringToAddressA");
+            char whatToDo = WhatToDoInFunction("WSAStringToAddressA");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAStringToAddressA$");logMsg += std::string("AddressString: ") + generic_log(AddressString)+std::string("$");
 logMsg += std::string("AddressFamily: ") + generic_log(AddressFamily)+std::string("$");
@@ -3115,7 +3009,7 @@ DWORD WSAAPI __stdcall newWSAWaitForMultipleEvents(
        DWORD          dwTimeout,
        BOOL           fAlertable
 ){
-            char whatToDo = WhatToDoInFunction(*"WSAWaitForMultipleEvents");
+            char whatToDo = WhatToDoInFunction("WSAWaitForMultipleEvents");
             if(whatToDo == *"b"){
                 std::string logMsg("WSAWaitForMultipleEvents$");logMsg += std::string("cEvents: ") + generic_log(cEvents)+std::string("$");
 logMsg += std::string("lphEvents: ") + generic_log(lphEvents)+std::string("$");

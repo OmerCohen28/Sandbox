@@ -11,7 +11,6 @@
 #pragma comment(lib,"ws2_32")
 #pragma warning(disable : 4996)
 
-#define _path_to_virus_ "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe"
 #define _my_addr_ "127.0.0.1"
 
 #ifdef mom
@@ -92,37 +91,41 @@ void GetFunctionsToHook(SOCKET* sock) {
 }
 
 
-int main()
+int main(int argc, char* argv[])
 {
-    SOCKET* sock = SetSocketUp();
-    if (*sock == INVALID_SOCKET || *sock == NULL || sock == nullptr) {
-        std::cout << "error connecting to python server\n";
-        return 1;
-    }
+    //SOCKET* sock = SetSocketUp();
+    //if (*sock == INVALID_SOCKET || *sock == NULL || sock == nullptr) {
+    //    std::cout << "error connecting to python server\n";
+    //    return 1;
+    //}
 
-    while (true) {
-        std::cout << "what file would you like to run?\n";
-        std::cout << "type \"stop\" if you would like to stop execution,\ntype defualt to run the default virus provided by the program\n";
-        std::cout << "path: ";
-        std::string file{};
-        //std::cin >> file;
-        std::getline(std::cin, file);
-        std::cout << file.c_str() << '\n';
-        std::cout << "what is the max size you want to allow for the process? (in MB): ";
-        int size;
-        std::cin >> size;
-        if (file == "stop") {
-            break;
-        }
-        GetFunctionsToHook(sock);
-        if (file == "default") {
-            std::string path{ _path_to_virus_ };
-            inject_dll(path, size);
-        }
-        else {
-            inject_dll(file, size);
-        }
+    //while (true) {
+    //    std::cout << "what file would you like to run?\n";
+    //    std::cout << "type \"stop\" if you would like to stop execution,\ntype defualt to run the default virus provided by the program\n";
+    //    std::cout << "path: ";
+    //    std::string file{};
+    //    //std::cin >> file;
+    //    std::getline(std::cin, file);
+    //    std::cout << file.c_str() << '\n';
+    //    std::cout << "what is the max size you want to allow for the process? (in MB): ";
+    //    int size;
+    //    std::cin >> size;
+    //    if (file == "stop") {
+    //        break;
+    //    }
+    //    GetFunctionsToHook(sock);
+    //    if (file == "default") {
+    //        std::string path{ _path_to_virus_ };
+    //        inject_dll(path, size);
+    //    }
+        //else {
+        //    inject_dll(file, size);
+        //}
+    //}
+    //std::cout << "thank you for using SafeBox :)\n";
+    if (argc != 3) {
+        return 0;
     }
-    std::cout << "thank you for using SafeBox :)\n";
+    inject_dll(std::string(argv[1]), std::stoi(argv[2]));
     return 0;
 }

@@ -41,7 +41,7 @@ void test_sock() {
 
 	sockaddr_in saServer;
 	saServer.sin_family = AF_INET;
-	saServer.sin_addr.S_un.S_addr = inet_addr("10.100.102.5");
+	saServer.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 	saServer.sin_port = htons(50500);
 	iResult = connect(sock, (SOCKADDR*)&saServer, sizeof(saServer));
 	if (iResult == SOCKET_ERROR) {

@@ -30,52 +30,7 @@ extern HINSTANCE hLibReg;
 extern HANDLE LOGfile;
 extern bool IsMyCall;
 
-std::string ToStringSocket(SOCKET s)
-{
-    SOCKADDR_IN src_addr, dst_addr;
-    int src_len = sizeof(src_addr), dst_len = sizeof(dst_addr);
-    std::string result;
 
-    if (getsockname(s, (SOCKADDR*)&src_addr, &src_len) == SOCKET_ERROR) {
-        result = "Error getting local endpoint address and port.";
-        return result;
-    }
-    if (getpeername(s, (SOCKADDR*)&dst_addr, &dst_len) == SOCKET_ERROR) {
-        result = "Error getting remote endpoint address and port.";
-        return result;
-    }
-
-    char src_ip[16], dst_ip[16];
-    inet_ntop(AF_INET, &src_addr.sin_addr, src_ip, sizeof(src_ip));
-    inet_ntop(AF_INET, &dst_addr.sin_addr, dst_ip, sizeof(dst_ip));
-
-    result = std::string(src_ip) + ":" + std::to_string(ntohs(src_addr.sin_port))
-        + " -> " + std::string(dst_ip) + ":" + std::to_string(ntohs(dst_addr.sin_port));
-
-    return result;
-}
-
-std::string sockaddrToString(const sockaddr* sa) {
-    std::stringstream ss;
-    if (sa->sa_family == AF_INET) {
-        // IPv4
-        const sockaddr_in* sin = reinterpret_cast<const sockaddr_in*>(sa);
-        char ip[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &(sin->sin_addr), ip, INET_ADDRSTRLEN);
-        ss << ip << ":" << ntohs(sin->sin_port);
-    }
-    else if (sa->sa_family == AF_INET6) {
-        // IPv6
-        const sockaddr_in6* sin6 = reinterpret_cast<const sockaddr_in6*>(sa);
-        char ip[INET6_ADDRSTRLEN];
-        inet_ntop(AF_INET6, &(sin6->sin6_addr), ip, INET6_ADDRSTRLEN);
-        ss << "[" << ip << "]:" << ntohs(sin6->sin6_port);
-    }
-    else {
-        ss << "Unknown family type: " << sa->sa_family;
-    }
-    return ss.str();
-}
 
 
 template <typename T>
@@ -150,14 +105,14 @@ std::string generic_log(T arg) {
         char buffer[32];
         time_t now = arg.tv_sec;
         struct tm* timeinfo = localtime(&now);
-        strftime(buffer, sizeof(buffer), %Y-%m-%d %H:%M:%S, timeinfo);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
         return std::string(buffer);
     }
     if constexpr (std::is_same_v < T, timeval*>) {
         char buffer[32];
         time_t now = (*arg).tv_sec;
         struct tm* timeinfo = localtime(&now);
-        strftime(buffer, sizeof(buffer), %Y-%m-%d %H:%M:%S, timeinfo);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
         return std::string(buffer);
     }
     return "Can't Parse Data";
@@ -169,7 +124,7 @@ BOOL __stdcall newGetSystemRegistryQuota(
                   PDWORD pdwQuotaAllowed,
                   PDWORD pdwQuotaUsed
 ){
-            char whatToDo = WhatToDoInFunction(*"GetSystemRegistryQuota");
+            char whatToDo = WhatToDoInFunction("GetSystemRegistryQuota");
             if(whatToDo == *"b"){
                 std::string logMsg("GetSystemRegistryQuota$");logMsg += std::string("pdwQuotaAllowed: ") + generic_log(pdwQuotaAllowed)+std::string("$");
 logMsg += std::string("pdwQuotaUsed: ") + generic_log(pdwQuotaUsed)+std::string("$");
@@ -197,7 +152,7 @@ logMsg += std::string("pdwQuotaUsed: ") + generic_log(pdwQuotaUsed)+std::string(
 LSTATUS __stdcall newRegCloseKey(
        HKEY hKey
 ){
-            char whatToDo = WhatToDoInFunction(*"RegCloseKey");
+            char whatToDo = WhatToDoInFunction("RegCloseKey");
             if(whatToDo == *"b"){
                 std::string logMsg("RegCloseKey$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 
@@ -225,7 +180,7 @@ LSTATUS __stdcall newRegConnectRegistryA(
                  HKEY   hKey,
                  PHKEY  phkResult
 ){
-            char whatToDo = WhatToDoInFunction(*"RegConnectRegistryA");
+            char whatToDo = WhatToDoInFunction("RegConnectRegistryA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegConnectRegistryA$");logMsg += std::string("lpMachineName: ") + generic_log(lpMachineName)+std::string("$");
 logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
@@ -257,7 +212,7 @@ LSTATUS __stdcall newRegCopyTreeA(
                  LPCSTR lpSubKey,
                  HKEY   hKeyDest
 ){
-            char whatToDo = WhatToDoInFunction(*"RegCopyTreeA");
+            char whatToDo = WhatToDoInFunction("RegCopyTreeA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegCopyTreeA$");logMsg += std::string("hKeySrc: ") + generic_log(hKeySrc)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -295,7 +250,7 @@ LSTATUS __stdcall newRegCreateKeyExA(
                   PHKEY                       phkResult,
                   LPDWORD                     lpdwDisposition
 ){
-            char whatToDo = WhatToDoInFunction(*"RegCreateKeyExA");
+            char whatToDo = WhatToDoInFunction("RegCreateKeyExA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegCreateKeyExA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -347,7 +302,7 @@ LSTATUS __stdcall newRegCreateKeyTransactedA(
                   HANDLE                      hTransaction,
                   PVOID                       pExtendedParemeter
 ){
-            char whatToDo = WhatToDoInFunction(*"RegCreateKeyTransactedA");
+            char whatToDo = WhatToDoInFunction("RegCreateKeyTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegCreateKeyTransactedA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -394,7 +349,7 @@ LSTATUS __stdcall newRegDeleteKeyA(
        HKEY   hKey,
        LPCSTR lpSubKey
 ){
-            char whatToDo = WhatToDoInFunction(*"RegDeleteKeyA");
+            char whatToDo = WhatToDoInFunction("RegDeleteKeyA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDeleteKeyA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -425,7 +380,7 @@ LSTATUS __stdcall newRegDeleteKeyExA(
        REGSAM samDesired,
        DWORD  Reserved
 ){
-            char whatToDo = WhatToDoInFunction(*"RegDeleteKeyExA");
+            char whatToDo = WhatToDoInFunction("RegDeleteKeyExA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDeleteKeyExA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -462,7 +417,7 @@ LSTATUS __stdcall newRegDeleteKeyTransactedA(
        HANDLE hTransaction,
        PVOID  pExtendedParameter
 ){
-            char whatToDo = WhatToDoInFunction(*"RegDeleteKeyTransactedA");
+            char whatToDo = WhatToDoInFunction("RegDeleteKeyTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDeleteKeyTransactedA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -500,7 +455,7 @@ LSTATUS __stdcall newRegDeleteKeyValueA(
                  LPCSTR lpSubKey,
                  LPCSTR lpValueName
 ){
-            char whatToDo = WhatToDoInFunction(*"RegDeleteKeyValueA");
+            char whatToDo = WhatToDoInFunction("RegDeleteKeyValueA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDeleteKeyValueA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -531,7 +486,7 @@ LSTATUS __stdcall newRegDeleteTreeA(
                  HKEY   hKey,
                  LPCSTR lpSubKey
 ){
-            char whatToDo = WhatToDoInFunction(*"RegDeleteTreeA");
+            char whatToDo = WhatToDoInFunction("RegDeleteTreeA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDeleteTreeA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -560,7 +515,7 @@ LSTATUS __stdcall newRegDeleteValueA(
                  HKEY   hKey,
                  LPCSTR lpValueName
 ){
-            char whatToDo = WhatToDoInFunction(*"RegDeleteValueA");
+            char whatToDo = WhatToDoInFunction("RegDeleteValueA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDeleteValueA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpValueName: ") + generic_log(lpValueName)+std::string("$");
@@ -586,7 +541,7 @@ logMsg += std::string("lpValueName: ") + generic_log(lpValueName)+std::string("$
 
 }
 LSTATUS __stdcall newRegDisablePredefinedCache(){
-            char whatToDo = WhatToDoInFunction(*"RegDisablePredefinedCache");
+            char whatToDo = WhatToDoInFunction("RegDisablePredefinedCache");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDisablePredefinedCache$");
                 log(logMsg);
@@ -608,7 +563,7 @@ LSTATUS __stdcall newRegDisablePredefinedCache(){
 
 }
 LSTATUS __stdcall newRegDisablePredefinedCacheEx(){
-            char whatToDo = WhatToDoInFunction(*"RegDisablePredefinedCacheEx");
+            char whatToDo = WhatToDoInFunction("RegDisablePredefinedCacheEx");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDisablePredefinedCacheEx$");
                 log(logMsg);
@@ -632,7 +587,7 @@ LSTATUS __stdcall newRegDisablePredefinedCacheEx(){
 LONG __stdcall newRegDisableReflectionKey(
        HKEY hBase
 ){
-            char whatToDo = WhatToDoInFunction(*"RegDisableReflectionKey");
+            char whatToDo = WhatToDoInFunction("RegDisableReflectionKey");
             if(whatToDo == *"b"){
                 std::string logMsg("RegDisableReflectionKey$");logMsg += std::string("hBase: ") + generic_log(hBase)+std::string("$");
 
@@ -658,7 +613,7 @@ LONG __stdcall newRegDisableReflectionKey(
 LONG __stdcall newRegEnableReflectionKey(
        HKEY hBase
 ){
-            char whatToDo = WhatToDoInFunction(*"RegEnableReflectionKey");
+            char whatToDo = WhatToDoInFunction("RegEnableReflectionKey");
             if(whatToDo == *"b"){
                 std::string logMsg("RegEnableReflectionKey$");logMsg += std::string("hBase: ") + generic_log(hBase)+std::string("$");
 
@@ -691,7 +646,7 @@ LSTATUS __stdcall newRegEnumKeyExA(
                       LPDWORD   lpcchClass,
                       PFILETIME lpftLastWriteTime
 ){
-            char whatToDo = WhatToDoInFunction(*"RegEnumKeyExA");
+            char whatToDo = WhatToDoInFunction("RegEnumKeyExA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegEnumKeyExA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("dwIndex: ") + generic_log(dwIndex)+std::string("$");
@@ -738,7 +693,7 @@ LSTATUS __stdcall newRegEnumValueA(
                       LPBYTE  lpData,
                       LPDWORD lpcbData
 ){
-            char whatToDo = WhatToDoInFunction(*"RegEnumValueA");
+            char whatToDo = WhatToDoInFunction("RegEnumValueA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegEnumValueA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("dwIndex: ") + generic_log(dwIndex)+std::string("$");
@@ -778,7 +733,7 @@ logMsg += std::string("lpcbData: ") + generic_log(lpcbData)+std::string("$");
 LSTATUS __stdcall newRegFlushKey(
        HKEY hKey
 ){
-            char whatToDo = WhatToDoInFunction(*"RegFlushKey");
+            char whatToDo = WhatToDoInFunction("RegFlushKey");
             if(whatToDo == *"b"){
                 std::string logMsg("RegFlushKey$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 
@@ -807,7 +762,7 @@ LSTATUS __stdcall newRegGetKeySecurity(
                   PSECURITY_DESCRIPTOR pSecurityDescriptor,
                   LPDWORD              lpcbSecurityDescriptor
 ){
-            char whatToDo = WhatToDoInFunction(*"RegGetKeySecurity");
+            char whatToDo = WhatToDoInFunction("RegGetKeySecurity");
             if(whatToDo == *"b"){
                 std::string logMsg("RegGetKeySecurity$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("SecurityInformation: ") + generic_log(SecurityInformation)+std::string("$");
@@ -845,7 +800,7 @@ LSTATUS __stdcall newRegGetValueA(
                       PVOID   pvData,
                       LPDWORD pcbData
 ){
-            char whatToDo = WhatToDoInFunction(*"RegGetValueA");
+            char whatToDo = WhatToDoInFunction("RegGetValueA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegGetValueA$");logMsg += std::string("hkey: ") + generic_log(hkey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -885,7 +840,7 @@ LSTATUS __stdcall newRegLoadKeyA(
                  LPCSTR lpSubKey,
                  LPCSTR lpFile
 ){
-            char whatToDo = WhatToDoInFunction(*"RegLoadKeyA");
+            char whatToDo = WhatToDoInFunction("RegLoadKeyA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegLoadKeyA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -921,7 +876,7 @@ LSTATUS __stdcall newRegLoadMUIStringA(
                   DWORD   Flags,
                   LPCSTR  pszDirectory
 ){
-            char whatToDo = WhatToDoInFunction(*"RegLoadMUIStringA");
+            char whatToDo = WhatToDoInFunction("RegLoadMUIStringA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegLoadMUIStringA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("pszValue: ") + generic_log(pszValue)+std::string("$");
@@ -963,7 +918,7 @@ LSTATUS __stdcall newRegNotifyChangeKeyValue(
                  HANDLE hEvent,
                  BOOL   fAsynchronous
 ){
-            char whatToDo = WhatToDoInFunction(*"RegNotifyChangeKeyValue");
+            char whatToDo = WhatToDoInFunction("RegNotifyChangeKeyValue");
             if(whatToDo == *"b"){
                 std::string logMsg("RegNotifyChangeKeyValue$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("bWatchSubtree: ") + generic_log(bWatchSubtree)+std::string("$");
@@ -998,7 +953,7 @@ LSTATUS __stdcall newRegOpenCurrentUser(
         REGSAM samDesired,
         PHKEY  phkResult
 ){
-            char whatToDo = WhatToDoInFunction(*"RegOpenCurrentUser");
+            char whatToDo = WhatToDoInFunction("RegOpenCurrentUser");
             if(whatToDo == *"b"){
                 std::string logMsg("RegOpenCurrentUser$");logMsg += std::string("samDesired: ") + generic_log(samDesired)+std::string("$");
 logMsg += std::string("phkResult: ") + generic_log(phkResult)+std::string("$");
@@ -1030,7 +985,7 @@ LSTATUS __stdcall newRegOpenKeyExA(
                  REGSAM samDesired,
                  PHKEY  phkResult
 ){
-            char whatToDo = WhatToDoInFunction(*"RegOpenKeyExA");
+            char whatToDo = WhatToDoInFunction("RegOpenKeyExA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegOpenKeyExA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -1070,7 +1025,7 @@ LSTATUS __stdcall newRegOpenKeyTransactedA(
                  HANDLE hTransaction,
                  PVOID  pExtendedParemeter
 ){
-            char whatToDo = WhatToDoInFunction(*"RegOpenKeyTransactedA");
+            char whatToDo = WhatToDoInFunction("RegOpenKeyTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegOpenKeyTransactedA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -1111,7 +1066,7 @@ LSTATUS __stdcall newRegOpenUserClassesRoot(
         REGSAM samDesired,
         PHKEY  phkResult
 ){
-            char whatToDo = WhatToDoInFunction(*"RegOpenUserClassesRoot");
+            char whatToDo = WhatToDoInFunction("RegOpenUserClassesRoot");
             if(whatToDo == *"b"){
                 std::string logMsg("RegOpenUserClassesRoot$");logMsg += std::string("hToken: ") + generic_log(hToken)+std::string("$");
 logMsg += std::string("dwOptions: ") + generic_log(dwOptions)+std::string("$");
@@ -1144,7 +1099,7 @@ LSTATUS __stdcall newRegOverridePredefKey(
                  HKEY hKey,
                  HKEY hNewHKey
 ){
-            char whatToDo = WhatToDoInFunction(*"RegOverridePredefKey");
+            char whatToDo = WhatToDoInFunction("RegOverridePredefKey");
             if(whatToDo == *"b"){
                 std::string logMsg("RegOverridePredefKey$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("hNewHKey: ") + generic_log(hNewHKey)+std::string("$");
@@ -1183,7 +1138,7 @@ LSTATUS __stdcall newRegQueryInfoKeyA(
                       LPDWORD   lpcbSecurityDescriptor,
                       PFILETIME lpftLastWriteTime
 ){
-            char whatToDo = WhatToDoInFunction(*"RegQueryInfoKeyA");
+            char whatToDo = WhatToDoInFunction("RegQueryInfoKeyA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegQueryInfoKeyA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpClass: ") + generic_log(lpClass)+std::string("$");
@@ -1235,7 +1190,7 @@ LSTATUS __stdcall newRegQueryMultipleValuesA(
                       LPSTR    lpValueBuf,
                       LPDWORD  ldwTotsize
 ){
-            char whatToDo = WhatToDoInFunction(*"RegQueryMultipleValuesA");
+            char whatToDo = WhatToDoInFunction("RegQueryMultipleValuesA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegQueryMultipleValuesA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("val_list: ") + generic_log(val_list)+std::string("$");
@@ -1270,7 +1225,7 @@ LONG __stdcall newRegQueryReflectionKey(
         HKEY hBase,
         BOOL *bIsReflectionDisabled
 ){
-            char whatToDo = WhatToDoInFunction(*"RegQueryReflectionKey");
+            char whatToDo = WhatToDoInFunction("RegQueryReflectionKey");
             if(whatToDo == *"b"){
                 std::string logMsg("RegQueryReflectionKey$");logMsg += std::string("hBase: ") + generic_log(hBase)+std::string("$");
 logMsg += std::string("bIsReflectionDisabled: ") + generic_log(bIsReflectionDisabled)+std::string("$");
@@ -1303,7 +1258,7 @@ LSTATUS __stdcall newRegQueryValueExA(
                       LPBYTE  lpData,
                       LPDWORD lpcbData
 ){
-            char whatToDo = WhatToDoInFunction(*"RegQueryValueExA");
+            char whatToDo = WhatToDoInFunction("RegQueryValueExA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegQueryValueExA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpValueName: ") + generic_log(lpValueName)+std::string("$");
@@ -1341,7 +1296,7 @@ LSTATUS __stdcall newRegRenameKey(
   LPCWSTR lpSubKeyName,
   LPCWSTR lpNewKeyName
 ){
-            char whatToDo = WhatToDoInFunction(*"RegRenameKey");
+            char whatToDo = WhatToDoInFunction("RegRenameKey");
             if(whatToDo == *"b"){
                 std::string logMsg("RegRenameKey$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKeyName: ") + generic_log(lpSubKeyName)+std::string("$");
@@ -1374,7 +1329,7 @@ LSTATUS __stdcall newRegReplaceKeyA(
                  LPCSTR lpNewFile,
                  LPCSTR lpOldFile
 ){
-            char whatToDo = WhatToDoInFunction(*"RegReplaceKeyA");
+            char whatToDo = WhatToDoInFunction("RegReplaceKeyA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegReplaceKeyA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -1408,7 +1363,7 @@ LSTATUS __stdcall newRegRestoreKeyA(
        LPCSTR lpFile,
        DWORD  dwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"RegRestoreKeyA");
+            char whatToDo = WhatToDoInFunction("RegRestoreKeyA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegRestoreKeyA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpFile: ") + generic_log(lpFile)+std::string("$");
@@ -1440,7 +1395,7 @@ LSTATUS __stdcall newRegSaveKeyA(
                  LPCSTR                      lpFile,
                  const LPSECURITY_ATTRIBUTES lpSecurityAttributes
 ){
-            char whatToDo = WhatToDoInFunction(*"RegSaveKeyA");
+            char whatToDo = WhatToDoInFunction("RegSaveKeyA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegSaveKeyA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpFile: ") + generic_log(lpFile)+std::string("$");
@@ -1473,7 +1428,7 @@ LSTATUS __stdcall newRegSaveKeyExA(
                  const LPSECURITY_ATTRIBUTES lpSecurityAttributes,
                  DWORD                       Flags
 ){
-            char whatToDo = WhatToDoInFunction(*"RegSaveKeyExA");
+            char whatToDo = WhatToDoInFunction("RegSaveKeyExA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegSaveKeyExA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpFile: ") + generic_log(lpFile)+std::string("$");
@@ -1510,7 +1465,7 @@ LSTATUS __stdcall newRegSetKeyValueA(
                  LPCVOID lpData,
                  DWORD   cbData
 ){
-            char whatToDo = WhatToDoInFunction(*"RegSetKeyValueA");
+            char whatToDo = WhatToDoInFunction("RegSetKeyValueA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegSetKeyValueA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -1548,7 +1503,7 @@ LSTATUS __stdcall newRegSetKeySecurity(
        SECURITY_INFORMATION SecurityInformation,
        PSECURITY_DESCRIPTOR pSecurityDescriptor
 ){
-            char whatToDo = WhatToDoInFunction(*"RegSetKeySecurity");
+            char whatToDo = WhatToDoInFunction("RegSetKeySecurity");
             if(whatToDo == *"b"){
                 std::string logMsg("RegSetKeySecurity$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("SecurityInformation: ") + generic_log(SecurityInformation)+std::string("$");
@@ -1583,7 +1538,7 @@ LSTATUS __stdcall newRegSetValueExA(
                  const BYTE *lpData,
                  DWORD      cbData
 ){
-            char whatToDo = WhatToDoInFunction(*"RegSetValueExA");
+            char whatToDo = WhatToDoInFunction("RegSetValueExA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegSetValueExA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpValueName: ") + generic_log(lpValueName)+std::string("$");
@@ -1620,7 +1575,7 @@ LSTATUS __stdcall newRegUnLoadKeyA(
                  HKEY   hKey,
                  LPCSTR lpSubKey
 ){
-            char whatToDo = WhatToDoInFunction(*"RegUnLoadKeyA");
+            char whatToDo = WhatToDoInFunction("RegUnLoadKeyA");
             if(whatToDo == *"b"){
                 std::string logMsg("RegUnLoadKeyA$");logMsg += std::string("hKey: ") + generic_log(hKey)+std::string("$");
 logMsg += std::string("lpSubKey: ") + generic_log(lpSubKey)+std::string("$");
@@ -1651,7 +1606,7 @@ UINT __stdcall newGetPrivateProfileInt(
        INT     nDefault,
        LPCTSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"GetPrivateProfileInt");
+            char whatToDo = WhatToDoInFunction("GetPrivateProfileInt");
             if(whatToDo == *"b"){
                 std::string logMsg("GetPrivateProfileInt$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpKeyName: ") + generic_log(lpKeyName)+std::string("$");
@@ -1686,7 +1641,7 @@ DWORD __stdcall newGetPrivateProfileSection(
         DWORD   nSize,
         LPCTSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"GetPrivateProfileSection");
+            char whatToDo = WhatToDoInFunction("GetPrivateProfileSection");
             if(whatToDo == *"b"){
                 std::string logMsg("GetPrivateProfileSection$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpReturnedString: ") + generic_log(lpReturnedString)+std::string("$");
@@ -1720,7 +1675,7 @@ DWORD __stdcall newGetPrivateProfileSectionNames(
         DWORD   nSize,
         LPCTSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"GetPrivateProfileSectionNames");
+            char whatToDo = WhatToDoInFunction("GetPrivateProfileSectionNames");
             if(whatToDo == *"b"){
                 std::string logMsg("GetPrivateProfileSectionNames$");logMsg += std::string("lpszReturnBuffer: ") + generic_log(lpszReturnBuffer)+std::string("$");
 logMsg += std::string("nSize: ") + generic_log(nSize)+std::string("$");
@@ -1755,7 +1710,7 @@ DWORD __stdcall newGetPrivateProfileString(
         DWORD   nSize,
         LPCTSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"GetPrivateProfileString");
+            char whatToDo = WhatToDoInFunction("GetPrivateProfileString");
             if(whatToDo == *"b"){
                 std::string logMsg("GetPrivateProfileString$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpKeyName: ") + generic_log(lpKeyName)+std::string("$");
@@ -1795,7 +1750,7 @@ BOOL __stdcall newGetPrivateProfileStruct(
         UINT    uSizeStruct,
         LPCTSTR szFile
 ){
-            char whatToDo = WhatToDoInFunction(*"GetPrivateProfileStruct");
+            char whatToDo = WhatToDoInFunction("GetPrivateProfileStruct");
             if(whatToDo == *"b"){
                 std::string logMsg("GetPrivateProfileStruct$");logMsg += std::string("lpszSection: ") + generic_log(lpszSection)+std::string("$");
 logMsg += std::string("lpszKey: ") + generic_log(lpszKey)+std::string("$");
@@ -1831,7 +1786,7 @@ UINT __stdcall newGetProfileIntA(
        LPCSTR lpKeyName,
        INT    nDefault
 ){
-            char whatToDo = WhatToDoInFunction(*"GetProfileIntA");
+            char whatToDo = WhatToDoInFunction("GetProfileIntA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetProfileIntA$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpKeyName: ") + generic_log(lpKeyName)+std::string("$");
@@ -1863,7 +1818,7 @@ DWORD __stdcall newGetProfileSectionA(
         LPSTR  lpReturnedString,
         DWORD  nSize
 ){
-            char whatToDo = WhatToDoInFunction(*"GetProfileSectionA");
+            char whatToDo = WhatToDoInFunction("GetProfileSectionA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetProfileSectionA$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpReturnedString: ") + generic_log(lpReturnedString)+std::string("$");
@@ -1897,7 +1852,7 @@ DWORD __stdcall newGetProfileStringA(
         LPSTR  lpReturnedString,
         DWORD  nSize
 ){
-            char whatToDo = WhatToDoInFunction(*"GetProfileStringA");
+            char whatToDo = WhatToDoInFunction("GetProfileStringA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetProfileStringA$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpKeyName: ") + generic_log(lpKeyName)+std::string("$");
@@ -1933,7 +1888,7 @@ BOOL __stdcall newWritePrivateProfileSectionA(
        LPCSTR lpString,
        LPCSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"WritePrivateProfileSectionA");
+            char whatToDo = WhatToDoInFunction("WritePrivateProfileSectionA");
             if(whatToDo == *"b"){
                 std::string logMsg("WritePrivateProfileSectionA$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpString: ") + generic_log(lpString)+std::string("$");
@@ -1966,7 +1921,7 @@ BOOL __stdcall newWritePrivateProfileStringA(
        LPCSTR lpString,
        LPCSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"WritePrivateProfileStringA");
+            char whatToDo = WhatToDoInFunction("WritePrivateProfileStringA");
             if(whatToDo == *"b"){
                 std::string logMsg("WritePrivateProfileStringA$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpKeyName: ") + generic_log(lpKeyName)+std::string("$");
@@ -2002,7 +1957,7 @@ BOOL __stdcall newWritePrivateProfileStructA(
        UINT   uSizeStruct,
        LPCSTR szFile
 ){
-            char whatToDo = WhatToDoInFunction(*"WritePrivateProfileStructA");
+            char whatToDo = WhatToDoInFunction("WritePrivateProfileStructA");
             if(whatToDo == *"b"){
                 std::string logMsg("WritePrivateProfileStructA$");logMsg += std::string("lpszSection: ") + generic_log(lpszSection)+std::string("$");
 logMsg += std::string("lpszKey: ") + generic_log(lpszKey)+std::string("$");
@@ -2037,7 +1992,7 @@ BOOL __stdcall newWriteProfileSectionA(
        LPCSTR lpAppName,
        LPCSTR lpString
 ){
-            char whatToDo = WhatToDoInFunction(*"WriteProfileSectionA");
+            char whatToDo = WhatToDoInFunction("WriteProfileSectionA");
             if(whatToDo == *"b"){
                 std::string logMsg("WriteProfileSectionA$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpString: ") + generic_log(lpString)+std::string("$");
@@ -2067,7 +2022,7 @@ BOOL __stdcall newWriteProfileStringA(
        LPCSTR lpKeyName,
        LPCSTR lpString
 ){
-            char whatToDo = WhatToDoInFunction(*"WriteProfileStringA");
+            char whatToDo = WhatToDoInFunction("WriteProfileStringA");
             if(whatToDo == *"b"){
                 std::string logMsg("WriteProfileStringA$");logMsg += std::string("lpAppName: ") + generic_log(lpAppName)+std::string("$");
 logMsg += std::string("lpKeyName: ") + generic_log(lpKeyName)+std::string("$");

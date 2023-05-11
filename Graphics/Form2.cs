@@ -11,14 +11,34 @@ using Python.Runtime;
 using IronPython;
 using IronPython.Compiler;
 using Python;
+using System.Net;
+using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace Graphics
 {
     public partial class Form2 : Form
     {
         static Dictionary<string, Color> function_to_color = new Dictionary<string, Color>();
+        public static TcpClient client = new TcpClient();
         public Form2()
         {
+            try
+            {
+               
+                client.Connect("127.0.0.1", 50505);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            // Check if the connection is successful
+            if (client.Connected)
+            {
+                Console.WriteLine("Connected to the server.");
+
+            }
             InitializeComponent();
         }
 
@@ -58,12 +78,22 @@ namespace Graphics
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            NetworkStream stream = client.GetStream();
             if (this.radioButton1.Checked)
             {
                 try
                 {
                     function_to_color.Add(this.textBox1.Text, Color.Orange);
+                    byte[] data = Encoding.UTF8.GetBytes("w"+this.textBox1.Text);
+                    stream.Write(data, 0, data.Length);
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    if(response == "0")
+                    {
+                        MessageBox.Show("Invalid function");
+                        return;
+                    }
                 }
                 catch
                 {
@@ -76,6 +106,16 @@ namespace Graphics
                 try
                 {
                     function_to_color.Add(this.textBox1.Text, Color.DarkRed);
+                    byte[] data = Encoding.UTF8.GetBytes("b"+this.textBox1.Text);
+                    stream.Write(data, 0, data.Length);
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    if (response == "0")
+                    {
+                        MessageBox.Show("Invalid function");
+                        return;
+                    }
                 }
                 catch
                 {
@@ -221,6 +261,11 @@ namespace Graphics
 
         private void button3_Click(object sender, EventArgs e)
         {
+            Process process2 = new Process();
+            process2.StartInfo.FileName = "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\injectDll\\Debug\\injectDll.exe";
+            process2.StartInfo.Arguments = "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe " + trackBar1.Value;
+            process2.Start();
+            InitializeComponent();
             Program.form2.Hide();
             Program.form3.ShowDialog();
             Thread thread = new Thread(Program.form3.updateGUIData);
@@ -244,6 +289,16 @@ namespace Graphics
         }
 
         private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
         {
 
         }

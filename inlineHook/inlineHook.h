@@ -23,7 +23,11 @@ extern HINSTANCE hLibReg;
 
 void mylog(char* buf, int size);
 void mylog1(const char* buf, int size);
-char WhatToDoInFunction(char);
+char WhatToDoInFunction(const char* func_name);
+std::string ToStringSocket(SOCKET s);
+
+std::string sockaddrToString(const sockaddr* sa);
+
 void log(std::string);
 
 class Hook {
@@ -346,10 +350,6 @@ public:
 			ReadProcessMemory(GetCurrentProcess(), (LPCVOID)tmp_hooked_addr, tmp_og_bytes, 6, NULL);
 			original_bytes.push_back(tmp_og_bytes);
 			hooked_addr.push_back(tmp_hooked_addr);
-		}
-
-		if (!DeleteFileA("..\\log.txt")) {
-			std::cout << "couldn't delete log.txt\n";
 		}
 		time(&begin);
 

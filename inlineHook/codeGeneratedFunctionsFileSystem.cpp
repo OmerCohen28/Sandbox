@@ -30,52 +30,6 @@ extern HINSTANCE hLibReg;
 extern HANDLE LOGfile;
 extern bool IsMyCall;
 
-std::string ToStringSocket(SOCKET s)
-{
-    SOCKADDR_IN src_addr, dst_addr;
-    int src_len = sizeof(src_addr), dst_len = sizeof(dst_addr);
-    std::string result;
-
-    if (getsockname(s, (SOCKADDR*)&src_addr, &src_len) == SOCKET_ERROR) {
-        result = "Error getting local endpoint address and port.";
-        return result;
-    }
-    if (getpeername(s, (SOCKADDR*)&dst_addr, &dst_len) == SOCKET_ERROR) {
-        result = "Error getting remote endpoint address and port.";
-        return result;
-    }
-
-    char src_ip[16], dst_ip[16];
-    inet_ntop(AF_INET, &src_addr.sin_addr, src_ip, sizeof(src_ip));
-    inet_ntop(AF_INET, &dst_addr.sin_addr, dst_ip, sizeof(dst_ip));
-
-    result = std::string(src_ip) + ":" + std::to_string(ntohs(src_addr.sin_port))
-        + " -> " + std::string(dst_ip) + ":" + std::to_string(ntohs(dst_addr.sin_port));
-
-    return result;
-}
-
-std::string sockaddrToString(const sockaddr* sa) {
-    std::stringstream ss;
-    if (sa->sa_family == AF_INET) {
-        // IPv4
-        const sockaddr_in* sin = reinterpret_cast<const sockaddr_in*>(sa);
-        char ip[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &(sin->sin_addr), ip, INET_ADDRSTRLEN);
-        ss << ip << ":" << ntohs(sin->sin_port);
-    }
-    else if (sa->sa_family == AF_INET6) {
-        // IPv6
-        const sockaddr_in6* sin6 = reinterpret_cast<const sockaddr_in6*>(sa);
-        char ip[INET6_ADDRSTRLEN];
-        inet_ntop(AF_INET6, &(sin6->sin6_addr), ip, INET6_ADDRSTRLEN);
-        ss << "[" << ip << "]:" << ntohs(sin6->sin6_port);
-    }
-    else {
-        ss << "Unknown family type: " << sa->sa_family;
-    }
-    return ss.str();
-}
 
 
 template <typename T>
@@ -150,14 +104,14 @@ std::string generic_log(T arg) {
         char buffer[32];
         time_t now = arg.tv_sec;
         struct tm* timeinfo = localtime(&now);
-        strftime(buffer, sizeof(buffer), %Y-%m-%d %H:%M:%S, timeinfo);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
         return std::string(buffer);
     }
     if constexpr (std::is_same_v < T, timeval*>) {
         char buffer[32];
         time_t now = (*arg).tv_sec;
         struct tm* timeinfo = localtime(&now);
-        strftime(buffer, sizeof(buffer), %Y-%m-%d %H:%M:%S, timeinfo);
+        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
         return std::string(buffer);
     }
     return "Can't Parse Data";
@@ -169,7 +123,7 @@ DWORD __stdcall newAddUsersToEncryptedFile(
     LPCWSTR                      lpFileName,
     PENCRYPTION_CERTIFICATE_LIST pEncryptionCertificates
 ){
-            char whatToDo = WhatToDoInFunction(*"AddUsersToEncryptedFile");
+            char whatToDo = WhatToDoInFunction("AddUsersToEncryptedFile");
             if(whatToDo == *"b"){
                 std::string logMsg("AddUsersToEncryptedFile$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("pEncryptionCertificates: ") + generic_log(pEncryptionCertificates)+std::string("$");
@@ -195,7 +149,7 @@ logMsg += std::string("pEncryptionCertificates: ") + generic_log(pEncryptionCert
 
 }
 BOOL __stdcall newAreFileApisANSI(){
-            char whatToDo = WhatToDoInFunction(*"AreFileApisANSI");
+            char whatToDo = WhatToDoInFunction("AreFileApisANSI");
             if(whatToDo == *"b"){
                 std::string logMsg("AreFileApisANSI$");
                 log(logMsg);
@@ -223,7 +177,7 @@ BOOL __stdcall newCheckNameLegalDOS8Dot3A(
     PBOOL  pbNameContainsSpaces,
     PBOOL  pbNameLegal
 ){
-            char whatToDo = WhatToDoInFunction(*"CheckNameLegalDOS8Dot3A");
+            char whatToDo = WhatToDoInFunction("CheckNameLegalDOS8Dot3A");
             if(whatToDo == *"b"){
                 std::string logMsg("CheckNameLegalDOS8Dot3A$");logMsg += std::string("lpName: ") + generic_log(lpName)+std::string("$");
 logMsg += std::string("lpOemName: ") + generic_log(lpOemName)+std::string("$");
@@ -257,7 +211,7 @@ logMsg += std::string("pbNameLegal: ") + generic_log(pbNameLegal)+std::string("$
 void __stdcall newCloseEncryptedFileRaw(
     PVOID pvContext
 ){
-            char whatToDo = WhatToDoInFunction(*"CloseEncryptedFileRaw");
+            char whatToDo = WhatToDoInFunction("CloseEncryptedFileRaw");
             if(whatToDo == *"b"){
                 std::string logMsg("CloseEncryptedFileRaw$");logMsg += std::string("pvContext: ") + generic_log(pvContext)+std::string("$");
 
@@ -282,7 +236,7 @@ BOOL __stdcall newCopyFile(
     LPCTSTR lpNewFileName,
     BOOL    bFailIfExists
 ){
-            char whatToDo = WhatToDoInFunction(*"CopyFile");
+            char whatToDo = WhatToDoInFunction("CopyFile");
             if(whatToDo == *"b"){
                 std::string logMsg("CopyFile$");logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
 logMsg += std::string("lpNewFileName: ") + generic_log(lpNewFileName)+std::string("$");
@@ -314,7 +268,7 @@ HRESULT __stdcall newCopyFile2(
     PCWSTR                        pwszNewFileName,
     COPYFILE2_EXTENDED_PARAMETERS* pExtendedParameters
 ){
-            char whatToDo = WhatToDoInFunction(*"CopyFile2");
+            char whatToDo = WhatToDoInFunction("CopyFile2");
             if(whatToDo == *"b"){
                 std::string logMsg("CopyFile2$");logMsg += std::string("pwszExistingFileName: ") + generic_log(pwszExistingFileName)+std::string("$");
 logMsg += std::string("pwszNewFileName: ") + generic_log(pwszNewFileName)+std::string("$");
@@ -349,7 +303,7 @@ BOOL __stdcall newCopyFileExA(
     LPBOOL             pbCancel,
     DWORD              dwCopyFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"CopyFileExA");
+            char whatToDo = WhatToDoInFunction("CopyFileExA");
             if(whatToDo == *"b"){
                 std::string logMsg("CopyFileExA$");logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
 logMsg += std::string("lpNewFileName: ") + generic_log(lpNewFileName)+std::string("$");
@@ -391,7 +345,7 @@ BOOL __stdcall newCopyFileTransactedA(
     DWORD              dwCopyFlags,
     HANDLE             hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"CopyFileTransactedA");
+            char whatToDo = WhatToDoInFunction("CopyFileTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("CopyFileTransactedA$");logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
 logMsg += std::string("lpNewFileName: ") + generic_log(lpNewFileName)+std::string("$");
@@ -435,8 +389,9 @@ HANDLE __stdcall newCreateFileA(
     DWORD                 dwFlagsAndAttributes,
     HANDLE                hTemplateFile
 ){
-            char whatToDo = WhatToDoInFunction(*"CreateFileA");
+            char whatToDo = WhatToDoInFunction("CreateFileA");
             if(whatToDo == *"b"){
+                std::cout << "inside hook of CreateFileA in block\n";
                 std::string logMsg("CreateFileA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("dwDesiredAccess: ") + generic_log(dwDesiredAccess)+std::string("$");
 logMsg += std::string("dwShareMode: ") + generic_log(dwShareMode)+std::string("$");
@@ -446,6 +401,7 @@ logMsg += std::string("dwFlagsAndAttributes: ") + generic_log(dwFlagsAndAttribut
 logMsg += std::string("hTemplateFile: ") + generic_log(hTemplateFile)+std::string("$");
 
                 log(logMsg);
+                std::cout << "returned from hook\n";
                 return NULL;
             }
             if(whatToDo == *"w"){    	       
@@ -477,7 +433,7 @@ HANDLE __stdcall newCreateFile2(
     DWORD                             dwCreationDisposition,
     LPCREATEFILE2_EXTENDED_PARAMETERS pCreateExParams
 ){
-            char whatToDo = WhatToDoInFunction(*"CreateFile2");
+            char whatToDo = WhatToDoInFunction("CreateFile2");
             if(whatToDo == *"b"){
                 std::string logMsg("CreateFile2$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("dwDesiredAccess: ") + generic_log(dwDesiredAccess)+std::string("$");
@@ -520,7 +476,7 @@ HANDLE __stdcall newCreateFileTransactedA(
     PUSHORT               pusMiniVersion,
     PVOID                 lpExtendedParameter
 ){
-            char whatToDo = WhatToDoInFunction(*"CreateFileTransactedA");
+            char whatToDo = WhatToDoInFunction("CreateFileTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("CreateFileTransactedA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("dwDesiredAccess: ") + generic_log(dwDesiredAccess)+std::string("$");
@@ -566,7 +522,7 @@ BOOL __stdcall newCreateHardLinkA(
     LPCSTR                lpExistingFileName,
     LPSECURITY_ATTRIBUTES lpSecurityAttributes
 ){
-            char whatToDo = WhatToDoInFunction(*"CreateHardLinkA");
+            char whatToDo = WhatToDoInFunction("CreateHardLinkA");
             if(whatToDo == *"b"){
                 std::string logMsg("CreateHardLinkA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
@@ -599,7 +555,7 @@ BOOL __stdcall newCreateHardLinkTransactedA(
     LPSECURITY_ATTRIBUTES lpSecurityAttributes,
     HANDLE                hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"CreateHardLinkTransactedA");
+            char whatToDo = WhatToDoInFunction("CreateHardLinkTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("CreateHardLinkTransactedA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
@@ -633,7 +589,7 @@ BOOLEAN __stdcall newCreateSymbolicLinkA(
     LPCSTR lpTargetFileName,
     DWORD  dwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"CreateSymbolicLinkA");
+            char whatToDo = WhatToDoInFunction("CreateSymbolicLinkA");
             if(whatToDo == *"b"){
                 std::string logMsg("CreateSymbolicLinkA$");logMsg += std::string("lpSymlinkFileName: ") + generic_log(lpSymlinkFileName)+std::string("$");
 logMsg += std::string("lpTargetFileName: ") + generic_log(lpTargetFileName)+std::string("$");
@@ -666,7 +622,7 @@ BOOLEAN __stdcall newCreateSymbolicLinkTransactedA(
     DWORD  dwFlags,
     HANDLE hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"CreateSymbolicLinkTransactedA");
+            char whatToDo = WhatToDoInFunction("CreateSymbolicLinkTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("CreateSymbolicLinkTransactedA$");logMsg += std::string("lpSymlinkFileName: ") + generic_log(lpSymlinkFileName)+std::string("$");
 logMsg += std::string("lpTargetFileName: ") + generic_log(lpTargetFileName)+std::string("$");
@@ -699,7 +655,7 @@ BOOL __stdcall newDecryptFileA(
     LPCSTR lpFileName,
     DWORD  dwReserved
 ){
-            char whatToDo = WhatToDoInFunction(*"DecryptFileA");
+            char whatToDo = WhatToDoInFunction("DecryptFileA");
             if(whatToDo == *"b"){
                 std::string logMsg("DecryptFileA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("dwReserved: ") + generic_log(dwReserved)+std::string("$");
@@ -727,7 +683,7 @@ logMsg += std::string("dwReserved: ") + generic_log(dwReserved)+std::string("$")
 BOOL __stdcall newDeleteFileA(
     LPCSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"DeleteFileA");
+            char whatToDo = WhatToDoInFunction("DeleteFileA");
             if(whatToDo == *"b"){
                 std::string logMsg("DeleteFileA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 
@@ -754,7 +710,7 @@ BOOL __stdcall newDeleteFileTransactedA(
     LPCSTR lpFileName,
     HANDLE hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"DeleteFileTransactedA");
+            char whatToDo = WhatToDoInFunction("DeleteFileTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("DeleteFileTransactedA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("hTransaction: ") + generic_log(hTransaction)+std::string("$");
@@ -786,7 +742,7 @@ DWORD __stdcall newDuplicateEncryptionInfoFile(
     DWORD                       dwAttributes,
     const LPSECURITY_ATTRIBUTES lpSecurityAttributes
 ){
-            char whatToDo = WhatToDoInFunction(*"DuplicateEncryptionInfoFile");
+            char whatToDo = WhatToDoInFunction("DuplicateEncryptionInfoFile");
             if(whatToDo == *"b"){
                 std::string logMsg("DuplicateEncryptionInfoFile$");logMsg += std::string("SrcFileName: ") + generic_log(SrcFileName)+std::string("$");
 logMsg += std::string("DstFileName: ") + generic_log(DstFileName)+std::string("$");
@@ -820,7 +776,7 @@ logMsg += std::string("lpSecurityAttributes: ") + generic_log(lpSecurityAttribut
 BOOL __stdcall newEncryptFileA(
     LPCSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"EncryptFileA");
+            char whatToDo = WhatToDoInFunction("EncryptFileA");
             if(whatToDo == *"b"){
                 std::string logMsg("EncryptFileA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 
@@ -847,7 +803,7 @@ BOOL __stdcall newEncryptionDisable(
     LPCWSTR DirPath,
     BOOL    Disable
 ){
-            char whatToDo = WhatToDoInFunction(*"EncryptionDisable");
+            char whatToDo = WhatToDoInFunction("EncryptionDisable");
             if(whatToDo == *"b"){
                 std::string logMsg("EncryptionDisable$");logMsg += std::string("DirPath: ") + generic_log(DirPath)+std::string("$");
 logMsg += std::string("Disable: ") + generic_log(Disable)+std::string("$");
@@ -876,7 +832,7 @@ BOOL newFileEncryptionStatusA(
     LPCSTR  lpFileName,
     LPDWORD lpStatus
 ){
-            char whatToDo = WhatToDoInFunction(*"FileEncryptionStatusA");
+            char whatToDo = WhatToDoInFunction("FileEncryptionStatusA");
             if(whatToDo == *"b"){
                 std::string logMsg("FileEncryptionStatusA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("lpStatus: ") + generic_log(lpStatus)+std::string("$");
@@ -904,7 +860,7 @@ logMsg += std::string("lpStatus: ") + generic_log(lpStatus)+std::string("$");
 BOOL newFindClose(
     HANDLE hFindFile
 ){
-            char whatToDo = WhatToDoInFunction(*"FindClose");
+            char whatToDo = WhatToDoInFunction("FindClose");
             if(whatToDo == *"b"){
                 std::string logMsg("FindClose$");logMsg += std::string("hFindFile: ") + generic_log(hFindFile)+std::string("$");
 
@@ -931,7 +887,7 @@ HANDLE __stdcall newFindFirstFileA(
     LPCSTR             lpFileName,
     LPWIN32_FIND_DATAA lpFindFileData
 ){
-            char whatToDo = WhatToDoInFunction(*"FindFirstFileA");
+            char whatToDo = WhatToDoInFunction("FindFirstFileA");
             if(whatToDo == *"b"){
                 std::string logMsg("FindFirstFileA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("lpFindFileData: ") + generic_log(lpFindFileData)+std::string("$");
@@ -964,7 +920,7 @@ HANDLE __stdcall newFindFirstFileExA(
     LPVOID             lpSearchFilter,
     DWORD              dwAdditionalFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"FindFirstFileExA");
+            char whatToDo = WhatToDoInFunction("FindFirstFileExA");
             if(whatToDo == *"b"){
                 std::string logMsg("FindFirstFileExA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("fInfoLevelId: ") + generic_log(fInfoLevelId)+std::string("$");
@@ -1004,7 +960,7 @@ HANDLE __stdcall newFindFirstFileNameTransactedW(
     PWSTR   LinkName,
     HANDLE  hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"FindFirstFileNameTransactedW");
+            char whatToDo = WhatToDoInFunction("FindFirstFileNameTransactedW");
             if(whatToDo == *"b"){
                 std::string logMsg("FindFirstFileNameTransactedW$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("dwFlags: ") + generic_log(dwFlags)+std::string("$");
@@ -1041,7 +997,7 @@ HANDLE __stdcall newFindFirstFileNameW(
     LPDWORD StringLength,
     PWSTR   LinkName
 ){
-            char whatToDo = WhatToDoInFunction(*"FindFirstFileNameW");
+            char whatToDo = WhatToDoInFunction("FindFirstFileNameW");
             if(whatToDo == *"b"){
                 std::string logMsg("FindFirstFileNameW$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("dwFlags: ") + generic_log(dwFlags)+std::string("$");
@@ -1079,7 +1035,7 @@ HANDLE __stdcall newFindFirstFileTransactedA(
     DWORD              dwAdditionalFlags,
     HANDLE             hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"FindFirstFileTransactedA");
+            char whatToDo = WhatToDoInFunction("FindFirstFileTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("FindFirstFileTransactedA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("fInfoLevelId: ") + generic_log(fInfoLevelId)+std::string("$");
@@ -1121,7 +1077,7 @@ HANDLE __stdcall newFindFirstStreamTransactedW(
     DWORD              dwFlags,
     HANDLE             hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"FindFirstStreamTransactedW");
+            char whatToDo = WhatToDoInFunction("FindFirstStreamTransactedW");
             if(whatToDo == *"b"){
                 std::string logMsg("FindFirstStreamTransactedW$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("InfoLevel: ") + generic_log(InfoLevel)+std::string("$");
@@ -1158,7 +1114,7 @@ HANDLE __stdcall newFindFirstStreamW(
     LPVOID             lpFindStreamData,
     DWORD              dwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"FindFirstStreamW");
+            char whatToDo = WhatToDoInFunction("FindFirstStreamW");
             if(whatToDo == *"b"){
                 std::string logMsg("FindFirstStreamW$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("InfoLevel: ") + generic_log(InfoLevel)+std::string("$");
@@ -1191,7 +1147,7 @@ BOOL __stdcall newFindNextFileA(
     HANDLE             hFindFile,
     LPWIN32_FIND_DATAA lpFindFileData
 ){
-            char whatToDo = WhatToDoInFunction(*"FindNextFileA");
+            char whatToDo = WhatToDoInFunction("FindNextFileA");
             if(whatToDo == *"b"){
                 std::string logMsg("FindNextFileA$");logMsg += std::string("hFindFile: ") + generic_log(hFindFile)+std::string("$");
 logMsg += std::string("lpFindFileData: ") + generic_log(lpFindFileData)+std::string("$");
@@ -1221,7 +1177,7 @@ BOOL __stdcall newFindNextFileNameW(
     LPDWORD StringLength,
     PWSTR   LinkName
 ){
-            char whatToDo = WhatToDoInFunction(*"FindNextFileNameW");
+            char whatToDo = WhatToDoInFunction("FindNextFileNameW");
             if(whatToDo == *"b"){
                 std::string logMsg("FindNextFileNameW$");logMsg += std::string("hFindStream: ") + generic_log(hFindStream)+std::string("$");
 logMsg += std::string("StringLength: ") + generic_log(StringLength)+std::string("$");
@@ -1252,7 +1208,7 @@ BOOL __stdcall newFindNextStreamW(
     HANDLE hFindStream,
     LPVOID lpFindStreamData
 ){
-            char whatToDo = WhatToDoInFunction(*"FindNextStreamW");
+            char whatToDo = WhatToDoInFunction("FindNextStreamW");
             if(whatToDo == *"b"){
                 std::string logMsg("FindNextStreamW$");logMsg += std::string("hFindStream: ") + generic_log(hFindStream)+std::string("$");
 logMsg += std::string("lpFindStreamData: ") + generic_log(lpFindStreamData)+std::string("$");
@@ -1280,7 +1236,7 @@ logMsg += std::string("lpFindStreamData: ") + generic_log(lpFindStreamData)+std:
 BOOL __stdcall newFlushFileBuffers(
     HANDLE hFile
 ){
-            char whatToDo = WhatToDoInFunction(*"FlushFileBuffers");
+            char whatToDo = WhatToDoInFunction("FlushFileBuffers");
             if(whatToDo == *"b"){
                 std::string logMsg("FlushFileBuffers$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 
@@ -1306,7 +1262,7 @@ BOOL __stdcall newFlushFileBuffers(
 void __stdcall newFreeEncryptionCertificateHashList(
     PENCRYPTION_CERTIFICATE_HASH_LIST pUsers
 ){
-            char whatToDo = WhatToDoInFunction(*"FreeEncryptionCertificateHashList");
+            char whatToDo = WhatToDoInFunction("FreeEncryptionCertificateHashList");
             if(whatToDo == *"b"){
                 std::string logMsg("FreeEncryptionCertificateHashList$");logMsg += std::string("pUsers: ") + generic_log(pUsers)+std::string("$");
 
@@ -1330,7 +1286,7 @@ BOOL __stdcall newGetBinaryTypeA(
     LPCSTR  lpApplicationName,
     LPDWORD lpBinaryType
 ){
-            char whatToDo = WhatToDoInFunction(*"GetBinaryTypeA");
+            char whatToDo = WhatToDoInFunction("GetBinaryTypeA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetBinaryTypeA$");logMsg += std::string("lpApplicationName: ") + generic_log(lpApplicationName)+std::string("$");
 logMsg += std::string("lpBinaryType: ") + generic_log(lpBinaryType)+std::string("$");
@@ -1359,7 +1315,7 @@ DWORD __stdcall newGetCompressedFileSizeA(
     LPCSTR  lpFileName,
     LPDWORD lpFileSizeHigh
 ){
-            char whatToDo = WhatToDoInFunction(*"GetCompressedFileSizeA");
+            char whatToDo = WhatToDoInFunction("GetCompressedFileSizeA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetCompressedFileSizeA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("lpFileSizeHigh: ") + generic_log(lpFileSizeHigh)+std::string("$");
@@ -1389,7 +1345,7 @@ DWORD __stdcall newGetCompressedFileSizeTransactedA(
     LPDWORD lpFileSizeHigh,
     HANDLE  hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"GetCompressedFileSizeTransactedA");
+            char whatToDo = WhatToDoInFunction("GetCompressedFileSizeTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetCompressedFileSizeTransactedA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("lpFileSizeHigh: ") + generic_log(lpFileSizeHigh)+std::string("$");
@@ -1419,7 +1375,7 @@ logMsg += std::string("hTransaction: ") + generic_log(hTransaction)+std::string(
 DWORD __stdcall newGetFileAttributesA(
     LPCSTR lpFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileAttributesA");
+            char whatToDo = WhatToDoInFunction("GetFileAttributesA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileAttributesA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 
@@ -1447,7 +1403,7 @@ BOOL __stdcall newGetFileAttributesExA(
     GET_FILEEX_INFO_LEVELS fInfoLevelId,
     LPVOID                 lpFileInformation
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileAttributesExA");
+            char whatToDo = WhatToDoInFunction("GetFileAttributesExA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileAttributesExA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("fInfoLevelId: ") + generic_log(fInfoLevelId)+std::string("$");
@@ -1480,7 +1436,7 @@ BOOL __stdcall newGetFileAttributesTransactedA(
     LPVOID                 lpFileInformation,
     HANDLE                 hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileAttributesTransactedA");
+            char whatToDo = WhatToDoInFunction("GetFileAttributesTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileAttributesTransactedA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("fInfoLevelId: ") + generic_log(fInfoLevelId)+std::string("$");
@@ -1517,7 +1473,7 @@ BOOL __stdcall newGetFileBandwidthReservation(
     LPDWORD lpTransferSize,
     LPDWORD lpNumOutstandingRequests
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileBandwidthReservation");
+            char whatToDo = WhatToDoInFunction("GetFileBandwidthReservation");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileBandwidthReservation$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpPeriodMilliseconds: ") + generic_log(lpPeriodMilliseconds)+std::string("$");
@@ -1554,7 +1510,7 @@ BOOL __stdcall newGetFileInformationByHandle(
     HANDLE                       hFile,
     LPBY_HANDLE_FILE_INFORMATION lpFileInformation
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileInformationByHandle");
+            char whatToDo = WhatToDoInFunction("GetFileInformationByHandle");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileInformationByHandle$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpFileInformation: ") + generic_log(lpFileInformation)+std::string("$");
@@ -1585,7 +1541,7 @@ BOOL __stdcall newGetFileInformationByHandleEx(
     LPVOID                    lpFileInformation,
     DWORD                     dwBufferSize
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileInformationByHandleEx");
+            char whatToDo = WhatToDoInFunction("GetFileInformationByHandleEx");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileInformationByHandleEx$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("FileInformationClass: ") + generic_log(FileInformationClass)+std::string("$");
@@ -1618,7 +1574,7 @@ DWORD __stdcall newGetFileSize(
     HANDLE  hFile,
     LPDWORD lpFileSizeHigh
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileSize");
+            char whatToDo = WhatToDoInFunction("GetFileSize");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileSize$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpFileSizeHigh: ") + generic_log(lpFileSizeHigh)+std::string("$");
@@ -1647,7 +1603,7 @@ BOOL __stdcall newGetFileSizeEx(
     HANDLE         hFile,
     PLARGE_INTEGER lpFileSize
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileSizeEx");
+            char whatToDo = WhatToDoInFunction("GetFileSizeEx");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileSizeEx$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpFileSize: ") + generic_log(lpFileSize)+std::string("$");
@@ -1675,7 +1631,7 @@ logMsg += std::string("lpFileSize: ") + generic_log(lpFileSize)+std::string("$")
 DWORD __stdcall newGetFileType(
     HANDLE hFile
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFileType");
+            char whatToDo = WhatToDoInFunction("GetFileType");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFileType$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 
@@ -1704,7 +1660,7 @@ DWORD __stdcall newGetFinalPathNameByHandleA(
     DWORD  cchFilePath,
     DWORD  dwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFinalPathNameByHandleA");
+            char whatToDo = WhatToDoInFunction("GetFinalPathNameByHandleA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFinalPathNameByHandleA$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpszFilePath: ") + generic_log(lpszFilePath)+std::string("$");
@@ -1739,7 +1695,7 @@ DWORD __stdcall newGetFullPathNameA(
     LPSTR  lpBuffer,
     LPSTR* lpFilePart
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFullPathNameA");
+            char whatToDo = WhatToDoInFunction("GetFullPathNameA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFullPathNameA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("nBufferLength: ") + generic_log(nBufferLength)+std::string("$");
@@ -1775,7 +1731,7 @@ DWORD __stdcall newGetFullPathNameTransactedA(
     LPSTR* lpFilePart,
     HANDLE hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"GetFullPathNameTransactedA");
+            char whatToDo = WhatToDoInFunction("GetFullPathNameTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetFullPathNameTransactedA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("nBufferLength: ") + generic_log(nBufferLength)+std::string("$");
@@ -1811,7 +1767,7 @@ DWORD __stdcall newGetLongPathNameA(
     LPSTR  lpszLongPath,
     DWORD  cchBuffer
 ){
-            char whatToDo = WhatToDoInFunction(*"GetLongPathNameA");
+            char whatToDo = WhatToDoInFunction("GetLongPathNameA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetLongPathNameA$");logMsg += std::string("lpszShortPath: ") + generic_log(lpszShortPath)+std::string("$");
 logMsg += std::string("lpszLongPath: ") + generic_log(lpszLongPath)+std::string("$");
@@ -1844,7 +1800,7 @@ DWORD __stdcall newGetLongPathNameTransactedA(
     DWORD  cchBuffer,
     HANDLE hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"GetLongPathNameTransactedA");
+            char whatToDo = WhatToDoInFunction("GetLongPathNameTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetLongPathNameTransactedA$");logMsg += std::string("lpszShortPath: ") + generic_log(lpszShortPath)+std::string("$");
 logMsg += std::string("lpszLongPath: ") + generic_log(lpszLongPath)+std::string("$");
@@ -1880,7 +1836,7 @@ BOOL __stdcall newGetQueuedCompletionStatus(
     LPOVERLAPPED* lpOverlapped,
     DWORD        dwMilliseconds
 ){
-            char whatToDo = WhatToDoInFunction(*"GetQueuedCompletionStatus");
+            char whatToDo = WhatToDoInFunction("GetQueuedCompletionStatus");
             if(whatToDo == *"b"){
                 std::string logMsg("GetQueuedCompletionStatus$");logMsg += std::string("CompletionPort: ") + generic_log(CompletionPort)+std::string("$");
 logMsg += std::string("lpNumberOfBytesTransferred: ") + generic_log(lpNumberOfBytesTransferred)+std::string("$");
@@ -1916,7 +1872,7 @@ DWORD __stdcall newGetShortPathNameW(
     LPWSTR  lpszShortPath,
     DWORD   cchBuffer
 ){
-            char whatToDo = WhatToDoInFunction(*"GetShortPathNameW");
+            char whatToDo = WhatToDoInFunction("GetShortPathNameW");
             if(whatToDo == *"b"){
                 std::string logMsg("GetShortPathNameW$");logMsg += std::string("lpszLongPath: ") + generic_log(lpszLongPath)+std::string("$");
 logMsg += std::string("lpszShortPath: ") + generic_log(lpszShortPath)+std::string("$");
@@ -1949,7 +1905,7 @@ UINT __stdcall newGetTempFileNameA(
     UINT   uUnique,
     LPSTR  lpTempFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"GetTempFileNameA");
+            char whatToDo = WhatToDoInFunction("GetTempFileNameA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetTempFileNameA$");logMsg += std::string("lpPathName: ") + generic_log(lpPathName)+std::string("$");
 logMsg += std::string("lpPrefixString: ") + generic_log(lpPrefixString)+std::string("$");
@@ -1982,7 +1938,7 @@ DWORD __stdcall newGetTempPathA(
     DWORD nBufferLength,
     LPSTR lpBuffer
 ){
-            char whatToDo = WhatToDoInFunction(*"GetTempPathA");
+            char whatToDo = WhatToDoInFunction("GetTempPathA");
             if(whatToDo == *"b"){
                 std::string logMsg("GetTempPathA$");logMsg += std::string("nBufferLength: ") + generic_log(nBufferLength)+std::string("$");
 logMsg += std::string("lpBuffer: ") + generic_log(lpBuffer)+std::string("$");
@@ -2014,7 +1970,7 @@ BOOL newLockFile(
     DWORD  nNumberOfBytesToLockLow,
     DWORD  nNumberOfBytesToLockHigh
 ){
-            char whatToDo = WhatToDoInFunction(*"LockFile");
+            char whatToDo = WhatToDoInFunction("LockFile");
             if(whatToDo == *"b"){
                 std::string logMsg("LockFile$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("dwFileOffsetLow: ") + generic_log(dwFileOffsetLow)+std::string("$");
@@ -2053,7 +2009,7 @@ BOOL __stdcall newLockFileEx(
     DWORD        nNumberOfBytesToLockHigh,
     LPOVERLAPPED lpOverlapped
 ){
-            char whatToDo = WhatToDoInFunction(*"LockFileEx");
+            char whatToDo = WhatToDoInFunction("LockFileEx");
             if(whatToDo == *"b"){
                 std::string logMsg("LockFileEx$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("dwFlags: ") + generic_log(dwFlags)+std::string("$");
@@ -2090,7 +2046,7 @@ BOOL __stdcall newMoveFile(
     LPCTSTR lpExistingFileName,
     LPCTSTR lpNewFileName
 ){
-            char whatToDo = WhatToDoInFunction(*"MoveFile");
+            char whatToDo = WhatToDoInFunction("MoveFile");
             if(whatToDo == *"b"){
                 std::string logMsg("MoveFile$");logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
 logMsg += std::string("lpNewFileName: ") + generic_log(lpNewFileName)+std::string("$");
@@ -2120,7 +2076,7 @@ BOOL __stdcall newMoveFileExA(
     LPCSTR lpNewFileName,
     DWORD  dwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"MoveFileExA");
+            char whatToDo = WhatToDoInFunction("MoveFileExA");
             if(whatToDo == *"b"){
                 std::string logMsg("MoveFileExA$");logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
 logMsg += std::string("lpNewFileName: ") + generic_log(lpNewFileName)+std::string("$");
@@ -2155,7 +2111,7 @@ BOOL __stdcall newMoveFileTransactedA(
     DWORD              dwFlags,
     HANDLE             hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"MoveFileTransactedA");
+            char whatToDo = WhatToDoInFunction("MoveFileTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("MoveFileTransactedA$");logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
 logMsg += std::string("lpNewFileName: ") + generic_log(lpNewFileName)+std::string("$");
@@ -2195,7 +2151,7 @@ BOOL __stdcall newMoveFileWithProgressA(
     LPVOID             lpData,
     DWORD              dwFlags
 ){
-            char whatToDo = WhatToDoInFunction(*"MoveFileWithProgressA");
+            char whatToDo = WhatToDoInFunction("MoveFileWithProgressA");
             if(whatToDo == *"b"){
                 std::string logMsg("MoveFileWithProgressA$");logMsg += std::string("lpExistingFileName: ") + generic_log(lpExistingFileName)+std::string("$");
 logMsg += std::string("lpNewFileName: ") + generic_log(lpNewFileName)+std::string("$");
@@ -2231,7 +2187,7 @@ DWORD __stdcall newOpenEncryptedFileRawA(
     ULONG  ulFlags,
     PVOID* pvContext
 ){
-            char whatToDo = WhatToDoInFunction(*"OpenEncryptedFileRawA");
+            char whatToDo = WhatToDoInFunction("OpenEncryptedFileRawA");
             if(whatToDo == *"b"){
                 std::string logMsg("OpenEncryptedFileRawA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("ulFlags: ") + generic_log(ulFlags)+std::string("$");
@@ -2263,7 +2219,7 @@ HFILE __stdcall newOpenFile(
     LPOFSTRUCT lpReOpenBuff,
     UINT       uStyle
 ){
-            char whatToDo = WhatToDoInFunction(*"OpenFile");
+            char whatToDo = WhatToDoInFunction("OpenFile");
             if(whatToDo == *"b"){
                 std::string logMsg("OpenFile$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("lpReOpenBuff: ") + generic_log(lpReOpenBuff)+std::string("$");
@@ -2298,7 +2254,7 @@ HANDLE __stdcall newOpenFileById(
     LPSECURITY_ATTRIBUTES lpSecurityAttributes,
     DWORD                 dwFlagsAndAttributes
 ){
-            char whatToDo = WhatToDoInFunction(*"OpenFileById");
+            char whatToDo = WhatToDoInFunction("OpenFileById");
             if(whatToDo == *"b"){
                 std::string logMsg("OpenFileById$");logMsg += std::string("hVolumeHint: ") + generic_log(hVolumeHint)+std::string("$");
 logMsg += std::string("lpFileId: ") + generic_log(lpFileId)+std::string("$");
@@ -2335,7 +2291,7 @@ DWORD __stdcall newQueryRecoveryAgentsOnEncryptedFile(
     LPCWSTR                           lpFileName,
     PENCRYPTION_CERTIFICATE_HASH_LIST* pRecoveryAgents
 ){
-            char whatToDo = WhatToDoInFunction(*"QueryRecoveryAgentsOnEncryptedFile");
+            char whatToDo = WhatToDoInFunction("QueryRecoveryAgentsOnEncryptedFile");
             if(whatToDo == *"b"){
                 std::string logMsg("QueryRecoveryAgentsOnEncryptedFile$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("pRecoveryAgents: ") + generic_log(pRecoveryAgents)+std::string("$");
@@ -2364,7 +2320,7 @@ DWORD __stdcall newQueryUsersOnEncryptedFile(
     LPCWSTR                           lpFileName,
     PENCRYPTION_CERTIFICATE_HASH_LIST* pUsers
 ){
-            char whatToDo = WhatToDoInFunction(*"QueryUsersOnEncryptedFile");
+            char whatToDo = WhatToDoInFunction("QueryUsersOnEncryptedFile");
             if(whatToDo == *"b"){
                 std::string logMsg("QueryUsersOnEncryptedFile$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("pUsers: ") + generic_log(pUsers)+std::string("$");
@@ -2394,7 +2350,7 @@ DWORD __stdcall newReadEncryptedFileRaw(
     PVOID           pvCallbackContext,
     PVOID           pvContext
 ){
-            char whatToDo = WhatToDoInFunction(*"ReadEncryptedFileRaw");
+            char whatToDo = WhatToDoInFunction("ReadEncryptedFileRaw");
             if(whatToDo == *"b"){
                 std::string logMsg("ReadEncryptedFileRaw$");logMsg += std::string("pfExportCallback: ") + generic_log(pfExportCallback)+std::string("$");
 logMsg += std::string("pvCallbackContext: ") + generic_log(pvCallbackContext)+std::string("$");
@@ -2428,7 +2384,7 @@ BOOL __stdcall newReadFile(
     LPDWORD      lpNumberOfBytesRead,
     LPOVERLAPPED lpOverlapped
 ){
-            char whatToDo = WhatToDoInFunction(*"ReadFile");
+            char whatToDo = WhatToDoInFunction("ReadFile");
             if(whatToDo == *"b"){
                 std::string logMsg("ReadFile$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpBuffer: ") + generic_log(lpBuffer)+std::string("$");
@@ -2466,7 +2422,7 @@ BOOL __stdcall newReadFileEx(
     LPOVERLAPPED                    lpOverlapped,
     LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"ReadFileEx");
+            char whatToDo = WhatToDoInFunction("ReadFileEx");
             if(whatToDo == *"b"){
                 std::string logMsg("ReadFileEx$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpBuffer: ") + generic_log(lpBuffer)+std::string("$");
@@ -2501,7 +2457,7 @@ DWORD __stdcall newRemoveUsersFromEncryptedFile(
     LPCWSTR                           lpFileName,
     PENCRYPTION_CERTIFICATE_HASH_LIST pHashes
 ){
-            char whatToDo = WhatToDoInFunction(*"RemoveUsersFromEncryptedFile");
+            char whatToDo = WhatToDoInFunction("RemoveUsersFromEncryptedFile");
             if(whatToDo == *"b"){
                 std::string logMsg("RemoveUsersFromEncryptedFile$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("pHashes: ") + generic_log(pHashes)+std::string("$");
@@ -2532,7 +2488,7 @@ HANDLE __stdcall newReOpenFile(
     DWORD  dwShareMode,
     DWORD  dwFlagsAndAttributes
 ){
-            char whatToDo = WhatToDoInFunction(*"ReOpenFile");
+            char whatToDo = WhatToDoInFunction("ReOpenFile");
             if(whatToDo == *"b"){
                 std::string logMsg("ReOpenFile$");logMsg += std::string("hOriginalFile: ") + generic_log(hOriginalFile)+std::string("$");
 logMsg += std::string("dwDesiredAccess: ") + generic_log(dwDesiredAccess)+std::string("$");
@@ -2569,7 +2525,7 @@ BOOL __stdcall newReplaceFileA(
     LPVOID lpExclude,
     LPVOID lpReserved
 ){
-            char whatToDo = WhatToDoInFunction(*"ReplaceFileA");
+            char whatToDo = WhatToDoInFunction("ReplaceFileA");
             if(whatToDo == *"b"){
                 std::string logMsg("ReplaceFileA$");logMsg += std::string("lpReplacedFileName: ") + generic_log(lpReplacedFileName)+std::string("$");
 logMsg += std::string("lpReplacementFileName: ") + generic_log(lpReplacementFileName)+std::string("$");
@@ -2610,7 +2566,7 @@ DWORD __stdcall newSearchPathA(
     LPSTR  lpBuffer,
     LPSTR* lpFilePart
 ){
-            char whatToDo = WhatToDoInFunction(*"SearchPathA");
+            char whatToDo = WhatToDoInFunction("SearchPathA");
             if(whatToDo == *"b"){
                 std::string logMsg("SearchPathA$");logMsg += std::string("lpPath: ") + generic_log(lpPath)+std::string("$");
 logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
@@ -2646,7 +2602,7 @@ logMsg += std::string("lpFilePart: ") + generic_log(lpFilePart)+std::string("$")
 BOOL __stdcall newSetEndOfFile(
     HANDLE hFile
 ){
-            char whatToDo = WhatToDoInFunction(*"SetEndOfFile");
+            char whatToDo = WhatToDoInFunction("SetEndOfFile");
             if(whatToDo == *"b"){
                 std::string logMsg("SetEndOfFile$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 
@@ -2670,7 +2626,7 @@ BOOL __stdcall newSetEndOfFile(
 
 }
 void __stdcall newSetFileApisToANSI(){
-            char whatToDo = WhatToDoInFunction(*"SetFileApisToANSI");
+            char whatToDo = WhatToDoInFunction("SetFileApisToANSI");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileApisToANSI$");
                 log(logMsg);
@@ -2689,7 +2645,7 @@ void __stdcall newSetFileApisToANSI(){
 
 }
 void __stdcall newSetFileApisToOEM(){
-            char whatToDo = WhatToDoInFunction(*"SetFileApisToOEM");
+            char whatToDo = WhatToDoInFunction("SetFileApisToOEM");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileApisToOEM$");
                 log(logMsg);
@@ -2711,7 +2667,7 @@ BOOL __stdcall newSetFileAttributesA(
     LPCSTR lpFileName,
     DWORD  dwFileAttributes
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFileAttributesA");
+            char whatToDo = WhatToDoInFunction("SetFileAttributesA");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileAttributesA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("dwFileAttributes: ") + generic_log(dwFileAttributes)+std::string("$");
@@ -2741,7 +2697,7 @@ BOOL __stdcall newSetFileAttributesTransactedA(
     DWORD  dwFileAttributes,
     HANDLE hTransaction
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFileAttributesTransactedA");
+            char whatToDo = WhatToDoInFunction("SetFileAttributesTransactedA");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileAttributesTransactedA$");logMsg += std::string("lpFileName: ") + generic_log(lpFileName)+std::string("$");
 logMsg += std::string("dwFileAttributes: ") + generic_log(dwFileAttributes)+std::string("$");
@@ -2776,7 +2732,7 @@ BOOL __stdcall newSetFileBandwidthReservation(
     LPDWORD lpTransferSize,
     LPDWORD lpNumOutstandingRequests
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFileBandwidthReservation");
+            char whatToDo = WhatToDoInFunction("SetFileBandwidthReservation");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileBandwidthReservation$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("nPeriodMilliseconds: ") + generic_log(nPeriodMilliseconds)+std::string("$");
@@ -2813,7 +2769,7 @@ BOOL __stdcall newSetFileCompletionNotificationModes(
     HANDLE FileHandle,
     UCHAR  Flags
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFileCompletionNotificationModes");
+            char whatToDo = WhatToDoInFunction("SetFileCompletionNotificationModes");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileCompletionNotificationModes$");logMsg += std::string("FileHandle: ") + generic_log(FileHandle)+std::string("$");
 logMsg += std::string("Flags: ") + generic_log(Flags)+std::string("$");
@@ -2844,7 +2800,7 @@ BOOL __stdcall newSetFileInformationByHandle(
     LPVOID                    lpFileInformation,
     DWORD                     dwBufferSize
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFileInformationByHandle");
+            char whatToDo = WhatToDoInFunction("SetFileInformationByHandle");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileInformationByHandle$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("FileInformationClass: ") + generic_log(FileInformationClass)+std::string("$");
@@ -2878,7 +2834,7 @@ BOOL __stdcall newSetFileIoOverlappedRange(
     PUCHAR OverlappedRangeStart,
     ULONG  Length
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFileIoOverlappedRange");
+            char whatToDo = WhatToDoInFunction("SetFileIoOverlappedRange");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileIoOverlappedRange$");logMsg += std::string("FileHandle: ") + generic_log(FileHandle)+std::string("$");
 logMsg += std::string("OverlappedRangeStart: ") + generic_log(OverlappedRangeStart)+std::string("$");
@@ -2911,7 +2867,7 @@ DWORD __stdcall newSetFilePointer(
     PLONG  lpDistanceToMoveHigh,
     DWORD  dwMoveMethod
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFilePointer");
+            char whatToDo = WhatToDoInFunction("SetFilePointer");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFilePointer$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lDistanceToMove: ") + generic_log(lDistanceToMove)+std::string("$");
@@ -2946,7 +2902,7 @@ BOOL __stdcall newSetFilePointerEx(
     PLARGE_INTEGER lpNewFilePointer,
     DWORD          dwMoveMethod
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFilePointerEx");
+            char whatToDo = WhatToDoInFunction("SetFilePointerEx");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFilePointerEx$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("liDistanceToMove: ") + generic_log(liDistanceToMove)+std::string("$");
@@ -2979,7 +2935,7 @@ BOOL __stdcall newSetFileShortNameA(
     HANDLE hFile,
     LPCSTR lpShortName
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFileShortNameA");
+            char whatToDo = WhatToDoInFunction("SetFileShortNameA");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileShortNameA$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpShortName: ") + generic_log(lpShortName)+std::string("$");
@@ -3008,7 +2964,7 @@ BOOL __stdcall newSetFileValidData(
     HANDLE   hFile,
     LONGLONG ValidDataLength
 ){
-            char whatToDo = WhatToDoInFunction(*"SetFileValidData");
+            char whatToDo = WhatToDoInFunction("SetFileValidData");
             if(whatToDo == *"b"){
                 std::string logMsg("SetFileValidData$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("ValidDataLength: ") + generic_log(ValidDataLength)+std::string("$");
@@ -3036,7 +2992,7 @@ logMsg += std::string("ValidDataLength: ") + generic_log(ValidDataLength)+std::s
 BOOL __stdcall newSetSearchPathMode(
     DWORD Flags
 ){
-            char whatToDo = WhatToDoInFunction(*"SetSearchPathMode");
+            char whatToDo = WhatToDoInFunction("SetSearchPathMode");
             if(whatToDo == *"b"){
                 std::string logMsg("SetSearchPathMode$");logMsg += std::string("Flags: ") + generic_log(Flags)+std::string("$");
 
@@ -3062,7 +3018,7 @@ BOOL __stdcall newSetSearchPathMode(
 DWORD __stdcall newSetUserFileEncryptionKey(
     PENCRYPTION_CERTIFICATE pEncryptionCertificate
 ){
-            char whatToDo = WhatToDoInFunction(*"SetUserFileEncryptionKey");
+            char whatToDo = WhatToDoInFunction("SetUserFileEncryptionKey");
             if(whatToDo == *"b"){
                 std::string logMsg("SetUserFileEncryptionKey$");logMsg += std::string("pEncryptionCertificate: ") + generic_log(pEncryptionCertificate)+std::string("$");
 
@@ -3092,7 +3048,7 @@ BOOL __stdcall newUnlockFile(
     DWORD  nNumberOfBytesToUnlockLow,
     DWORD  nNumberOfBytesToUnlockHigh
 ){
-            char whatToDo = WhatToDoInFunction(*"UnlockFile");
+            char whatToDo = WhatToDoInFunction("UnlockFile");
             if(whatToDo == *"b"){
                 std::string logMsg("UnlockFile$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("dwFileOffsetLow: ") + generic_log(dwFileOffsetLow)+std::string("$");
@@ -3130,7 +3086,7 @@ BOOL __stdcall newUnlockFileEx(
     DWORD        nNumberOfBytesToUnlockHigh,
     LPOVERLAPPED lpOverlapped
 ){
-            char whatToDo = WhatToDoInFunction(*"UnlockFileEx");
+            char whatToDo = WhatToDoInFunction("UnlockFileEx");
             if(whatToDo == *"b"){
                 std::string logMsg("UnlockFileEx$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("dwReserved: ") + generic_log(dwReserved)+std::string("$");
@@ -3164,7 +3120,7 @@ logMsg += std::string("lpOverlapped: ") + generic_log(lpOverlapped)+std::string(
 BOOL __stdcall newWow64DisableWow64FsRedirection(
     PVOID* OldValue
 ){
-            char whatToDo = WhatToDoInFunction(*"Wow64DisableWow64FsRedirection");
+            char whatToDo = WhatToDoInFunction("Wow64DisableWow64FsRedirection");
             if(whatToDo == *"b"){
                 std::string logMsg("Wow64DisableWow64FsRedirection$");logMsg += std::string("OldValue: ") + generic_log(OldValue)+std::string("$");
 
@@ -3190,7 +3146,7 @@ BOOL __stdcall newWow64DisableWow64FsRedirection(
 BOOLEAN __stdcall newWow64EnableWow64FsRedirection(
     BOOLEAN Wow64FsEnableRedirection
 ){
-            char whatToDo = WhatToDoInFunction(*"Wow64EnableWow64FsRedirection");
+            char whatToDo = WhatToDoInFunction("Wow64EnableWow64FsRedirection");
             if(whatToDo == *"b"){
                 std::string logMsg("Wow64EnableWow64FsRedirection$");logMsg += std::string("Wow64FsEnableRedirection: ") + generic_log(Wow64FsEnableRedirection)+std::string("$");
 
@@ -3216,7 +3172,7 @@ BOOLEAN __stdcall newWow64EnableWow64FsRedirection(
 BOOL __stdcall newWow64RevertWow64FsRedirection(
     PVOID OlValue
 ){
-            char whatToDo = WhatToDoInFunction(*"Wow64RevertWow64FsRedirection");
+            char whatToDo = WhatToDoInFunction("Wow64RevertWow64FsRedirection");
             if(whatToDo == *"b"){
                 std::string logMsg("Wow64RevertWow64FsRedirection$");logMsg += std::string("OlValue: ") + generic_log(OlValue)+std::string("$");
 
@@ -3244,7 +3200,7 @@ DWORD __stdcall newWriteEncryptedFileRaw(
     PVOID           pvCallbackContext,
     PVOID           pvContext
 ){
-            char whatToDo = WhatToDoInFunction(*"WriteEncryptedFileRaw");
+            char whatToDo = WhatToDoInFunction("WriteEncryptedFileRaw");
             if(whatToDo == *"b"){
                 std::string logMsg("WriteEncryptedFileRaw$");logMsg += std::string("pfImportCallback: ") + generic_log(pfImportCallback)+std::string("$");
 logMsg += std::string("pvCallbackContext: ") + generic_log(pvCallbackContext)+std::string("$");
@@ -3278,7 +3234,18 @@ BOOL __stdcall newWriteFile(
     LPDWORD      lpNumberOfBytesWritten,
     LPOVERLAPPED lpOverlapped
 ){
-            char whatToDo = WhatToDoInFunction(*"WriteFile");
+            if (IsMyCall) {
+        WriteProcessMemory(GetCurrentProcess(),
+            (LPVOID)hooked_addr[(int)Hook::Functions::WriteFile],
+            original_bytes[(int)Hook::Functions::WriteFile], 6, NULL);
+
+        BOOL result = WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, lpNumberOfBytesWritten, lpOverlapped);
+        Hook reset_hook{ Hook::Functions::WriteFile };
+        reset_hook.deploy_hook();
+
+        return result;
+            }
+            char whatToDo = WhatToDoInFunction("WriteFile");
             if(whatToDo == *"b"){
                 std::string logMsg("WriteFile$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpBuffer: ") + generic_log(lpBuffer)+std::string("$");
@@ -3316,7 +3283,7 @@ BOOL __stdcall newWriteFileEx(
     LPOVERLAPPED                    lpOverlapped,
     LPOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 ){
-            char whatToDo = WhatToDoInFunction(*"WriteFileEx");
+            char whatToDo = WhatToDoInFunction("WriteFileEx");
             if(whatToDo == *"b"){
                 std::string logMsg("WriteFileEx$");logMsg += std::string("hFile: ") + generic_log(hFile)+std::string("$");
 logMsg += std::string("lpBuffer: ") + generic_log(lpBuffer)+std::string("$");

@@ -21,11 +21,18 @@
 #include <stdlib.h>
 #include <cstring>
 #include <cstdarg>
+#include <time.h>
+#include <stdio.h>
+#include <ws2tcpip.h> 
+#include <locale>
+#include <codecvt>
+#include <ctime>
+#include <iomanip>
 #include "codeGeneratedFunctionsFileSystem.h"
 #include "codeGeneratedFunctionsRegistry.h"
 #include "codeGeneratedFunctionsRegistry.h"
 
-#define _my_addr_ "192.168.0.120"
+#define _my_addr_ "127.0.0.1"
 
 
 
@@ -34,6 +41,12 @@ std::vector<CHAR*> original_bytes{};
 std::vector<FARPROC> hooked_addr{};
 std::vector<std::string>* functions;
 time_t begin, end;
+std::vector<std::string> fs_functions;
+std::vector<std::string> reg_functions;
+std::vector<std::string> sock_functions;
+char WhatToDoSock;
+char WhatToDoFs;
+char WhatToDoReg;
 
 
 HINSTANCE hLibFiles{ LoadLibraryA("kernel32.dll") };
@@ -43,9 +56,9 @@ HINSTANCE hLibReg{ LoadLibraryA("Advapi32.dll") };
 HANDLE LOGfile = CreateFileA(
 	"..\\log.txt",
 	GENERIC_READ | GENERIC_WRITE,
-	FILE_SHARE_READ,
+	FILE_SHARE_READ | FILE_SHARE_DELETE,
 	NULL,
-	4,
+	CREATE_ALWAYS,
 	FILE_ATTRIBUTE_NORMAL,
 	NULL
 );
@@ -94,13 +107,66 @@ void mylog(char* buf, int size) {
 	//delete[] buf;
 }
 
-void log(std::string* buffer){
+void log(std::string buffer){
 	if (LOGfile == INVALID_HANDLE_VALUE) {
 		std::cout << "Log file could not be opened\n";
 		return;
 	}
-	WriteFile(LOGfile,buffer->data(),buffer->size(),NULL,NULL);
+	IsMyCall = true;
+	std::cout << "right here inside of log about to log data\n";
+	buffer.at(buffer.size()-1) = *"%";
+	WriteFile(LOGfile,buffer.data(),buffer.size(),NULL,NULL);
+	std::cout << "finished logging\n";
+	IsMyCall = false;
 }
+
+std::string ToStringSocket(SOCKET s)
+{
+	SOCKADDR_IN src_addr, dst_addr;
+	int src_len = sizeof(src_addr), dst_len = sizeof(dst_addr);
+	std::string result;
+
+	if (getsockname(s, (SOCKADDR*)&src_addr, &src_len) == SOCKET_ERROR) {
+		result = "Error getting local endpoint address and port.";
+		return result;
+	}
+	if (getpeername(s, (SOCKADDR*)&dst_addr, &dst_len) == SOCKET_ERROR) {
+		result = "Error getting remote endpoint address and port.";
+		return result;
+	}
+
+	char src_ip[16], dst_ip[16];
+	inet_ntop(AF_INET, &src_addr.sin_addr, src_ip, sizeof(src_ip));
+	inet_ntop(AF_INET, &dst_addr.sin_addr, dst_ip, sizeof(dst_ip));
+
+	result = std::string(src_ip) + ":" + std::to_string(ntohs(src_addr.sin_port))
+		+ " -> " + std::string(dst_ip) + ":" + std::to_string(ntohs(dst_addr.sin_port));
+
+	return result;
+}
+
+std::string sockaddrToString(const sockaddr* sa) {
+	std::stringstream ss;
+	if (sa->sa_family == AF_INET) {
+		// IPv4
+		const sockaddr_in* sin = reinterpret_cast<const sockaddr_in*>(sa);
+		char ip[INET_ADDRSTRLEN];
+		inet_ntop(AF_INET, &(sin->sin_addr), ip, INET_ADDRSTRLEN);
+		ss << ip << ":" << ntohs(sin->sin_port);
+	}
+	else if (sa->sa_family == AF_INET6) {
+		// IPv6
+		const sockaddr_in6* sin6 = reinterpret_cast<const sockaddr_in6*>(sa);
+		char ip[INET6_ADDRSTRLEN];
+		inet_ntop(AF_INET6, &(sin6->sin6_addr), ip, INET6_ADDRSTRLEN);
+		ss << "[" << ip << "]:" << ntohs(sin6->sin6_port);
+	}
+	else {
+		ss << "Unknown family type: " << sa->sa_family;
+	}
+	return ss.str();
+}
+
 
 void* Hook::get_new_fnc_pointer() {
 	switch (func_to_hook) {
@@ -258,7 +324,6 @@ void* Hook::get_new_fnc_pointer() {
 	case Functions::WSAGetServiceClassNameByClassIdA: return &newFunctions::newWSAGetServiceClassNameByClassIdA;break;
 	case Functions::WSAHtonl: return &newFunctions::newWSAHtonl;break;
 	case Functions::WSAHtons: return &newFunctions::newWSAHtons;break;
-	case Functions::WSAImpersonateSocketPeer: return &newFunctions::newWSAImpersonateSocketPeer;break;
 	case Functions::WSAInstallServiceClassA: return &newFunctions::newWSAInstallServiceClassA;break;
 	case Functions::WSAIoctl: return &newFunctions::newWSAIoctl;break;
 	case Functions::WSAJoinLeaf: return &newFunctions::newWSAJoinLeaf;break;
@@ -275,7 +340,6 @@ void* Hook::get_new_fnc_pointer() {
 	case Functions::WSARecvFrom: return &newFunctions::newWSARecvFrom;break;
 	case Functions::WSARemoveServiceClass: return &newFunctions::newWSARemoveServiceClass;break;
 	case Functions::WSAResetEvent: return &newFunctions::newWSAResetEvent;break;
-	case Functions::WSARevertImpersonation: return &newFunctions::newWSARevertImpersonation;break;
 	case Functions::WSASend: return &newFunctions::newWSASend;break;
 	case Functions::WSASendDisconnect: return &newFunctions::newWSASendDisconnect;break;
 	case Functions::WSASendMsg: return &newFunctions::newWSASendMsg;break;
@@ -383,7 +447,7 @@ SOCKET* SetFunctionsToHookSocket() {
 	saServer.sin_family = AF_INET;
 	saServer.sin_addr.S_un.S_addr = inet_addr(_my_addr_);
 	//InetPton(AF_INET, (PCWSTR)_my_addr_, &saServer.sin_addr.S_un.S_addr);
-	saServer.sin_port = htons(50505);
+	saServer.sin_port = htons(50512);
 	iResult = connect(*sock, (SOCKADDR*)&saServer, sizeof(saServer));
 	if (iResult == SOCKET_ERROR) {
 		std::cout << "error connecting to server\n";
@@ -414,6 +478,27 @@ std::vector<std::string>* getFunctionsToHook() {
 		if (strcmp(st->data(), "stop") == 0) {
 			break;
 		}
+		WhatToDoFs = *"p";
+		WhatToDoReg = *"p";
+		WhatToDoSock = *"p";
+		if (strcmp(st->c_str(),"bfs")==0) {
+			WhatToDoFs = *"b";
+		}
+		if (strcmp(st->c_str(), "wfs") == 0) {
+			WhatToDoFs = *"w";
+		}
+		if (strcmp(st->c_str(), "bsock") == 0) {
+			WhatToDoSock = *"b";
+		}
+		if (strcmp(st->c_str(), "wsock") == 0) {
+			WhatToDoSock = *"w";
+		}
+		if (strcmp(st->c_str(), "breg") == 0) {
+			WhatToDoReg = *"b";
+		}
+		if (strcmp(st->c_str(), "wregs") == 0) {
+			WhatToDoReg = *"w";
+		}
 		vec->push_back(*st);
 
 	} while (true);
@@ -422,14 +507,43 @@ std::vector<std::string>* getFunctionsToHook() {
 
 }
 
-char WhatToDoInFunction(char* func_name){
+char WhatToDoInFunction(const char* func_name){
 	for(auto func : *functions){
 		if(strcmp(&func.c_str()[1],func_name)==0){
 			return func.at(0);
 		}
 	}
+	/*std::cout << "called with func " << func_name << '\n';
+	if (std::find(fs_functions.begin(), fs_functions.end(), func_name) != fs_functions.end()) {
+		
+	}*/
+	for (auto item : fs_functions) {
+		if (item == func_name) {
+			return WhatToDoFs;
+		}
+	}
+	/*if (std::find(reg_functions.begin(), reg_functions.end(), new std::string(func_name)) != reg_functions.end()) {
+		return WhatToDoReg;
+	}*/
+	for (auto item : reg_functions) {
+		if (item == func_name) {
+			return WhatToDoReg;
+		}
+	}
+	/*if (std::find(sock_functions.begin(), sock_functions.end(), new std::string(func_name)) != sock_functions.end()) {
+		return WhatToDoSock;
+	}*/
+	for (auto item : sock_functions) {
+		if (item == func_name) {
+			return WhatToDoSock;
+		}
+	}
+
+
 	return *"p";
 }
+
+
 
 void deployInitialHook(){
 	for(int i{0};i<(int)Hook::Functions::max_functions_number;++i){
@@ -447,6 +561,18 @@ NULL,
 FALSE,
 "myMutex"
 ) };
+	char fs[][97] = { "AddUsersToEncryptedFile", "AreFileApisANSI", "CheckNameLegalDOS8Dot3A", "CloseEncryptedFileRaw", "CopyFile", "CopyFile2", "CopyFileExA", "CopyFileTransactedA", "CreateFileA", "CreateFile2", "CreateFileTransactedA", "CreateHardLinkA", "CreateHardLinkTransactedA", "CreateSymbolicLinkA", "CreateSymbolicLinkTransactedA", "DecryptFileA", "DeleteFileA", "DeleteFileTransactedA", "DuplicateEncryptionInfoFile", "EncryptFileA", "EncryptionDisable", "FileEncryptionStatusA", "FindClose", "FindFirstFileA", "FindFirstFileExA", "FindFirstFileNameTransactedW", "FindFirstFileNameW", "FindFirstFileTransactedA", "FindFirstStreamTransactedW", "FindFirstStreamW", "FindNextFileA", "FindNextFileNameW", "FindNextStreamW", "FlushFileBuffers", "FreeEncryptionCertificateHashList", "GetBinaryTypeA", "GetCompressedFileSizeA", "GetCompressedFileSizeTransactedA", "GetFileAttributesA", "GetFileAttributesExA", "GetFileAttributesTransactedA", "GetFileBandwidthReservation", "GetFileInformationByHandle", "GetFileInformationByHandleEx", "GetFileSize", "GetFileSizeEx", "GetFileType", "GetFinalPathNameByHandleA", "GetFullPathNameA", "GetFullPathNameTransactedA", "GetLongPathNameA", "GetLongPathNameTransactedA", "GetQueuedCompletionStatus", "GetShortPathNameW", "GetTempFileNameA", "GetTempPathA", "LockFile", "LockFileEx", "MoveFile", "MoveFileExA", "MoveFileTransactedA", "MoveFileWithProgressA", "OpenEncryptedFileRawA", "OpenFile", "OpenFileById", "QueryRecoveryAgentsOnEncryptedFile", "QueryUsersOnEncryptedFile", "ReadEncryptedFileRaw", "ReadFile", "ReadFileEx", "RemoveUsersFromEncryptedFile", "ReOpenFile", "ReplaceFileA", "SearchPathA", "SetEndOfFile", "SetFileApisToANSI", "SetFileApisToOEM", "SetFileAttributesA", "SetFileAttributesTransactedA", "SetFileBandwidthReservation", "SetFileCompletionNotificationModes", "SetFileInformationByHandle", "SetFileIoOverlappedRange", "SetFilePointer", "SetFilePointerEx", "SetFileShortNameA", "SetFileValidData", "SetSearchPathMode", "SetUserFileEncryptionKey", "UnlockFile", "UnlockFileEx", "Wow64DisableWow64FsRedirection", "Wow64EnableWow64FsRedirection", "Wow64RevertWow64FsRedirection", "WriteEncryptedFileRaw", "WriteFile", "WriteFileEx" };
+	for (int i = { 0 }; i < sizeof(fs) / sizeof(fs[0]); ++i) {
+		fs_functions.push_back(std::string(fs[i]));
+	}
+	char reg[][87] = { "accept", "bind", "closesocket", "connect", "gai_strerrorA", "gethostname", "getpeername", "getprotobyname", "getprotobynumber", "getservbyname", "getservbyport", "getsockname", "getsockopt", "htons", "inet_addr", "inet_ntoa", "InetNtopW", "InetPtonW", "ioctlsocket", "listen", "ntohl", "ntohs", "recv", "recvfrom", "select", "send", "sendto", "setsockopt", "shutdown", "socket", "WSAAccept", "WSAAddressToStringA", "WSAAsyncGetHostByAddr", "WSAAsyncGetHostByName", "WSAAsyncGetProtoByName", "WSAAsyncGetProtoByNumber", "WSAAsyncGetServByName", "WSAAsyncGetServByPort", "WSAAsyncSelect", "WSACancelAsyncRequest", "WSACleanup", "WSACloseEvent", "WSAConnect", "WSAConnectByList", "WSAConnectByNameA", "WSACreateEvent", "WSADuplicateSocketA", "WSAEnumNameSpaceProvidersA", "WSAEnumNameSpaceProvidersExA", "WSAEnumNetworkEvents", "WSAEnumProtocolsA", "WSAEventSelect", "__WSAFDIsSet", "WSAGetLastError", "WSAGetOverlappedResult", "WSAGetQOSByName", "WSAGetServiceClassInfoA", "WSAGetServiceClassNameByClassIdA", "WSAHtonl", "WSAHtons", "WSAInstallServiceClassA", "WSAIoctl", "WSAJoinLeaf", "WSALookupServiceBeginA", "WSALookupServiceEnd", "WSALookupServiceNextA", "WSANSPIoctl", "WSANtohl", "WSANtohs", "WSAPoll", "WSAProviderConfigChange", "WSARecv", "WSARecvDisconnect", "WSARecvFrom", "WSARemoveServiceClass", "WSAResetEvent", "WSASend", "WSASendDisconnect", "WSASendMsg", "WSASendTo", "WSASetEvent", "WSASetLastError", "WSASetServiceA", "WSASocketA", "WSAStartup", "WSAStringToAddressA", "WSAWaitForMultipleEvents" };
+	for (int i{ 0 }; i < sizeof(reg) / sizeof(reg[0]); ++i) {
+		reg_functions.push_back(std::string(reg[i]));
+	}
+	char sock[][55] = { "GetSystemRegistryQuota", "RegCloseKey", "RegConnectRegistryA", "RegCopyTreeA", "RegCreateKeyExA", "RegCreateKeyTransactedA", "RegDeleteKeyA", "RegDeleteKeyExA", "RegDeleteKeyTransactedA", "RegDeleteKeyValueA", "RegDeleteTreeA", "RegDeleteValueA", "RegDisablePredefinedCache", "RegDisablePredefinedCacheEx", "RegDisableReflectionKey", "RegEnableReflectionKey", "RegEnumKeyExA", "RegEnumValueA", "RegFlushKey", "RegGetKeySecurity", "RegGetValueA", "RegLoadKeyA", "RegLoadMUIStringA", "RegNotifyChangeKeyValue", "RegOpenCurrentUser", "RegOpenKeyExA", "RegOpenKeyTransactedA", "RegOpenUserClassesRoot", "RegOverridePredefKey", "RegQueryInfoKeyA", "RegQueryMultipleValuesA", "RegQueryReflectionKey", "RegQueryValueExA", "RegRenameKey", "RegReplaceKeyA", "RegRestoreKeyA", "RegSaveKeyA", "RegSaveKeyExA", "RegSetKeyValueA", "RegSetKeySecurity", "RegSetValueExA", "RegUnLoadKeyA", "GetPrivateProfileInt", "GetPrivateProfileSection", "GetPrivateProfileSectionNames", "GetPrivateProfileString", "GetPrivateProfileStruct", "GetProfileIntA", "GetProfileSectionA", "GetProfileStringA", "WritePrivateProfileSectionA", "WritePrivateProfileStringA", "WritePrivateProfileStructA", "WriteProfileSectionA", "WriteProfileStringA" };
+	for (int i{ 0 }; i < sizeof(sock) / sizeof(sock[0]); ++i) {
+		sock_functions.push_back(std::string(sock[i]));
+	}
 	std::cout << "got into DLL!!\n";
 	void* f;
 	switch (ul_reason_for_call)
@@ -457,14 +583,13 @@ FALSE,
 		WaitForSingleObject(hMutex, INFINITE);
 		msg = new char[50] {"---------------\nstarted hooking\n---------------\n\n"};
 		Hook::set_up_vars();
-		mylog(msg, 49);
+		//mylog(msg, 49);
 		functions = getFunctionsToHook();
 		for (auto item : *functions) {
 			std::cout << "got " << item << '\n';
 		}
-
-		Hook{ Hook::Functions::CreateFileA }.deploy_hook();
-		Hook{ Hook::Functions::RegCreateKeyExA }.deploy_hook();
+		std::cout << "my test is: " << WhatToDoInFunction("CreateFileA");
+		deployInitialHook();
 
 	case DLL_THREAD_ATTACH:
 		// A process is creating a new thread.

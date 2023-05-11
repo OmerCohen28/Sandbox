@@ -51,10 +51,10 @@ def get_all_function_names():
         with open("inlineHook\\codeGeneratedFunctionsRegistry.h",'r') as file:
             data_reg = file.read().split("{")[1].strip("}").split(";")
     names = []
+    f = []
     for func in data_fs:
         try:
             names.append(get_data(func)[0].replace("new","",1))
-
         except:
             continue
     for func in data_socket:
@@ -65,6 +65,7 @@ def get_all_function_names():
     for func in data_reg:
         try:
             names.append(get_data(func)[0].replace("new","",1))
+            f.append(get_data(func)[0].replace("new","",1))
         except:
             continue
     return names

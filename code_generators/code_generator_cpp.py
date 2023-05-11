@@ -1,6 +1,6 @@
 from get_func_info import get_data
 
-insert = r"%Y-%m-%d %H:%M:%S"
+insert = "\"%Y-%m-%d %H:%M:%S\""
 
 code = """#include <iostream>
 #include <winsock2.h>
@@ -215,7 +215,7 @@ for func in data:
             added_code+= f"logMsg += std::string(\"{param}: \") + generic_log({param})+std::string(\"$\");\n"
     if return_type != "void":
         func+="""{
-            char whatToDo = WhatToDoInFunction(*\"func\");
+            char whatToDo = WhatToDoInFunction(\"func\");
             if(whatToDo == *\"b\"){
                 """ + added_code + """
                 log(logMsg);
@@ -238,7 +238,7 @@ for func in data:
 }"""
     else:
         func+="""{
-            char whatToDo = WhatToDoInFunction(*\"func\");
+            char whatToDo = WhatToDoInFunction(\"func\");
             if(whatToDo == *\"b\"){
                 """+added_code+"""
                 log(logMsg);
