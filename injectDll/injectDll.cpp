@@ -1,5 +1,5 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define dad
+#define mom
 #include <iostream>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
@@ -10,6 +10,7 @@
 #include "injectDll.h"
 #pragma comment(lib,"ws2_32")
 #pragma warning(disable : 4996)
+#include <fstream>
 
 #define _my_addr_ "127.0.0.1"
 
@@ -123,9 +124,22 @@ int main(int argc, char* argv[])
         //}
     //}
     //std::cout << "thank you for using SafeBox :)\n";
-    if (argc != 3) {
-        return 0;
+    std::ofstream outputFile("D:\\Actual sandbox sln\\output.txt");
+    if (outputFile.is_open()) {
+        outputFile << "Hello, C# application!" << std::endl;
+        if (argc != 3) {
+            outputFile << "not enough arguments\n";
+            outputFile << argc << '\n';
+            outputFile << argv;
+            return 0;
+        }
+        outputFile << "enough args!\n";
+        outputFile << std::string(argv[1]) << '\n';
+        outputFile << std::stoi(argv[2]) << '\n';
+        inject_dll(std::string(argv[1]), std::stoi(argv[2]), outputFile);
+        outputFile << "Injected dll\n";
+        outputFile.close();
     }
-    inject_dll(std::string(argv[1]), std::stoi(argv[2]));
+    
     return 0;
 }

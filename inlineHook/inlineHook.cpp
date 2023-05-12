@@ -27,6 +27,7 @@
 #include <locale>
 #include <codecvt>
 #include <ctime>
+#include <fstream>
 #include <iomanip>
 #include "codeGeneratedFunctionsFileSystem.h"
 #include "codeGeneratedFunctionsRegistry.h"
@@ -54,7 +55,7 @@ HINSTANCE hLibSock{ LoadLibraryA("Ws2_32.dll") };
 HINSTANCE hLibReg{ LoadLibraryA("Advapi32.dll") };
 
 HANDLE LOGfile = CreateFileA(
-	"..\\log.txt",
+	"D:\\Actual sandbox sln\\log.txt",
 	GENERIC_READ | GENERIC_WRITE,
 	FILE_SHARE_READ | FILE_SHARE_DELETE,
 	NULL,
@@ -432,15 +433,17 @@ std::string* ResizeAndFixFunctionName(char* func) {
 
 SOCKET* SetFunctionsToHookSocket() {
 	WSADATA wsaData;
+	std::cout << "setting sock up!\n";
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != NO_ERROR) {
-		wprintf(L"WSAStartup function failed with error: %d\n", iResult);
+		std::cout << "WSAStartup function failed with error: " << iResult << '\n';
 		return nullptr;
 	}
 
 	SOCKET* sock = new SOCKET{ socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) };
 	if (*sock == INVALID_SOCKET) {
 		wprintf(L"socket function failed with error = %d\n", WSAGetLastError());
+		std::cout << "socket function failed with error: " << WSAGetLastError() << '\n';
 		return nullptr;
 	}
 	sockaddr_in saServer;
@@ -458,6 +461,7 @@ SOCKET* SetFunctionsToHookSocket() {
 
 std::vector<std::string>* getFunctionsToHook() {
 	SOCKET* sock = SetFunctionsToHookSocket();
+	std::cout << "finished setting sock up\n";
 	if (sock == nullptr || *sock == INVALID_SOCKET || *sock == NULL) {
 		std::cout << "error connecting to python server\n";
 		TerminateProcess(GetCurrentProcess(), 1);
@@ -465,9 +469,11 @@ std::vector<std::string>* getFunctionsToHook() {
 	std::vector<std::string>* vec = new std::vector<std::string>;
 	int iResult;
 	char* buffer;
+	std::cout << "starting to get functions\n";
 	do {
 		buffer = new char[40];
 		iResult = recv(*sock, buffer, 40, 0);
+		std::cout << "got function\n";
 		if (iResult == SOCKET_ERROR) {
 			std::cout << "Error receving function from injectDll server\nterminating\n";
 			TerminateProcess(GetCurrentProcess(), 1);
@@ -555,23 +561,17 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 	DWORD ul_reason_for_call,
 	LPVOID lpReserved) // Reserved
 {
-	char* msg;
-	HANDLE hMutex{ CreateMutexA(
-NULL,
-FALSE,
-"myMutex"
-) };
 	char fs[][97] = { "AddUsersToEncryptedFile", "AreFileApisANSI", "CheckNameLegalDOS8Dot3A", "CloseEncryptedFileRaw", "CopyFile", "CopyFile2", "CopyFileExA", "CopyFileTransactedA", "CreateFileA", "CreateFile2", "CreateFileTransactedA", "CreateHardLinkA", "CreateHardLinkTransactedA", "CreateSymbolicLinkA", "CreateSymbolicLinkTransactedA", "DecryptFileA", "DeleteFileA", "DeleteFileTransactedA", "DuplicateEncryptionInfoFile", "EncryptFileA", "EncryptionDisable", "FileEncryptionStatusA", "FindClose", "FindFirstFileA", "FindFirstFileExA", "FindFirstFileNameTransactedW", "FindFirstFileNameW", "FindFirstFileTransactedA", "FindFirstStreamTransactedW", "FindFirstStreamW", "FindNextFileA", "FindNextFileNameW", "FindNextStreamW", "FlushFileBuffers", "FreeEncryptionCertificateHashList", "GetBinaryTypeA", "GetCompressedFileSizeA", "GetCompressedFileSizeTransactedA", "GetFileAttributesA", "GetFileAttributesExA", "GetFileAttributesTransactedA", "GetFileBandwidthReservation", "GetFileInformationByHandle", "GetFileInformationByHandleEx", "GetFileSize", "GetFileSizeEx", "GetFileType", "GetFinalPathNameByHandleA", "GetFullPathNameA", "GetFullPathNameTransactedA", "GetLongPathNameA", "GetLongPathNameTransactedA", "GetQueuedCompletionStatus", "GetShortPathNameW", "GetTempFileNameA", "GetTempPathA", "LockFile", "LockFileEx", "MoveFile", "MoveFileExA", "MoveFileTransactedA", "MoveFileWithProgressA", "OpenEncryptedFileRawA", "OpenFile", "OpenFileById", "QueryRecoveryAgentsOnEncryptedFile", "QueryUsersOnEncryptedFile", "ReadEncryptedFileRaw", "ReadFile", "ReadFileEx", "RemoveUsersFromEncryptedFile", "ReOpenFile", "ReplaceFileA", "SearchPathA", "SetEndOfFile", "SetFileApisToANSI", "SetFileApisToOEM", "SetFileAttributesA", "SetFileAttributesTransactedA", "SetFileBandwidthReservation", "SetFileCompletionNotificationModes", "SetFileInformationByHandle", "SetFileIoOverlappedRange", "SetFilePointer", "SetFilePointerEx", "SetFileShortNameA", "SetFileValidData", "SetSearchPathMode", "SetUserFileEncryptionKey", "UnlockFile", "UnlockFileEx", "Wow64DisableWow64FsRedirection", "Wow64EnableWow64FsRedirection", "Wow64RevertWow64FsRedirection", "WriteEncryptedFileRaw", "WriteFile", "WriteFileEx" };
 	for (int i = { 0 }; i < sizeof(fs) / sizeof(fs[0]); ++i) {
 		fs_functions.push_back(std::string(fs[i]));
 	}
-	char reg[][87] = { "accept", "bind", "closesocket", "connect", "gai_strerrorA", "gethostname", "getpeername", "getprotobyname", "getprotobynumber", "getservbyname", "getservbyport", "getsockname", "getsockopt", "htons", "inet_addr", "inet_ntoa", "InetNtopW", "InetPtonW", "ioctlsocket", "listen", "ntohl", "ntohs", "recv", "recvfrom", "select", "send", "sendto", "setsockopt", "shutdown", "socket", "WSAAccept", "WSAAddressToStringA", "WSAAsyncGetHostByAddr", "WSAAsyncGetHostByName", "WSAAsyncGetProtoByName", "WSAAsyncGetProtoByNumber", "WSAAsyncGetServByName", "WSAAsyncGetServByPort", "WSAAsyncSelect", "WSACancelAsyncRequest", "WSACleanup", "WSACloseEvent", "WSAConnect", "WSAConnectByList", "WSAConnectByNameA", "WSACreateEvent", "WSADuplicateSocketA", "WSAEnumNameSpaceProvidersA", "WSAEnumNameSpaceProvidersExA", "WSAEnumNetworkEvents", "WSAEnumProtocolsA", "WSAEventSelect", "__WSAFDIsSet", "WSAGetLastError", "WSAGetOverlappedResult", "WSAGetQOSByName", "WSAGetServiceClassInfoA", "WSAGetServiceClassNameByClassIdA", "WSAHtonl", "WSAHtons", "WSAInstallServiceClassA", "WSAIoctl", "WSAJoinLeaf", "WSALookupServiceBeginA", "WSALookupServiceEnd", "WSALookupServiceNextA", "WSANSPIoctl", "WSANtohl", "WSANtohs", "WSAPoll", "WSAProviderConfigChange", "WSARecv", "WSARecvDisconnect", "WSARecvFrom", "WSARemoveServiceClass", "WSAResetEvent", "WSASend", "WSASendDisconnect", "WSASendMsg", "WSASendTo", "WSASetEvent", "WSASetLastError", "WSASetServiceA", "WSASocketA", "WSAStartup", "WSAStringToAddressA", "WSAWaitForMultipleEvents" };
-	for (int i{ 0 }; i < sizeof(reg) / sizeof(reg[0]); ++i) {
-		reg_functions.push_back(std::string(reg[i]));
-	}
-	char sock[][55] = { "GetSystemRegistryQuota", "RegCloseKey", "RegConnectRegistryA", "RegCopyTreeA", "RegCreateKeyExA", "RegCreateKeyTransactedA", "RegDeleteKeyA", "RegDeleteKeyExA", "RegDeleteKeyTransactedA", "RegDeleteKeyValueA", "RegDeleteTreeA", "RegDeleteValueA", "RegDisablePredefinedCache", "RegDisablePredefinedCacheEx", "RegDisableReflectionKey", "RegEnableReflectionKey", "RegEnumKeyExA", "RegEnumValueA", "RegFlushKey", "RegGetKeySecurity", "RegGetValueA", "RegLoadKeyA", "RegLoadMUIStringA", "RegNotifyChangeKeyValue", "RegOpenCurrentUser", "RegOpenKeyExA", "RegOpenKeyTransactedA", "RegOpenUserClassesRoot", "RegOverridePredefKey", "RegQueryInfoKeyA", "RegQueryMultipleValuesA", "RegQueryReflectionKey", "RegQueryValueExA", "RegRenameKey", "RegReplaceKeyA", "RegRestoreKeyA", "RegSaveKeyA", "RegSaveKeyExA", "RegSetKeyValueA", "RegSetKeySecurity", "RegSetValueExA", "RegUnLoadKeyA", "GetPrivateProfileInt", "GetPrivateProfileSection", "GetPrivateProfileSectionNames", "GetPrivateProfileString", "GetPrivateProfileStruct", "GetProfileIntA", "GetProfileSectionA", "GetProfileStringA", "WritePrivateProfileSectionA", "WritePrivateProfileStringA", "WritePrivateProfileStructA", "WriteProfileSectionA", "WriteProfileStringA" };
+	char sock[][87] = { "accept", "bind", "closesocket", "connect", "gai_strerrorA", "gethostname", "getpeername", "getprotobyname", "getprotobynumber", "getservbyname", "getservbyport", "getsockname", "getsockopt", "htons", "inet_addr", "inet_ntoa", "InetNtopW", "InetPtonW", "ioctlsocket", "listen", "ntohl", "ntohs", "recv", "recvfrom", "select", "send", "sendto", "setsockopt", "shutdown", "socket", "WSAAccept", "WSAAddressToStringA", "WSAAsyncGetHostByAddr", "WSAAsyncGetHostByName", "WSAAsyncGetProtoByName", "WSAAsyncGetProtoByNumber", "WSAAsyncGetServByName", "WSAAsyncGetServByPort", "WSAAsyncSelect", "WSACancelAsyncRequest", "WSACleanup", "WSACloseEvent", "WSAConnect", "WSAConnectByList", "WSAConnectByNameA", "WSACreateEvent", "WSADuplicateSocketA", "WSAEnumNameSpaceProvidersA", "WSAEnumNameSpaceProvidersExA", "WSAEnumNetworkEvents", "WSAEnumProtocolsA", "WSAEventSelect", "__WSAFDIsSet", "WSAGetLastError", "WSAGetOverlappedResult", "WSAGetQOSByName", "WSAGetServiceClassInfoA", "WSAGetServiceClassNameByClassIdA", "WSAHtonl", "WSAHtons", "WSAInstallServiceClassA", "WSAIoctl", "WSAJoinLeaf", "WSALookupServiceBeginA", "WSALookupServiceEnd", "WSALookupServiceNextA", "WSANSPIoctl", "WSANtohl", "WSANtohs", "WSAPoll", "WSAProviderConfigChange", "WSARecv", "WSARecvDisconnect", "WSARecvFrom", "WSARemoveServiceClass", "WSAResetEvent", "WSASend", "WSASendDisconnect", "WSASendMsg", "WSASendTo", "WSASetEvent", "WSASetLastError", "WSASetServiceA", "WSASocketA", "WSAStartup", "WSAStringToAddressA", "WSAWaitForMultipleEvents" };
 	for (int i{ 0 }; i < sizeof(sock) / sizeof(sock[0]); ++i) {
 		sock_functions.push_back(std::string(sock[i]));
+	}
+	char reg[][55] = { "GetSystemRegistryQuota", "RegCloseKey", "RegConnectRegistryA", "RegCopyTreeA", "RegCreateKeyExA", "RegCreateKeyTransactedA", "RegDeleteKeyA", "RegDeleteKeyExA", "RegDeleteKeyTransactedA", "RegDeleteKeyValueA", "RegDeleteTreeA", "RegDeleteValueA", "RegDisablePredefinedCache", "RegDisablePredefinedCacheEx", "RegDisableReflectionKey", "RegEnableReflectionKey", "RegEnumKeyExA", "RegEnumValueA", "RegFlushKey", "RegGetKeySecurity", "RegGetValueA", "RegLoadKeyA", "RegLoadMUIStringA", "RegNotifyChangeKeyValue", "RegOpenCurrentUser", "RegOpenKeyExA", "RegOpenKeyTransactedA", "RegOpenUserClassesRoot", "RegOverridePredefKey", "RegQueryInfoKeyA", "RegQueryMultipleValuesA", "RegQueryReflectionKey", "RegQueryValueExA", "RegRenameKey", "RegReplaceKeyA", "RegRestoreKeyA", "RegSaveKeyA", "RegSaveKeyExA", "RegSetKeyValueA", "RegSetKeySecurity", "RegSetValueExA", "RegUnLoadKeyA", "GetPrivateProfileInt", "GetPrivateProfileSection", "GetPrivateProfileSectionNames", "GetPrivateProfileString", "GetPrivateProfileStruct", "GetProfileIntA", "GetProfileSectionA", "GetProfileStringA", "WritePrivateProfileSectionA", "WritePrivateProfileStringA", "WritePrivateProfileStructA", "WriteProfileSectionA", "WriteProfileStringA" };
+	for (int i{ 0 }; i < sizeof(reg) / sizeof(reg[0]); ++i) {
+		reg_functions.push_back(std::string(reg[i]));
 	}
 	std::cout << "got into DLL!!\n";
 	void* f;
@@ -580,8 +580,6 @@ FALSE,
 	case DLL_PROCESS_ATTACH:
 		// A process is loading the DLL.
 		//set_up_hook();
-		WaitForSingleObject(hMutex, INFINITE);
-		msg = new char[50] {"---------------\nstarted hooking\n---------------\n\n"};
 		Hook::set_up_vars();
 		//mylog(msg, 49);
 		functions = getFunctionsToHook();
@@ -599,9 +597,6 @@ FALSE,
 		break;
 	case DLL_PROCESS_DETACH:
 		// A process unloads the DLL.
-		ReleaseMutex(hMutex);
-		CloseHandle(hMutex);
-		std::cout << "relaed mutex^^^^^^^^^^^^^^^^\n";
 		break;
 	}
 	return TRUE;

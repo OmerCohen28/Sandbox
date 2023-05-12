@@ -351,6 +351,9 @@ public:
 			original_bytes.push_back(tmp_og_bytes);
 			hooked_addr.push_back(tmp_hooked_addr);
 		}
+		/*if(!DeleteFileA("D:\\Actual sandbox sln\\log.txt")){
+			std::cout << "unable to delete log\n";
+		}*/
 		time(&begin);
 
 	}

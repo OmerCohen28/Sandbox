@@ -1,10 +1,15 @@
 from socket import *
 from select import select
 from code_generators.get_func_info import get_all_function_names
+import sys
 
-functions = get_all_function_names()
+output_file = open('D:\\Actual sandbox sln\\output_python.txt','w')
+try:
+    functions = get_all_function_names()
+except:
+    output_file.write("whoops")
 
-
+output_file.write("before connection\n")
 conn_sock = socket(AF_INET,SOCK_STREAM)
 conn_sock.bind(("127.0.0.1",50505))
 conn_sock.listen(2)
@@ -13,7 +18,7 @@ conn_sock2.bind(("127.0.0.1",50512))
 conn_sock2.listen(2)
 
 sock,addr = conn_sock.accept()
-
+output_file.write("recevied 1st connection\n")
 functions_to_hook = []
 
 while True:
@@ -41,14 +46,13 @@ while True:
             sock.send("0".encode())
 
 
-print("here")
+output_file.write("here\n")
 sock,addr = conn_sock2.accept()
 
 for name in functions_to_hook:
-    stuffed_name = "b"
-    stuffed_name+=name
-    stuffed_name = stuffed_name.ljust(40,"@")
+    stuffed_name = name.ljust(40,"@")
     print(f"sent {stuffed_name}")
     sock.send(stuffed_name.encode())
 
 sock.send("stop".ljust(40,"@").encode())
+output_file.close()

@@ -8,11 +8,11 @@ namespace Graphics
         string fileToExamine = "";
         public Form1()
         {
-            //Process process = new Process();
+            Process process = new Process();
 
-            //process.StartInfo.FileName = "python.exe";
-            //process.StartInfo.Arguments = "C:\\Users\\Omer Cohen\\Documents\\Programming\\Sandbox\\connection_server.py";
-            //process.Start();
+            process.StartInfo.FileName = "python.exe";
+            process.StartInfo.Arguments = "D:\\Sandbox\\connection_server.py > D:\\Actual sandbox sln\\output_python.txt";
+            process.Start();
             InitializeComponent();
         }
 
@@ -28,6 +28,7 @@ namespace Graphics
                 MessageBox.Show("You must drag a file to examine before proceeding!");
                 return;
             }
+            Form2.init_sock();
             Program.form.Hide();
             Program.form2.ShowDialog();
             this.Dispose();

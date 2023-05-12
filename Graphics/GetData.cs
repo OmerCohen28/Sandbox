@@ -19,7 +19,7 @@ namespace Graphics
         public static WinApiHooksData[] GetDLLData()
         {
             string content;
-            using (FileStream fileStream = new FileStream("C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\injectDll\\log.txt", FileMode.Open, FileAccess.Read))
+            using (FileStream fileStream = new FileStream("D:\\Actual sandbox sln\\log.txt", FileMode.Open, FileAccess.Read))
             {
                 fileStream.Seek(WinApiHooksData.filePosition, SeekOrigin.Begin);
 

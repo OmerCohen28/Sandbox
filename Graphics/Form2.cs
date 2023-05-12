@@ -14,6 +14,7 @@ using Python;
 using System.Net;
 using System.Net.Sockets;
 using System.Diagnostics;
+using System.IO;
 
 namespace Graphics
 {
@@ -23,9 +24,13 @@ namespace Graphics
         public static TcpClient client = new TcpClient();
         public Form2()
         {
+            InitializeComponent();
+        }
+        public static void init_sock()
+        {
             try
             {
-               
+
                 client.Connect("127.0.0.1", 50505);
 
             }
@@ -36,10 +41,9 @@ namespace Graphics
             // Check if the connection is successful
             if (client.Connected)
             {
-                Console.WriteLine("Connected to the server.");
+                MessageBox.Show("Connected to the server.");
 
             }
-            InitializeComponent();
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -261,9 +265,13 @@ namespace Graphics
 
         private void button3_Click(object sender, EventArgs e)
         {
+            NetworkStream stream = client.GetStream();
+            byte[] data = Encoding.UTF8.GetBytes("stop");
+            stream.Write(data, 0, data.Length);
+
             Process process2 = new Process();
-            process2.StartInfo.FileName = "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\injectDll\\Debug\\injectDll.exe";
-            process2.StartInfo.Arguments = "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe " + trackBar1.Value;
+            process2.StartInfo.FileName = "\"D:\\Actual sandbox sln\\injectDll\\Debug\\injectDll.exe\"";
+            process2.StartInfo.Arguments = $"\"D:\\Actual sandbox sln\\virus\\Debug\\virus.exe\" \"{trackBar1.Value}\"";
             process2.Start();
             InitializeComponent();
             Program.form2.Hide();

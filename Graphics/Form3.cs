@@ -21,7 +21,7 @@ namespace Graphics
         {
             if (Program.IsVirusFinished)
             {
-                button3.Enabled = true;
+                //button3.Enabled = true;
             }
         }
 

@@ -2,16 +2,18 @@
 #include <Windows.h>
 #include <string>
 #include <psapi.h>
+#include <fstream>
 
 
 struct pass_to_memory_limiter {
     HANDLE hProcess;
     int max_size;
+    std::ofstream& outputFile;
 };
 
 DWORD WINAPI checkProcessMemory(pass_to_memory_limiter& data) {
     if (data.hProcess == NULL) {
-        std::cout << "Failed to open process with error " << GetLastError() << std::endl;
+        data.outputFile << "Failed to open process with error " << GetLastError() << std::endl;
         return 1;
     }
     while (true) {
@@ -20,7 +22,7 @@ DWORD WINAPI checkProcessMemory(pass_to_memory_limiter& data) {
         if (GetProcessMemoryInfo(data.hProcess, &pmc, sizeof(pmc))) {
             int size = pmc.WorkingSetSize / 1024;
             if (size > data.max_size * 1024) {
-                std::cout << "PROCESS EXCEEDED ALLOWED MEMORY\n";
+                data.outputFile << "PROCESS EXCEEDED ALLOWED MEMORY\n";
                 TerminateProcess(data.hProcess, 1);
                 ExitProcess(1);
             }
@@ -32,8 +34,8 @@ DWORD WINAPI checkProcessMemory(pass_to_memory_limiter& data) {
     return 0;
 }
 
-void inject_dll(std::string& file, int size) {
-    const char name[] = { "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\inlineHook\\Debug\\inlineHook.dll" };
+void inject_dll(const std::string& file, int size, std::ofstream& outputFile) {
+    const char name[] = { "D:\\Actual sandbox sln\\inlineHook\\Debug\\inlineHook.dll" };
     unsigned int len{ sizeof(name) + 1 };
     DWORD result = GetFullPathNameA(name, 0, NULL, NULL);
     char* buf = new char[result];
@@ -41,7 +43,7 @@ void inject_dll(std::string& file, int size) {
 
     PVOID addrLoadLibrary = (PVOID)GetProcAddress(GetModuleHandleA("kernel32"), "LoadLibraryA");
     if (addrLoadLibrary == NULL) {
-        std::cout << "loadlibrary a failed\n";
+        outputFile << "loadlibrary a failed\n";
     }
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
@@ -62,9 +64,9 @@ void inject_dll(std::string& file, int size) {
         (LPSTARTUPINFOA)&si,
         &pi
     )) {
-        std::cout << "failed to create new process with error: " << GetLastError() << '\n';
+        outputFile << "failed to create new process with error: " << GetLastError() << '\n';
     }
-    std::cout << "created new process\n";
+    outputFile << "created new process\n";
     SuspendThread(pi.hThread);
     //std::cout << pi.hProcess << '\n';
     //std::cout << "yo";
@@ -76,9 +78,9 @@ void inject_dll(std::string& file, int size) {
         PAGE_EXECUTE_READWRITE
     );
     if (memAddr == NULL) {
-        std::cout << "failed to allocate virtual memory";
+        outputFile << "failed to allocate virtual memory";
         DWORD err = GetLastError();
-        std::cout << err;
+        outputFile << err;
     }
 
     if (!WriteProcessMemory(
@@ -89,9 +91,8 @@ void inject_dll(std::string& file, int size) {
         NULL
     )) {
         DWORD err = GetLastError();
-        std::cout << "failed to write process memory";
-        std::cout << err;
-        std::cout << "eror";
+        outputFile << "failed to write process memory with code: ";
+        outputFile << err;
     }
     HANDLE remote_thread = CreateRemoteThread(
         pi.hProcess,
@@ -103,10 +104,10 @@ void inject_dll(std::string& file, int size) {
         NULL
     );
     if (remote_thread == NULL) {
-        std::cout << "failed to create remote thread\n";
+        outputFile << "failed to create remote thread\n";
     }
-    std::cout << "injected the DLL\n";
-    pass_to_memory_limiter data{ pi.hProcess,size };
+    outputFile << "injected the DLL\n";
+    pass_to_memory_limiter data{ pi.hProcess,size,outputFile };
     HANDLE hThread = CreateThread(
         NULL,
         0,
