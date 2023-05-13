@@ -37,6 +37,7 @@ namespace Graphics
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                System.Windows.Forms.Application.Exit();
             }
             // Check if the connection is successful
             if (client.Connected)
@@ -270,8 +271,8 @@ namespace Graphics
             stream.Write(data, 0, data.Length);
 
             Process process2 = new Process();
-            process2.StartInfo.FileName = "\"D:\\Actual sandbox sln\\injectDll\\Debug\\injectDll.exe\"";
-            process2.StartInfo.Arguments = $"\"D:\\Actual sandbox sln\\virus\\Debug\\virus.exe\" \"{trackBar1.Value}\"";
+            process2.StartInfo.FileName = "\"C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\injectDll\\Debug\\injectDll.exe\"";
+            process2.StartInfo.Arguments = $"\"C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\virus\\Debug\\virus.exe\" \"{trackBar1.Value}\"";
             process2.Start();
             InitializeComponent();
             Program.form2.Hide();

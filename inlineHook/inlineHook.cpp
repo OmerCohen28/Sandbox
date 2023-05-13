@@ -55,7 +55,7 @@ HINSTANCE hLibSock{ LoadLibraryA("Ws2_32.dll") };
 HINSTANCE hLibReg{ LoadLibraryA("Advapi32.dll") };
 
 HANDLE LOGfile = CreateFileA(
-	"D:\\Actual sandbox sln\\log.txt",
+	"C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\log.txt",
 	GENERIC_READ | GENERIC_WRITE,
 	FILE_SHARE_READ | FILE_SHARE_DELETE,
 	NULL,
@@ -514,8 +514,10 @@ std::vector<std::string>* getFunctionsToHook() {
 }
 
 char WhatToDoInFunction(const char* func_name){
+	std::cout << "checking for function " << func_name << '\n';
 	for(auto func : *functions){
 		if(strcmp(&func.c_str()[1],func_name)==0){
+			std::cout << "returning " << func.at(0) << '\n';
 			return func.at(0);
 		}
 	}
@@ -586,9 +588,9 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 		for (auto item : *functions) {
 			std::cout << "got " << item << '\n';
 		}
-		std::cout << "my test is: " << WhatToDoInFunction("CreateFileA");
+		std::cout << "my test is: " << WhatToDoInFunction("connect");
 		deployInitialHook();
-
+		Hook{ Hook::Functions::connect }.deploy_hook();
 	case DLL_THREAD_ATTACH:
 		// A process is creating a new thread.
 		break;

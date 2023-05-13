@@ -11,7 +11,7 @@ namespace Graphics
             Process process = new Process();
 
             process.StartInfo.FileName = "python.exe";
-            process.StartInfo.Arguments = "D:\\Sandbox\\connection_server.py > D:\\Actual sandbox sln\\output_python.txt";
+            process.StartInfo.Arguments = "\"C:\\Users\\Omer Cohen\\Documents\\Programming\\Sandbox\\connection_server.py\"";
             process.Start();
             InitializeComponent();
         }

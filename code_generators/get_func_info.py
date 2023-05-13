@@ -35,20 +35,20 @@ def get_all_function_names():
             data = file.read()
             data_fs = data.split("{")[1].strip("}").split(";")
     except FileNotFoundError:
-        with open("inlineHook\\codeGeneratedFunctionsFileSystem.h",'r') as file:
+        with open("C:\\Users\\Omer Cohen\\Documents\\Programming\\Sandbox\\inlineHook\\codeGeneratedFunctionsFileSystem.h",'r') as file:
             data = file.read()
             data_fs = data.split("{")[1].strip("}").split(";")
     try:
         with open("..\\inlineHook\\codeGeneratedFunctionsSockets.h",'r') as file:
             data_socket = file.read().split("{")[1].strip("}").split(";")
     except FileNotFoundError:
-        with open("inlineHook\\codeGeneratedFunctionsSockets.h",'r') as file:
+        with open("C:\\Users\\Omer Cohen\\Documents\\Programming\\Sandbox\\inlineHook\\codeGeneratedFunctionsSockets.h",'r') as file:
             data_socket = file.read().split("{")[1].strip("}").split(";")
     try:
         with open("..\\inlineHook\\codeGeneratedFunctionsRegistry.h",'r') as file:
             data_reg = file.read().split("{")[1].strip("}").split(";")
     except FileNotFoundError:
-        with open("inlineHook\\codeGeneratedFunctionsRegistry.h",'r') as file:
+        with open("C:\\Users\\Omer Cohen\\Documents\\Programming\\Sandbox\\inlineHook\\codeGeneratedFunctionsRegistry.h",'r') as file:
             data_reg = file.read().split("{")[1].strip("}").split(";")
     names = []
     f = []

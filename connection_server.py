@@ -1,9 +1,8 @@
 from socket import *
 from select import select
 from code_generators.get_func_info import get_all_function_names
-import sys
 
-output_file = open('D:\\Actual sandbox sln\\output_python.txt','w')
+output_file = open('C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\output_python.txt','w')
 try:
     functions = get_all_function_names()
 except:

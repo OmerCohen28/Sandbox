@@ -1198,28 +1198,25 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Omer\\.nuget\\packages\\": {},
-    "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
-    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {}
+    "C:\\Users\\Omer Cohen\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Actual sandbox sln\\Graphics\\Graphics\\Graphics.csproj",
+      "projectUniqueName": "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\Graphics\\Graphics\\Graphics.csproj",
       "projectName": "Graphics",
-      "projectPath": "D:\\Actual sandbox sln\\Graphics\\Graphics\\Graphics.csproj",
-      "packagesPath": "C:\\Users\\Omer\\.nuget\\packages\\",
-      "outputPath": "D:\\Actual sandbox sln\\Graphics\\Graphics\\obj\\",
+      "projectPath": "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\Graphics\\Graphics\\Graphics.csproj",
+      "packagesPath": "C:\\Users\\Omer Cohen\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\Graphics\\Graphics\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Omer\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Omer Cohen\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net6.0-windows"
@@ -1272,7 +1269,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }

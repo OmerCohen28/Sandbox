@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
         //}
     //}
     //std::cout << "thank you for using SafeBox :)\n";
-    std::ofstream outputFile("D:\\Actual sandbox sln\\output.txt");
+    std::ofstream outputFile("C:\\Users\\Omer Cohen\\Documents\\Programming\\Actual sandbox sln\\output.txt");
     if (outputFile.is_open()) {
         outputFile << "Hello, C# application!" << std::endl;
         if (argc != 3) {

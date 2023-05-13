@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <algorithm>
+#include <string>
 #include "windivert.h"
 
 #define _my_addr_ "127.0.0.1"
@@ -21,10 +22,12 @@ SOCKET* sock;
 HANDLE mutex;
 std::vector<UINT16> NOT_ALLOWED_PORTS;
 
+void log(std::string  msg) {
+
+}
 
 void updatePythonProgram(UINT16 port, BOOL remove) {
-    DWORD result = WaitForSingleObject(mutex, INFINITE);
-    if (result == WAIT_OBJECT_0) {
+        std::cout << "got port " << port << '\n';
         // Convert value to network byte order
         UINT16 networkValue = htons(port);
         std::cout << "added " << networkValue << " to not allowed ports\n";
@@ -38,16 +41,9 @@ void updatePythonProgram(UINT16 port, BOOL remove) {
         }
         
         ReleaseMutex(mutex);
-        
-    }
-    else {
-        // Failed to wait for mutex
-        std::cout << "waiting for mutex failed\n";
-        exit(1);
-    }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
     NOT_ALLOWED_PORTS = {};
     SECURITY_ATTRIBUTES securityAttributes;
@@ -65,7 +61,7 @@ int main()
 
     HANDLE handle, process;
     INT16 priority = 1121;          // Arbitrary.
-    const char* filter = "processId == 20100", * err_str;
+    const char* filter = "processId == 31860", * err_str;
     //const char* filter = "processId == 15320 || processId == 14376 || processId == 8040 || processId == 5840 || processId == 15320 || processId == 10660 || processId == 10188 || processId == 6000 || processId == 15296 || processId == 19812 || processId == 3712 || processId == 19380 || processId == 13596 || processId == 19604 || processId == 19720", * err_str;
     char path[MAX_PATH + 1];
     char local_str[INET6_ADDRSTRLEN + 1], remote_str[INET6_ADDRSTRLEN + 1];
@@ -98,31 +94,41 @@ int main()
             fprintf(stderr, "failed to read packet (%d)\n", GetLastError());
             continue;
         }
-
-        std::cout << "got event\nport:" << addr.Socket.LocalPort << ' ';
+        DWORD result = WaitForSingleObject(mutex, INFINITE);
+        if (result != WAIT_OBJECT_0) {
+            std::cout << "waiting for mutex failed\n";
+            exit(1);
+        }
+        std::cout << "got event\nlocal port:" << addr.Socket.LocalPort << " remote port: " << addr.Socket.RemotePort << ' ';
         switch (addr.Event)
         {
         case WINDIVERT_EVENT_SOCKET_BIND:
             updatePythonProgram(addr.Socket.LocalPort, false);
+            updatePythonProgram(addr.Socket.RemotePort, false);
             printf("BIND");
             break;
         case WINDIVERT_EVENT_SOCKET_LISTEN:
             updatePythonProgram(addr.Socket.LocalPort, false);
+            updatePythonProgram(addr.Socket.RemotePort, false);
             printf("LISTEN");
             break;
         case WINDIVERT_EVENT_SOCKET_CONNECT:
             updatePythonProgram(addr.Socket.LocalPort, false);
+            updatePythonProgram(addr.Socket.RemotePort, false);
             printf("CONNECT");
             break;
         case WINDIVERT_EVENT_SOCKET_ACCEPT:
             updatePythonProgram(addr.Socket.LocalPort, false);
+            updatePythonProgram(addr.Socket.RemotePort, false);
             printf("ACCEPT");
             break;
         case WINDIVERT_EVENT_SOCKET_CLOSE:
             updatePythonProgram(addr.Socket.LocalPort, true);
+            updatePythonProgram(addr.Socket.RemotePort, true);
             printf("CLOSE");
             break;
         default:
+            ReleaseMutex(mutex);
             printf("???");
             break;
         }
@@ -143,7 +149,7 @@ DWORD WINAPI blockPackets(LPVOID lpParameter) {
     char packet[MAX_PACKET_SIZE];
     UINT packetLength;
 
-    handle = WinDivertOpen("true", WINDIVERT_LAYER_NETWORK, 0, 0);
+    handle = WinDivertOpen("outbound or inbound", WINDIVERT_LAYER_NETWORK, 0, 0);
     if (handle == INVALID_HANDLE_VALUE)
     {
         std::cerr << "Failed to open Windivert handle." << std::endl;
@@ -161,17 +167,77 @@ DWORD WINAPI blockPackets(LPVOID lpParameter) {
         }
 
         //UINT16 dstPort = htons(addr.Socket.LocalPort);
-        UINT16 dstPort = ntohs(*(UINT16*)(packet + 2 + (packet[0] & 0x0F) * 4));
+        PWINDIVERT_TCPHDR tcphdr = NULL;
+        PWINDIVERT_UDPHDR udphdr = NULL;
+        PWINDIVERT_IPHDR iphdr = NULL;
+        PVOID data = NULL;
+        UINT data_len;
+        WinDivertHelperParsePacket(packet, packetLength, &iphdr, NULL, NULL,
+            NULL, NULL, &tcphdr, &udphdr, &data, &data_len, NULL, NULL);
 
 
+        //UINT16 dstPort = ntohs(*(UINT16*)(packet + 2 + (packet[0] & 0x0F) * 4));
+        UINT16 srcPort;
+        UINT16 dstPort;
+        UINT32 dstAddr;
+        UINT32 srcAddr;
+
+        if (tcphdr != NULL) {
+            dstPort = ntohs(tcphdr->DstPort);
+            srcPort = ntohs(tcphdr->SrcPort);
+        }
+        else if (udphdr != NULL) {
+            dstPort = ntohs(udphdr->DstPort);
+            srcPort = ntohs(udphdr->SrcPort);
+        }
+        else {
+            continue;
+        }
         DWORD result = WaitForSingleObject(mutex, INFINITE);
         if (result != WAIT_OBJECT_0) {
             std::cout << "Waiting for mutex failed." << std::endl;
             return 0;
         }
 
-        if (std::find(NOT_ALLOWED_PORTS.begin(), NOT_ALLOWED_PORTS.end(), dstPort) != NOT_ALLOWED_PORTS.end())
+        if (std::find(NOT_ALLOWED_PORTS.begin(), NOT_ALLOWED_PORTS.end(), dstPort) != NOT_ALLOWED_PORTS.end() || std::find(NOT_ALLOWED_PORTS.begin(), NOT_ALLOWED_PORTS.end(), srcPort) != NOT_ALLOWED_PORTS.end())
         {
+            std::string logMsg = addr.Outbound == 1 ? std::string("outbound$") : std::string("inbound$");
+            if (iphdr != NULL) {
+                srcAddr = iphdr->SrcAddr;
+                dstAddr = iphdr->DstAddr;
+                char* src = new char[10];
+                WinDivertHelperFormatIPv4Address(srcAddr, src, 10);                
+                char* dst = new char[10];
+                WinDivertHelperFormatIPv4Address(srcAddr, dst, 10);
+                
+                logMsg += std::string(src) + ":" + std::to_string(srcPort) + "$";
+                logMsg += std::string(dst) + ":" + std::to_string(dstPort) + "$";
+            }
+            else {
+                logMsg += "????:" + std::to_string(srcPort) + "$";
+                logMsg += "????:" + std::to_string(dstPort) + "$";
+            }
+            if (data != NULL) {
+                logMsg += std::to_string(*(LPCSTR)data) + "%";
+            }
+            else {
+                logMsg += "%";
+            }
+            std::cout << logMsg << '\n';
+            if (addr.Loopback) {
+                std::cout << "loopback!!!\n";
+            }
+            if (data != NULL) {
+                std::cout << "data: " << (LPSTR)data << '\n';
+                std::cout << "data length: " << data_len << '\n';
+            }
+            if (udphdr != NULL) {
+                std::cout << "normal " << udphdr->DstPort << " ntohs: " << ntohs(udphdr->DstPort) << "htons " << htons(udphdr->DstPort) << '\n';
+            }
+            if (tcphdr != NULL) {
+                std::cout << "normal " << tcphdr->DstPort << " ntohs: " << ntohs(tcphdr->DstPort) << "htons " << htons(tcphdr->DstPort) << '\n';
+                std::cout << "normal " << tcphdr->SrcPort << " ntohs: " << ntohs(tcphdr->SrcPort) << "htons " << htons(tcphdr->SrcPort) << '\n';
+            }
             std::cout << "Blocked packet with destination port: " << dstPort << std::endl;
             continue; // Skip forwarding the packet
         }

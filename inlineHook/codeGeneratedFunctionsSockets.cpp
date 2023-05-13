@@ -214,8 +214,10 @@ int WSAAPI __stdcall newconnect(
        const sockaddr *name,
        int            namelen
 ){
+    std::cout << "inside new connect\n";
             char whatToDo = WhatToDoInFunction("connect");
             if(whatToDo == *"b"){
+                std::cout << "get blocked fool\n";
                 std::string logMsg("connect$");logMsg += std::string("s: ") + generic_log(s)+std::string("$");
 logMsg += std::string("name: ") + generic_log(name)+std::string("$");
 logMsg += std::string("namelen: ") + generic_log(namelen)+std::string("$");
